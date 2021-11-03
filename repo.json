@@ -6,17 +6,18 @@
     "Description": "Keep track of retainer, airship, submersible and crop timers of multiple characters.",
     "Tags": [ "Airship", "Gardening", "Crops", "Retainer", "Multiple Characters", "Account", "Timer", "Submarine", "Submersible" ],
     "InternalName": "Accountant",
-	"AssemblyVersion": "1.0.0.0",
-	"RepoUrl": "https://github.com/Ottermandias/Accountant",
-	"ApplicableVersion": "any",
-	"DalamudApiLevel": 4,
-	"LoadPriority": 0,
+    "AssemblyVersion": "1.0.0.0",
+    "RepoUrl": "https://github.com/Ottermandias/Accountant",
+    "ApplicableVersion": "any",
+    "DalamudApiLevel": 4,
+    "LoadPriority": 0,
     "IsHide": "False",
     "IsTestingExclusive": "True",
     "DownloadCount": 1,
     "LastUpdate": 1618608329,
     "DownloadLinkTesting": "https://github.com/Ottermandias/Accountant/raw/main/Accountant.zip",
     "DownloadLinkUpdate": "https://github.com/Ottermandias/Accountant/raw/main/Accountant.zip",
+    "DownloadLinkInstall": "https://github.com/Ottermandias/Accountant/raw/main/Accountant.zip",
     "IconUrl": "https://raw.githubusercontent.com/Ottermandias/Accountant/main/images/icon.png"
   }
 ]
