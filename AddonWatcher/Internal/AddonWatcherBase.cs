@@ -1,12 +1,15 @@
 ﻿using System;
 using AddonWatcher.SeFunctions;
 using Dalamud.Game;
+using Dalamud.Game.Gui;
 using Dalamud.Hooking;
 
 namespace AddonWatcher.Internal;
 
 internal partial class AddonWatcherBase : IDisposable
 {
+    private readonly GameGui _gui;
+
     internal SelectStringReceiveEvent SelectStringReceiveEvent;
     internal SelectYesnoReceiveEvent  SelectYesnoReceiveEvent;
     internal SelectStringOnSetup      SelectStringOnSetup;
@@ -28,8 +31,10 @@ internal partial class AddonWatcherBase : IDisposable
     private event JournalResultSetupDelegate?  JournalResultSetup;
     private event TalkUpdateDelegate?          TalkUpdated;
 
-    public AddonWatcherBase(SigScanner sigScanner)
+    public AddonWatcherBase(GameGui gui, SigScanner sigScanner)
     {
+        _gui                     = gui;
+
         SelectStringReceiveEvent = new SelectStringReceiveEvent(sigScanner);
         SelectYesnoReceiveEvent  = new SelectYesnoReceiveEvent(sigScanner);
         SelectStringOnSetup      = new SelectStringOnSetup(sigScanner);

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using Dalamud.Game.Text.SeStringHandling;
 
 namespace OtterLoc.Structs;
 
@@ -23,4 +25,13 @@ public static class StringIdExtensions
 {
     public static LazyString<T> Value<T>(this T s) where T : Enum
         => new(s);
+
+    public static ILocObject Object<T>(this T s) where T : Enum
+        => LocalizationDict<T>.Get(s);
+
+    public static IList<string> Filter<T>(this T s, SeString ss) where T : Enum
+        => ((ILocFilter)LocalizationDict<T>.Get(s)).Filter(ss);
+
+    public static bool Match<T>(this T s, SeString ss) where T : Enum
+        => ((ILocMatcher)LocalizationDict<T>.Get(s)).Matches(ss);
 }

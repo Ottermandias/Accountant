@@ -1,22 +1,22 @@
 ﻿[
   {
     "Author": "Ottermandias",
-    "Name": "AutoVisor [T]",
-    "Punchline": "Change Visor and Stance based on State and Job.",
-    "Description": "Automatically change visor, headslot hiding, and weapon hiding status for different player states, as well as default CPose-stances per job.",
-    "Tags": [ "Visor", "Headslot", "Hat", "CPose", "Stance", "State", "Glasses" ],
-    "InternalName": "AutoVisor",
-    "AssemblyVersion": "1.2.0.2",
-    "TestingAssemblyVersion": "1.2.0.2",
-    "RepoUrl": "https://github.com/Ottermandias/AutoVisor",
-    "ApplicableVersion": "any",
-    "DalamudApiLevel": 4,
+    "Name": "Accountant [T]",
+    "Punchline": "Character task timers.",
+    "Description": "Keep track of retainer, airship, submersible and crop timers of multiple characters.",
+    "Tags": [ "Airship", "Gardening", "Crops", "Retainer", "Multiple Characters", "Account", "Timer", "Submarine", "Submersible" ],
+    "InternalName": "Accountant",
+	"AssemblyVersion": "1.0.0.0",
+	"RepoUrl": "https://github.com/Ottermandias/Accountant",
+	"ApplicableVersion": "any",
+	"DalamudApiLevel": 4,
+	"LoadPriority": 0,
     "IsHide": "False",
     "IsTestingExclusive": "True",
     "DownloadCount": 1,
     "LastUpdate": 1618608329,
-    "DownloadLinkTesting": "https://github.com/Ottermandias/AutoVisor/raw/master/AutoVisor.zip",
-    "DownloadLinkUpdate": "https://github.com/Ottermandias/AutoVisor/raw/master/AutoVisor.zip",
-    "IconUrl": "https://raw.githubusercontent.com/Ottermandias/AutoVisor/master/images/icon.png"
+    "DownloadLinkTesting": "https://github.com/Ottermandias/Accountant/raw/main/Accountant.zip",
+    "DownloadLinkUpdate": "https://github.com/Ottermandias/Accountant/raw/main/Accountant.zip",
+    "IconUrl": "https://raw.githubusercontent.com/Ottermandias/Accountant/main/images/icon.png"
   }
 ]

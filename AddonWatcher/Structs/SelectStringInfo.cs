@@ -28,10 +28,14 @@ public unsafe struct SelectStringInfo
     {
         get
         {
-            var description = Pointer->AtkUnitBase.UldManager.NodeListCount > DescriptionNodeIdx
-                ? (AtkTextNode*)Pointer->AtkUnitBase.UldManager.NodeList[DescriptionNodeIdx]
-                : null;
-            return description == null ? SeString.Empty : Helpers.TextNodeToString(description);
+            var count = Pointer->AtkUnitBase.UldManager.NodeListCount;
+            if (DescriptionNodeIdx >= count)
+                return SeString.Empty;
+
+            var node  = Pointer->AtkUnitBase.UldManager.NodeList[DescriptionNodeIdx];
+            if (node == null)
+                return SeString.Empty;
+            return Helpers.TextNodeToString((AtkTextNode*)node);
         }
     }
 }

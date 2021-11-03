@@ -5,6 +5,8 @@ using System.Runtime.CompilerServices;
 using Dalamud;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
+using OtterLoc.Enums;
+using OtterLoc.Structs;
 
 namespace OtterLoc;
 
@@ -64,6 +66,18 @@ public static class LocalizationDict<T> where T : Enum
             _                       => Register(key, (se.Payloads[payloadEn] as TextPayload)?.Text.Trim() ?? string.Empty),
         };
 
+    public static bool RegisterComparer(T key, string s, MatchType type = MatchType.Equal)
+        => Register(key, new StringMatcher(s, type));
+
+    public static bool RegisterComparer(T key, CompareString s)
+        => Register(key, new StringMatcher(s));
+
+    public static bool Register(T key, Func<SeString, bool> matcher)
+        => Register(key, new SeStringMatcher(matcher));
+
+    public static bool Register(T key, Func<SeString, IList<string>> filter)
+        => Register(key, new SeStringParser(filter));
+
     private static int RangeCheck(T key)
     {
         var idx = Unsafe.As<T, int>(ref key);
@@ -80,7 +94,7 @@ public static class LocalizationDict<T> where T : Enum
         if (loc is LocEmpty)
             throw new InvalidOperationException($"{key} is not initialized.");
 
-        return InternalData[idx];
+        return loc;
     }
 
     public static string GetName(T key)

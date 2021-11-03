@@ -9,7 +9,7 @@ internal static class Helpers
         const long timeFromEpoch = 62135596800;
 
         return timeStamp == 0u
-            ? DateTime.UnixEpoch
+            ? DateTime.MinValue
             : new DateTime((timeStamp + timeFromEpoch) * TimeSpan.TicksPerSecond, DateTimeKind.Utc);
     }
 }

@@ -47,10 +47,10 @@ public partial class Crops
             _idToData[(uint)itemId] = (crop, name);
             _idToData[(uint)seedId] = (crop, name);
 
-            _nameToData[name]                     = crop;
-            _nameToData[seed.Name.ToString()]     = crop;
-            _nameToData[item.Singular.ToString()] = crop;
-            _nameToData[seed.Singular.ToString()] = crop;
+            _nameToData[name.ToLowerInvariant()]                     = crop;
+            _nameToData[seed.Name.ToString().ToLowerInvariant()]     = crop;
+            _nameToData[item.Singular.ToString().ToLowerInvariant()] = crop;
+            _nameToData[seed.Singular.ToString().ToLowerInvariant()] = crop;
         }
     }
 }

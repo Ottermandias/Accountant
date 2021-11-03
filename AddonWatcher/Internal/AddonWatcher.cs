@@ -1,5 +1,6 @@
 ﻿using System;
 using Dalamud.Game;
+using Dalamud.Game.Gui;
 
 namespace AddonWatcher.Internal;
 
@@ -15,9 +16,9 @@ internal class AddonWatcher : IAddonWatcher
 
     public bool Valid { get; private set; } = true;
 
-    public AddonWatcher(SigScanner sigScanner)
+    public AddonWatcher(GameGui gui, SigScanner sigScanner)
     {
-        _base ??= new AddonWatcherBase(sigScanner);
+        _base ??= new AddonWatcherBase(gui, sigScanner);
         ++_subscribers;
     }
 
