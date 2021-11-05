@@ -1,24 +1,24 @@
 ﻿using System;
 using Accountant.Manager;
 
-namespace Accountant.Gui;
+namespace Accountant.Gui.Timer;
 
 public partial class TimerWindow
 {
     private class ObjectCache : BaseCache
     {
-        protected int      AvailableObjects = 0;
-        protected int      CompletedObjects = 0;
-        protected int      SentObjects      = 0;
-        protected int      LimitedObjects   = 0;
-        protected int      TotalObjects     = 0;
-        protected DateTime TimeForFirst     = DateTime.MaxValue;
-        protected DateTime TimeForAll       = DateTime.MinValue;
+        protected int      AvailableObjects;
+        protected int      CompletedObjects;
+        protected int      SentObjects;
+        protected int      LimitedObjects;
+        protected int      TotalObjects;
+        protected DateTime TimeForFirst = DateTime.MaxValue;
+        protected DateTime TimeForAll   = DateTime.MinValue;
 
-        protected int      CurrentAvailableObjects   = 0;
-        protected int      CurrentCompletedObjects   = 0;
-        protected int      CurrentSentObjects        = 0;
-        protected int      CurrentLimitedObjects     = 0;
+        protected int      CurrentAvailableObjects;
+        protected int      CurrentCompletedObjects;
+        protected int      CurrentSentObjects;
+        protected int      CurrentLimitedObjects;
         protected DateTime CurrentTimeForFirst       = DateTime.MaxValue;
         protected DateTime CurrentActualTimeForFirst = DateTime.MaxValue;
         protected DateTime CurrentTimeForAll         = DateTime.MinValue;

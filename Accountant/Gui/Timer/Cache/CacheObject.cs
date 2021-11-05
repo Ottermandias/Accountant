@@ -3,7 +3,7 @@ using System.Numerics;
 using ImGuiNET;
 using ImGuiScene;
 
-namespace Accountant.Gui;
+namespace Accountant.Gui.Timer;
 
 public struct CacheObject
 {
@@ -31,6 +31,7 @@ public struct CacheObject
             var size   = Vector2.One - offset;
             ImGui.Image(Icon.ImGuiHandle, Vector2.One * ImGui.GetTextLineHeight(), offset, size);
         }
+
         ImGui.SameLine();
     }
 

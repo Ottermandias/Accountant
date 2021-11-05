@@ -1,40 +1,35 @@
 using System;
 using System.Collections.Generic;
 
-namespace Accountant.Gui.Helper
+namespace Accountant.Gui.Helper;
+
+public static partial class ImGuiRaii
 {
-    public static partial class ImGuiRaii
+    public static EndStack DeferredEnd(Action a, bool condition = true)
+        => new EndStack().Push(a, condition);
+
+    public sealed class EndStack : IDisposable
     {
-        public static EndStack DeferredEnd( Action a, bool condition = true )
-            => new EndStack().Push( a, condition );
+        private readonly Stack<Action> _cleanActions = new();
 
-        public class EndStack : IDisposable
+        public EndStack Push(Action a, bool condition = true)
         {
-            private readonly Stack< Action > _cleanActions = new();
+            if (condition)
+                _cleanActions.Push(a);
 
-            public EndStack Push( Action a, bool condition = true )
-            {
-                if( condition )
-                {
-                    _cleanActions.Push( a );
-                }
-
-                return this;
-            }
-
-
-            public EndStack Pop( int num = 1 )
-            {
-                while( num-- > 0 && _cleanActions.TryPop( out var action ) )
-                {
-                    action.Invoke();
-                }
-
-                return this;
-            }
-
-            public void Dispose()
-                => Pop( _cleanActions.Count );
+            return this;
         }
+
+
+        public EndStack Pop(int num = 1)
+        {
+            while (num-- > 0 && _cleanActions.TryPop(out var action))
+                action.Invoke();
+
+            return this;
+        }
+
+        public void Dispose()
+            => Pop(_cleanActions.Count);
     }
 }

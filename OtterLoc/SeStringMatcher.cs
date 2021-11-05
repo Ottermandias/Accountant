@@ -34,12 +34,14 @@ public sealed class SeStringMatcher : ILocMatcher
         var payload = s.Payloads[idx];
         var bytes   = payload.Encode().Where(c => c != '\r' && c != '\n').ToArray();
         var type    = payload.Type;
+
         bool Func(SeString x)
         {
-            var index = (uint) (idx.IsFromEnd ? x.Payloads.Count - idx.Value : idx.Value);
+            var index = (uint)(idx.IsFromEnd ? x.Payloads.Count - idx.Value : idx.Value);
             if (index >= x.Payloads.Count)
                 return false;
-            var p = x.Payloads[(int) index];
+
+            var p = x.Payloads[(int)index];
             return p.Type == type && bytes.SequenceEqual(p.Encode().Where(c => c != '\r' && c != '\n'));
         }
 

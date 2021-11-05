@@ -1,14 +1,13 @@
+using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
-using Accountant.Gui;
+using Accountant.Gui.Config;
 using Accountant.Manager;
 using AddonWatcher;
 using Dalamud.Game.Command;
-using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin;
+using TimerWindow = Accountant.Gui.Timer.TimerWindow;
 
 namespace Accountant;
-
 
 public class Accountant : IDalamudPlugin
 {
@@ -37,17 +36,26 @@ public class Accountant : IDalamudPlugin
 
         Timers       = new TimerManager();
         TimerWindow  = new TimerWindow(Timers);
-        ConfigWindow = new ConfigWindow();
+        ConfigWindow = new ConfigWindow(Timers, TimerWindow);
 
         Dalamud.Commands.AddHandler("/accountant", new CommandInfo(OnAccountant)
         {
-            HelpMessage = "Open Accountant config.",
+            HelpMessage = "Open Accountant config. Use '/accountant timers' to toggle the timer window.",
             ShowInHelp  = true,
         });
     }
 
     private void OnAccountant(string command, string arguments)
-        => ConfigWindow.Toggle();
+    {
+        if (arguments.ToLowerInvariant() != "timers")
+        {
+            ConfigWindow.Toggle();
+            return;
+        }
+
+        Config.WindowVisible = !Config.WindowVisible;
+        Config.Save();
+    }
 
     public void Dispose()
     {

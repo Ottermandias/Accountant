@@ -2,51 +2,50 @@ using System;
 using System.Numerics;
 using ImGuiNET;
 
-namespace Accountant.Gui.Helper
+namespace Accountant.Gui.Helper;
+
+public static partial class ImGuiRaii
 {
-    public static partial class ImGuiRaii
+    public static Color PushColor(ImGuiCol idx, uint color, bool condition = true)
+        => new Color().Push(idx, color, condition);
+
+    public static Color PushColor(ImGuiCol idx, Vector4 color, bool condition = true)
+        => new Color().Push(idx, color, condition);
+
+    public sealed class Color : IDisposable
     {
-        public static Color PushColor( ImGuiCol idx, uint color, bool condition = true )
-            => new Color().Push( idx, color, condition );
+        private int _count;
 
-        public static Color PushColor( ImGuiCol idx, Vector4 color, bool condition = true )
-            => new Color().Push( idx, color, condition );
-
-        public class Color : IDisposable
+        public Color Push(ImGuiCol idx, uint color, bool condition = true)
         {
-            private int _count;
-
-            public Color Push( ImGuiCol idx, uint color, bool condition = true )
+            if (condition)
             {
-                if( condition )
-                {
-                    ImGui.PushStyleColor( idx, color );
-                    ++_count;
-                }
-
-                return this;
+                ImGui.PushStyleColor(idx, color);
+                ++_count;
             }
 
-            public Color Push( ImGuiCol idx, Vector4 color, bool condition = true )
-            {
-                if( condition )
-                {
-                    ImGui.PushStyleColor( idx, color );
-                    ++_count;
-                }
-
-                return this;
-            }
-
-            public void Pop( int num = 1 )
-            {
-                num    =  Math.Min( num, _count );
-                _count -= num;
-                ImGui.PopStyleColor( num );
-            }
-
-            public void Dispose()
-                => Pop( _count );
+            return this;
         }
+
+        public Color Push(ImGuiCol idx, Vector4 color, bool condition = true)
+        {
+            if (condition)
+            {
+                ImGui.PushStyleColor(idx, color);
+                ++_count;
+            }
+
+            return this;
+        }
+
+        public void Pop(int num = 1)
+        {
+            num    =  Math.Min(num, _count);
+            _count -= num;
+            ImGui.PopStyleColor(num);
+        }
+
+        public void Dispose()
+            => Pop(_count);
     }
 }

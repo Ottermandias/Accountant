@@ -12,13 +12,12 @@ using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
 using OtterLoc;
 using OtterLoc.Enums;
-using OtterLoc.Structs;
 
 namespace Accountant.Internal;
 
 internal static class Localization
 {
-    private static bool _initialized = false;
+    private static bool _initialized;
 
     [Sheet("RetainerString")]
     private class StringSheet : ExcelRow

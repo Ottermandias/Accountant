@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Accountant.Structs;
 using Dalamud.Data;
 using Dalamud.Logging;
@@ -13,10 +12,10 @@ public partial class Crops
     private readonly Dictionary<uint, (CropData, string)> _idToData;
 
     internal (CropData Data, string Name) Find(uint itemId)
-        => _idToData.TryGetValue(itemId, out var crop) ? crop : (_idToData![0u].Item1, string.Empty);
+        => _idToData.TryGetValue(itemId, out var crop) ? crop : (_idToData[0u].Item1, string.Empty);
 
     internal CropData Find(string name)
-        => _nameToData.TryGetValue(name.ToLowerInvariant(), out var crop) ? crop : _idToData![0u].Item1;
+        => _nameToData.TryGetValue(name.ToLowerInvariant(), out var crop) ? crop : _idToData[0u].Item1;
 
     internal Crops(DataManager gameData)
     {

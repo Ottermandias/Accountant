@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Accountant.Enums;
 using Accountant.Internal;
 using Accountant.Structs;
@@ -28,14 +29,24 @@ public interface IGameData : IDisposable
     // If the name does not correspond to any crop or seed, returns item 0 with times (0, 0).
     public CropData FindCrop(string name);
 
+    // Obtain the number of available wards in a given housing zone.
+    public int GetNumWards(InternalHousingZone zone = InternalHousingZone.Mist);
+
+    // Obtain the number of available plots in a given housing zone.
+    public int GetNumPlots(InternalHousingZone zone = InternalHousingZone.Mist);
+
     // Obtain the PlotSize for a specific housing plot in a specific housing zone.
     PlotSize GetPlotSize(InternalHousingZone zone, ushort plot);
+
+    // Obtain an enumerable list of all valid world names and their ids.
+    public IEnumerable<(string Name, uint Id)> Worlds();
 
     // Obtain the name of a world for a given world id.
     public string GetWorldName(uint id);
 
     // Obtain the name of the homeworld for a player character.
     public string GetWorldName(PlayerCharacter player);
+
     // Obtain the id of a world by its name.
     public uint GetWorldId(string worldName);
 

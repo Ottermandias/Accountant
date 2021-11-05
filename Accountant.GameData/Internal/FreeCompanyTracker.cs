@@ -10,14 +10,14 @@ namespace Accountant.Internal;
 internal class FreeCompanyTracker
 {
     private readonly ClientState _state;
-    private readonly IntPtr      _fcStatePtr        = IntPtr.Zero;
-    private readonly IntPtr      _fcNamePtr         = IntPtr.Zero;
-    private readonly IntPtr      _fcLeaderPtr       = IntPtr.Zero;
-    private          SeString?   _freeCompanyName   = null;
-    private          SeString?   _freeCompanyLeader = null;
-    private          SeString    _characterName     = SeString.Empty;
-    private          SeString    _freeCompanyTag    = SeString.Empty;
-    private          uint        _serverId          = 0;
+    private readonly IntPtr      _fcStatePtr  = IntPtr.Zero;
+    private readonly IntPtr      _fcNamePtr   = IntPtr.Zero;
+    private readonly IntPtr      _fcLeaderPtr = IntPtr.Zero;
+    private          SeString?   _freeCompanyName;
+    private          SeString?   _freeCompanyLeader;
+    private          SeString    _characterName  = SeString.Empty;
+    private          SeString    _freeCompanyTag = SeString.Empty;
+    private          uint        _serverId;
 
     private unsafe SeString? GetFcInfo(IntPtr ptr)
     {

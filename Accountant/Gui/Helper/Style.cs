@@ -1,73 +1,8 @@
 using System;
-using System.Linq;
 using System.Numerics;
 using ImGuiNET;
 
 namespace Accountant.Gui.Helper;
-
-public static partial class ImGuiRaii
-{
-    public static void HoverTooltip(string tooltip)
-    {
-        if (ImGui.IsItemHovered())
-            ImGui.SetTooltip(tooltip);
-    }
-
-    public static bool Checkmark(string label, bool current, Action<bool> setter)
-    {
-        var tmp = current;
-        if (ImGui.Checkbox(label, ref tmp) && tmp != current)
-        {
-            setter(tmp);
-            return true;
-        }
-
-        return false;
-    }
-
-    public static void ConfigCheckmark(string label, bool current, Action<bool> setter)
-    {
-        if (Checkmark(label, current, setter))
-            Accountant.Config.Save();
-    }
-
-    public static bool ColorPicker(string label, string tooltip, uint current, Action<uint> setter, uint standard)
-    {
-        var ret = false;
-        var old = ImGui.ColorConvertU32ToFloat4(current);
-        var tmp = old;
-        ImGui.BeginGroup();
-        using var alpha = PushStyle(ImGuiStyleVar.Alpha, 0.5f, current == standard);
-        if (ImGui.Button($"Default##{label}") && current != standard)
-        {
-            setter(standard);
-            ret = true;
-        }
-        alpha.Pop();
-
-        ImGui.SameLine();
-        if (ImGui.ColorEdit4(label, ref tmp, ImGuiColorEditFlags.AlphaPreviewHalf | ImGuiColorEditFlags.NoInputs) && tmp != old)
-        {
-            setter(ImGui.ColorConvertFloat4ToU32(tmp));
-            ret = true;
-        }
-
-        ImGui.EndGroup();
-        if (tooltip.Any())
-        {
-            HoverTooltip(tooltip);
-        }
-
-
-        return ret;
-    }
-
-    public static void ConfigColorPicker(string label, string tooltip, uint current, Action<uint> setter, uint standard)
-    {
-        if (ColorPicker(label, tooltip, current, setter, standard))
-            Accountant.Config.Save();
-    }
-}
 
 public static partial class ImGuiRaii
 {
@@ -77,7 +12,7 @@ public static partial class ImGuiRaii
     public static Style PushStyle(ImGuiStyleVar idx, Vector2 value, bool condition = true)
         => new Style().Push(idx, value, condition);
 
-    public class Style : IDisposable
+    public sealed class Style : IDisposable
     {
         private int _count;
 
@@ -119,24 +54,24 @@ public static partial class ImGuiRaii
 
         public Style Push(ImGuiStyleVar idx, float value, bool condition = true)
         {
-            if (condition)
-            {
-                CheckStyleIdx(idx, typeof(float));
-                ImGui.PushStyleVar(idx, value);
-                ++_count;
-            }
+            if (!condition)
+                return this;
+
+            CheckStyleIdx(idx, typeof(float));
+            ImGui.PushStyleVar(idx, value);
+            ++_count;
 
             return this;
         }
 
         public Style Push(ImGuiStyleVar idx, Vector2 value, bool condition = true)
         {
-            if (condition)
-            {
-                CheckStyleIdx(idx, typeof(Vector2));
-                ImGui.PushStyleVar(idx, value);
-                ++_count;
-            }
+            if (!condition)
+                return this;
+
+            CheckStyleIdx(idx, typeof(Vector2));
+            ImGui.PushStyleVar(idx, value);
+            ++_count;
 
             return this;
         }

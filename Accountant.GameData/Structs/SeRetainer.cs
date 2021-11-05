@@ -41,7 +41,7 @@ public unsafe struct SeRetainer
         {
             fixed (byte* name = _name)
             {
-                return MemoryHelper.ReadSeStringNullTerminated((IntPtr) name);
+                return MemoryHelper.ReadSeStringNullTerminated((IntPtr)name);
             }
         }
     }

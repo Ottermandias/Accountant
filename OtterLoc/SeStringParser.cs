@@ -41,10 +41,11 @@ public sealed class SeStringParser : ILocFilter
 
         IList<string> Func(SeString se)
         {
-            var index = (uint) (idx.IsFromEnd ? se.Payloads.Count - idx.Value : idx.Value);
+            var index = (uint)(idx.IsFromEnd ? se.Payloads.Count - idx.Value : idx.Value);
             if (index >= se.Payloads.Count)
                 return Array.Empty<string>();
-            return se.Payloads[(int) index] is not TextPayload text
+
+            return se.Payloads[(int)index] is not TextPayload text
                 ? Array.Empty<string>()
                 : new[]
                 {

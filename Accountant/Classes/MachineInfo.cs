@@ -22,9 +22,9 @@ public class MachineInfo
     public int Slot(int slot)
         => Type switch
         {
-            MachineType.Airship   => slot < MaxSlots ? slot : -1,
+            MachineType.Airship     => slot < MaxSlots ? slot : -1,
             MachineType.Submersible => slot < MaxSlots ? slot + MaxSlots : -1,
-            _                     => -1,
+            _                       => -1,
         };
 
     public static readonly MachineInfo None = new(string.Empty, DateTime.MinValue, MachineType.Unknown);

@@ -1,11 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Accountant.Classes;
 using Accountant.Gui;
-using Accountant.Timers;
 using Dalamud.Configuration;
-using Lumina.Data.Parsing;
 
 namespace Accountant;
 
@@ -21,7 +18,11 @@ public class AccountantConfiguration : IPluginConfiguration
 
     public Dictionary<ColorId, uint> Colors { get; set; } = Enum.GetValues<ColorId>().ToDictionary(c => c, c => c.Default());
 
-    public Dictionary<PlotInfo, string> PlotNames { get; } = new();
+    public SortedList<ulong, string> PlotNames { get; } = new();
+
+    public HashSet<ulong>  BlockedPlots     { get; } = new();
+    public HashSet<string> BlockedPlayers   { get; } = new();
+    public HashSet<string> BlockedCompanies { get; } = new();
 
     public static AccountantConfiguration Load()
     {

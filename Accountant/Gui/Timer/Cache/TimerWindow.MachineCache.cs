@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata;
 using Accountant.Classes;
 using Accountant.Enums;
 using Accountant.Manager;
 using OtterLoc.Structs;
 
-namespace Accountant.Gui;
+namespace Accountant.Gui.Timer;
 
 public partial class TimerWindow
 {
@@ -19,10 +18,11 @@ public partial class TimerWindow
             Resubscribe();
         }
 
-        private void Resubscribe()
+        public void Resubscribe()
         {
             if (Manager.MachineTimers != null)
                 Manager.MachineTimers.MachineChanged += Resetter;
+            Resetter();
         }
 
         private CacheObject GenerateMachine(MachineInfo machine)
@@ -66,8 +66,8 @@ public partial class TimerWindow
 
             if (CurrentSentObjects == newObject.Children.Length - CurrentLimitedObjects)
             {
-                newObject.Color       =  ColorId.TextObjectsAway;
-                newObject.DisplayTime =  CurrentActualTimeForFirst;
+                newObject.Color       = ColorId.TextObjectsAway;
+                newObject.DisplayTime = CurrentActualTimeForFirst;
             }
             else if (CurrentSentObjects > 0)
             {
@@ -107,7 +107,8 @@ public partial class TimerWindow
         {
             base.UpdateInternal();
             LimitedObjects = 0;
-            foreach (var (company, machines) in Manager.MachineTimers!.Machines)
+            foreach (var (company, machines) in Manager.MachineTimers!.Machines
+                         .Where(r => !Accountant.Config.BlockedCompanies.Contains(r.Key.CastedName)))
             {
                 var p = GenerateCompany(company, machines);
                 if (p.Children.Length == 0)

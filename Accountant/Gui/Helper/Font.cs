@@ -1,39 +1,36 @@
 using System;
 using ImGuiNET;
 
-namespace Accountant.Gui.Helper
+namespace Accountant.Gui.Helper;
+
+public static partial class ImGuiRaii
 {
-    public static partial class ImGuiRaii
+    public static Font PushFont(ImFontPtr font)
+        => new(font);
+
+    public sealed class Font : IDisposable
     {
-        public static Font PushFont( ImFontPtr font )
-            => new( font );
+        private int _count;
 
-        public class Font : IDisposable
+        public Font(ImFontPtr font)
+            => Push(font);
+
+        public Font Push(ImFontPtr font)
         {
-            private int _count;
-
-            public Font( ImFontPtr font )
-                => Push( font );
-
-            public Font Push( ImFontPtr font )
-            {
-                ImGui.PushFont( font );
-                ++_count;
-                return this;
-            }
-
-            public void Pop( int num = 1 )
-            {
-                num    =  Math.Min( num, _count );
-                _count -= num;
-                while( num-- > 0 )
-                {
-                    ImGui.PopFont();
-                }
-            }
-
-            public void Dispose()
-                => Pop( _count );
+            ImGui.PushFont(font);
+            ++_count;
+            return this;
         }
+
+        public void Pop(int num = 1)
+        {
+            num    =  Math.Min(num, _count);
+            _count -= num;
+            while (num-- > 0)
+                ImGui.PopFont();
+        }
+
+        public void Dispose()
+            => Pop(_count);
     }
 }

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Linq;
 using Accountant.Enums;
+using Dalamud.Data;
+using Lumina.Excel.GeneratedSheets;
 
 namespace Accountant.Data;
 
@@ -7,157 +10,52 @@ public class Plots
 {
     internal PlotSize GetSize(InternalHousingZone zone, ushort plot)
     {
-        if (plot > 60)
-            throw new ArgumentOutOfRangeException($"Size of invalid housing plot {plot} requested.");
-
-        var idx = plot - (plot > 30 ? 31 : 1);
-        return zone switch
+        var data = zone switch
         {
-            InternalHousingZone.Mist         => MistData[idx],
-            InternalHousingZone.Goblet       => GobletData[idx],
-            InternalHousingZone.LavenderBeds => LavenderBedsData[idx],
-            InternalHousingZone.Shirogane    => ShiroganeData[idx],
-            InternalHousingZone.Firmament    => FirmamentData[idx],
+            InternalHousingZone.Mist         => _mistData,
+            InternalHousingZone.Goblet       => _gobletData,
+            InternalHousingZone.LavenderBeds => _lavenderBedsData,
+            InternalHousingZone.Shirogane    => _shiroganeData,
+            InternalHousingZone.Firmament    => _firmamentData,
             _                                => throw new ArgumentException($"Size of invalid housing zone {zone} requested."),
         };
+        --plot;
+        if (plot >= data.Length)
+            throw new ArgumentOutOfRangeException($"Size of invalid housing plot {plot} requested.");
+
+        return data[plot];
     }
 
-    private static readonly PlotSize[] MistData =
-    {
-        PlotSize.House,
-        PlotSize.Mansion,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Mansion,
-        PlotSize.House,
-        PlotSize.House,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Mansion,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.House,
-    };
+    internal int GetNumWards(InternalHousingZone _)
+        => 24;
 
-    private static readonly PlotSize[] LavenderBedsData =
+    internal int GetNumPlots(InternalHousingZone zone)
     {
-        PlotSize.House,
-        PlotSize.Cottage,
-        PlotSize.Mansion,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Mansion,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Mansion,
-        PlotSize.Cottage,
-        PlotSize.House,
-    };
+        var data = zone switch
+        {
+            InternalHousingZone.Mist         => _mistData,
+            InternalHousingZone.Goblet       => _gobletData,
+            InternalHousingZone.LavenderBeds => _lavenderBedsData,
+            InternalHousingZone.Shirogane    => _shiroganeData,
+            InternalHousingZone.Firmament    => _firmamentData,
+            _                                => throw new ArgumentException($"Size of invalid housing zone {zone} requested."),
+        };
+        return data.Length;
+    }
 
-    private static readonly PlotSize[] GobletData =
+    internal Plots(DataManager data)
     {
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Mansion,
-        PlotSize.House,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.House,
-        PlotSize.Mansion,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Mansion,
-    };
+        var sheet = data.GetExcelSheet<HousingLandSet>()!;
+        _mistData         = sheet.GetRow(0)!.PlotSize.Select(b => (PlotSize)b).ToArray();
+        _lavenderBedsData = sheet.GetRow(1)!.PlotSize.Select(b => (PlotSize)b).ToArray();
+        _gobletData       = sheet.GetRow(2)!.PlotSize.Select(b => (PlotSize)b).ToArray();
+        _shiroganeData    = sheet.GetRow(3)!.PlotSize.Select(b => (PlotSize)b).ToArray();
+        _firmamentData    = _shiroganeData; // sheet.GetRow(4)!.PlotSize.Select(b => (PlotSize)b).ToArray();
+    }
 
-    private static readonly PlotSize[] ShiroganeData =
-    {
-        PlotSize.House,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Mansion,
-        PlotSize.House,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Mansion,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Cottage,
-        PlotSize.Cottage,
-        PlotSize.House,
-        PlotSize.Cottage,
-        PlotSize.Mansion,
-    };
-
-    private static readonly PlotSize[] FirmamentData =
-        { };
+    private readonly PlotSize[] _mistData;
+    private readonly PlotSize[] _lavenderBedsData;
+    private readonly PlotSize[] _gobletData;
+    private readonly PlotSize[] _shiroganeData;
+    private readonly PlotSize[] _firmamentData;
 }

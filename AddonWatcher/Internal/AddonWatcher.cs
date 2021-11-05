@@ -9,7 +9,7 @@ internal class AddonWatcher : IAddonWatcher
     public const int CurrentVersion = 1;
 
     private static AddonWatcherBase? _base;
-    private static uint              _subscribers = 0;
+    private static uint              _subscribers;
 
     public int Version
         => CurrentVersion;

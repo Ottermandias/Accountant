@@ -6,7 +6,7 @@ using Accountant.Enums;
 using Accountant.Manager;
 using OtterLoc.Structs;
 
-namespace Accountant.Gui;
+namespace Accountant.Gui.Timer;
 
 public partial class TimerWindow
 {
@@ -18,10 +18,11 @@ public partial class TimerWindow
             Resubscribe();
         }
 
-        private void Resubscribe()
+        public void Resubscribe()
         {
             if (Manager.RetainerTimers != null)
                 Manager.RetainerTimers.RetainerChanged += Resetter;
+            Resetter();
         }
 
         private CacheObject GenerateRetainer(RetainerInfo retainer)
@@ -100,7 +101,8 @@ public partial class TimerWindow
         protected override void UpdateInternal()
         {
             base.UpdateInternal();
-            foreach (var (player, retainers) in Manager.RetainerTimers!.Retainers)
+            foreach (var (player, retainers) in Manager.RetainerTimers!.Retainers
+                         .Where(r => !Accountant.Config.BlockedPlayers.Contains(r.Key.CastedName)))
             {
                 var p = GeneratePlayer(player, retainers);
                 if (p.Children.Length == 0)

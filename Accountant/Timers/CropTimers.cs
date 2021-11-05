@@ -52,7 +52,13 @@ public class CropTimers
         {
             var plant = plants[i];
             if (plant.CloseEnough(position))
-                return plants[i].Update(itemId, plantTime, tendTime, fertilizeTime);
+            {
+                if (!plants[i].Update(itemId, plantTime, tendTime, fertilizeTime))
+                    return false;
+
+                CropChanged?.Invoke();
+                return true;
+            }
 
             if (plant.PlantId == 0 || plant.PlantTime < plants[oldestPlantIdx].PlantTime)
                 oldestPlantIdx = i;
@@ -83,11 +89,13 @@ public class CropTimers
         {
             CropSpotType.Apartment when plants[0].CloseEnough(position) => plants[0].Update(itemId, plantTime, tendTime, fertilizeTime),
             CropSpotType.Apartment when plants[1].CloseEnough(position) => plants[1].Update(itemId, plantTime, tendTime, fertilizeTime),
-            CropSpotType.Apartment => plants[plants[0].PlantId == 0 ? 0 : plants[1].PlantId == 0 ? 1 : plants[0].PlantTime < plants[1].PlantTime ? 0 : 1]
+            CropSpotType.Apartment => plants[
+                    plants[0].PlantId == 0 ? 0 : plants[1].PlantId == 0 ? 1 : plants[0].PlantTime < plants[1].PlantTime ? 0 : 1]
                 .Update(itemId, plantTime, tendTime, fertilizeTime, position),
             CropSpotType.Chambers when plants[2].CloseEnough(position) => plants[2].Update(itemId, plantTime, tendTime, fertilizeTime),
             CropSpotType.Chambers when plants[3].CloseEnough(position) => plants[3].Update(itemId, plantTime, tendTime, fertilizeTime),
-            CropSpotType.Chambers => plants[plants[2].PlantId == 0 ? 2 : plants[3].PlantId == 0 ? 3 : plants[2].PlantTime < plants[3].PlantTime ? 2 : 3]
+            CropSpotType.Chambers => plants[
+                    plants[2].PlantId == 0 ? 2 : plants[3].PlantId == 0 ? 3 : plants[2].PlantTime < plants[3].PlantTime ? 2 : 3]
                 .Update(itemId, plantTime, tendTime, fertilizeTime, position),
             _ => false,
         };
@@ -119,18 +127,6 @@ public class CropTimers
         var ret  = new PlantInfo[size];
         _plotCrops[info] = ret;
         return (info, ret);
-    }
-
-    private bool Update(CropSpotIdentification id, uint itemId, DateTime? plantTime, DateTime? tendTime, DateTime? fertilizeTime)
-    {
-        return id.Type switch
-        {
-            CropSpotType.Apartment => Update(FindPrivateCrops(id).Item2, id.Type,     id.Position, itemId, plantTime, tendTime, fertilizeTime),
-            CropSpotType.Chambers  => Update(FindPrivateCrops(id).Item2, id.Type,     id.Position, itemId, plantTime, tendTime, fertilizeTime),
-            CropSpotType.House     => Update(FindPlotCrops(id).Item2,    id.Position, itemId,      plantTime, tendTime, fertilizeTime),
-            CropSpotType.Outdoors  => Update(FindPlotCrops(id).Item2,    id.Patch,    id.Bed,      itemId, plantTime, tendTime, fertilizeTime),
-            _                      => false,
-        };
     }
 
     private void UpdateAndSave(CropSpotIdentification id, uint itemId, DateTime? plantTime, DateTime? tendTime, DateTime? fertilizeTime)

@@ -95,7 +95,7 @@ public static class ColorIdExtensions
             _                       => throw new ArgumentOutOfRangeException(nameof(id), id, null),
         };
 
-    public static readonly IReadOnlyList<uint> Defaults = new Dictionary<ColorId, uint>
+    public static readonly IReadOnlyList<uint> Defaults = new SortedList<ColorId, uint>
     {
         [ColorId.TextObjectsAway]      = 0xFF2020D0,
         [ColorId.TextObjectsMixed]     = 0xFF20D0D0,

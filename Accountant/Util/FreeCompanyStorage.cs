@@ -50,8 +50,8 @@ public class FreeCompanyStorage
 
             Infos.Add(new FreeCompanyInfo(n, serverId)
             {
-                Leader   = l,
-                Tag      = t,
+                Leader = l,
+                Tag    = t,
             });
             Save();
             return Infos.Last();

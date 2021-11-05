@@ -26,7 +26,7 @@ public partial class TimerManager
         {
             _companyStorage                ??= FreeCompanyStorage.Load();
             MachineTimers                  ??= Timers.MachineTimers.Load();
-            Dalamud.Network.NetworkMessage +=  NetworkMessage; 
+            Dalamud.Network.NetworkMessage +=  NetworkMessage;
         }
         else
         {

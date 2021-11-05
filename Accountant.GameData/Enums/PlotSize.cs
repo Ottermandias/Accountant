@@ -10,7 +10,6 @@ public enum PlotSize : byte
     Mansion,
 }
 
-
 public static class PlotSizeExtensions
 {
     public static int TotalBeds(this PlotSize s)

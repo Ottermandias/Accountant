@@ -12,13 +12,11 @@ public delegate void SelectYesnoSetupDelegate(IntPtr unit, SeString description,
 public delegate void JournalResultSetupDelegate(IntPtr unit, SeString questName);
 public delegate void TalkUpdateDelegate(IntPtr unit, SeString text, SeString speaker);
 
-
 public static class AddonWatcherFactory
 {
     public static IAddonWatcher Create(GameGui gui, SigScanner sigScanner)
         => new Internal.AddonWatcher(gui, sigScanner);
 }
-
 
 public interface IAddonWatcher : IDisposable
 {

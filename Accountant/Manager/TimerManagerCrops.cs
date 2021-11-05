@@ -32,7 +32,7 @@ public partial class TimerManager
             _positionInfo ??= new PositionInfoAddress(Dalamud.SigScanner);
             _watcher.SubscribeTalkUpdate(CheckPlant);
             _watcher.SubscribeStringSelected(SelectStringEventDetour);
-            _watcher.SubscribeYesnoSelected(SelectYesnoEventDetour); 
+            _watcher.SubscribeYesnoSelected(SelectYesnoEventDetour);
         }
         else
         {

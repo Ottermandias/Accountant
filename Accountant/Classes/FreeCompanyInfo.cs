@@ -47,4 +47,10 @@ public class FreeCompanyInfo : IEquatable<FreeCompanyInfo>
 
     public int GetStableHashCode()
         => Helpers.CombineHashCodes(Helpers.GetStableHashCode(Name), (int)ServerId);
+
+    public string CastedName
+        => $"{Name}{(char)ServerId}";
+
+    public static PlayerInfo FromCastedName(string castedName)
+        => new(castedName[..^1], castedName[^1]);
 }

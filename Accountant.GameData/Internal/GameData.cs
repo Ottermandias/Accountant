@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Accountant.Data;
 using Accountant.Enums;
-using Accountant.SeFunctions;
 using Accountant.Structs;
 using Dalamud.Data;
 using Dalamud.Game.ClientState;
@@ -16,14 +15,14 @@ namespace Accountant.Internal;
 
 internal class GameData : IGameData
 {
-    public const            int                       CurrentVersion = 1;
-    private static          Crops?                    _crops;
-    private static readonly Plots                     Plots = new();
-    private static          Dictionary<uint, string>? _worldNames;
-    private static          Dictionary<string, uint>? _worldIds;
-    private static          FreeCompanyTracker?       _fcTracker;
-    private static          int                       _subscribers = 0;
-    public                  bool                      Valid { get; private set; } = true;
+    public const   int                       CurrentVersion = 1;
+    private static Crops?                    _crops;
+    private static Plots?                    _plots;
+    private static Dictionary<uint, string>? _worldNames;
+    private static Dictionary<string, uint>? _worldIds;
+    private static FreeCompanyTracker?       _fcTracker;
+    private static int                       _subscribers;
+    public         bool                      Valid { get; private set; } = true;
 
     public int Version
         => CurrentVersion;
@@ -37,8 +36,17 @@ internal class GameData : IGameData
     public CropData FindCrop(string name)
         => _crops?.Find(name) ?? throw NotReadyException();
 
+    public int GetNumWards(InternalHousingZone zone = InternalHousingZone.Mist)
+        => _plots?.GetNumWards(zone) ?? throw NotReadyException();
+
+    public int GetNumPlots(InternalHousingZone zone = InternalHousingZone.Mist)
+        => _plots?.GetNumPlots(zone) ?? throw NotReadyException();
+
     public PlotSize GetPlotSize(InternalHousingZone zone, ushort plot)
-        => Plots.GetSize(zone, plot);
+        => _plots?.GetSize(zone, plot) ?? throw NotReadyException();
+
+    public IEnumerable<(string Name, uint Id)> Worlds()
+        => _worldNames!.Select(w => (w.Value, w.Key));
 
     public string GetWorldName(uint id)
         => _worldNames!.TryGetValue(id, out var ret)
@@ -57,6 +65,7 @@ internal class GameData : IGameData
     {
         _crops     ??= new Crops(data);
         _fcTracker ??= new FreeCompanyTracker(gui, state);
+        _plots     ??= new Plots(data);
         _worldNames ??= data.GameData.GetExcelSheet<World>()!
             .Where(w => w.IsPublic && !w.Name.RawData.IsEmpty)
             .ToDictionary(w => w.RowId, w => w.Name.RawString);

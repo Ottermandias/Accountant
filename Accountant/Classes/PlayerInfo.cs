@@ -8,17 +8,17 @@ namespace Accountant.Classes;
 public readonly struct PlayerInfo : IEquatable<PlayerInfo>
 {
     public readonly string Name;
-    public readonly uint   ServerId;
+    public readonly ushort ServerId;
 
     [JsonConstructor]
-    public PlayerInfo(string name, uint serverId)
+    public PlayerInfo(string name, ushort serverId)
     {
         Name     = name;
         ServerId = serverId;
     }
 
     public PlayerInfo(PlayerCharacter character)
-        : this(character.Name.TextValue, character.HomeWorld.Id)
+        : this(character.Name.TextValue, (ushort)character.HomeWorld.Id)
     { }
 
     public bool Equals(PlayerInfo other)
@@ -32,5 +32,11 @@ public readonly struct PlayerInfo : IEquatable<PlayerInfo>
         => HashCode.Combine(Name, ServerId);
 
     public int GetStableHashCode()
-        => Helpers.CombineHashCodes(Helpers.GetStableHashCode(Name), (int) ServerId);
+        => Helpers.CombineHashCodes(Helpers.GetStableHashCode(Name), ServerId);
+
+    public string CastedName
+        => $"{Name}{(char)ServerId}";
+
+    public static PlayerInfo FromCastedName(string castedName)
+        => new(castedName[..^1], castedName[^1]);
 }

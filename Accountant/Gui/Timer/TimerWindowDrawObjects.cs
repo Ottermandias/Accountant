@@ -5,11 +5,11 @@ using Accountant.Gui.Helper;
 using ImGuiNET;
 using OtterLoc.Structs;
 
-namespace Accountant.Gui;
+namespace Accountant.Gui.Timer;
 
 public partial class TimerWindow
 {
-    public void Draw(CacheObject item)
+    public void DrawObject(CacheObject item)
     {
         using var color  = ImGuiRaii.PushColor(ImGuiCol.Text, item.Color.Value());
         using var indent = ImGuiRaii.PushStyle(ImGuiStyleVar.IndentSpacing, ImGui.GetStyle().IndentSpacing / 2);
@@ -25,11 +25,13 @@ public partial class TimerWindow
             indent.Pop();
         }
         else
+        {
             tree = ImGui.TreeNodeEx(item.Name);
+        }
 
         if (item.DisplayString != null)
         {
-            var width = ImGui.CalcTextSize(item.DisplayString).X;
+            var width   = ImGui.CalcTextSize(item.DisplayString).X;
             var display = item.DisplayString;
             ImGui.SameLine(ImGui.GetWindowContentRegionWidth() - width);
             ImGui.Text(display);
@@ -41,6 +43,7 @@ public partial class TimerWindow
             ImGui.SameLine(ImGui.GetWindowContentRegionWidth() - width);
             ImGui.Text(display);
         }
+
         color.Pop();
         if (tooltip)
             item.DrawTooltip();
@@ -48,19 +51,15 @@ public partial class TimerWindow
         if (tree)
         {
             foreach (var child in item.Children)
-                Draw(child);
+                DrawObject(child);
             ImGui.TreePop();
         }
     }
 
-
-    private readonly RetainerCache _retainerCache;
-    private readonly MachineCache  _machineCache;
-    private readonly CropCache     _cropCache;
     private bool DrawHeader(string name, uint color, DateTime time)
     {
-        using var c  = ImGuiRaii.PushColor(ImGuiCol.Header, color);
-        var       posY    = ImGui.GetCursorPosY();
+        using var c      = ImGuiRaii.PushColor(ImGuiCol.Header, color);
+        var       posY   = ImGui.GetCursorPosY();
         var       header = ImGui.CollapsingHeader(name);
         if (time < _now)
             return header;
@@ -87,10 +86,8 @@ public partial class TimerWindow
         ImGui.PushID(id);
         var header = DrawHeader(name.Value(), cache.GlobalColor.Value(), cache.GlobalTime);
         if (header)
-        {
             foreach (var item in cache.Objects)
-                Draw(item);
-        }
+                DrawObject(item);
         ImGui.PopID();
     }
 
@@ -112,10 +109,8 @@ public partial class TimerWindow
         ImGui.PushID("Crops");
         var header = DrawHeader("Crops", _cropCache.GlobalColor.Value(), _cropCache.GlobalTime);
         if (header)
-        {
             foreach (var item in _cropCache.Objects)
-                Draw(item);
-        }
+                DrawObject(item);
 
         ImGui.PopID();
     }

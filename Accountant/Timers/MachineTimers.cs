@@ -17,6 +17,7 @@ public class MachineTimers
 
     public IReadOnlyDictionary<FreeCompanyInfo, MachineInfo[]> Machines
         => _machines;
+
     public event TimerChange? MachineChanged;
 
     public bool AddOrUpdateMachine(FreeCompanyInfo company, MachineInfo machine, byte slot)

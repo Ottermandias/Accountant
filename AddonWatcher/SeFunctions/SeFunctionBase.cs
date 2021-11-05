@@ -51,11 +51,9 @@ public class SeFunctionBase<T> where T : Delegate
             FuncDelegate = Marshal.GetDelegateForFunctionPointer<T>(Address);
             return FuncDelegate!.DynamicInvoke(parameters);
         }
-        else
-        {
-            PluginLog.Error($"Trying to call {GetType().Name}, but no pointer available.");
-            return null;
-        }
+
+        PluginLog.Error($"Trying to call {GetType().Name}, but no pointer available.");
+        return null;
     }
 
     public Hook<T>? CreateHook(T detour, bool enable = true)

@@ -33,7 +33,7 @@ internal partial class AddonWatcherBase : IDisposable
 
     public AddonWatcherBase(GameGui gui, SigScanner sigScanner)
     {
-        _gui                     = gui;
+        _gui = gui;
 
         SelectStringReceiveEvent = new SelectStringReceiveEvent(sigScanner);
         SelectYesnoReceiveEvent  = new SelectYesnoReceiveEvent(sigScanner);

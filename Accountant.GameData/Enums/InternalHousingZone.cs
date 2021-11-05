@@ -1,5 +1,4 @@
 ﻿using System;
-using OtterLoc;
 using OtterLoc.Structs;
 
 namespace Accountant.Enums;

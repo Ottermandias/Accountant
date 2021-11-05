@@ -19,11 +19,17 @@ public readonly struct PlotInfo : IEquatable<PlotInfo>
         Plot     = plot;
     }
 
-    public override string ToString()
+    public string ToName()
         => $"{Ward:D2}-{Plot:D2}, {Zone.ToName()}";
 
+    public override string ToString()
+        => $"{Plot:D2}{Ward:D2}{(ushort)Zone:X4}{ServerId:X4}";
+
+    public ulong Value
+        => Plot | ((ulong)Ward << 16) | ((ulong)Zone << 32) | ((ulong)ServerId << 48);
+
     public string GetName()
-        => Accountant.Config.PlotNames.TryGetValue(this, out var ret) ? ret : ToString();
+        => Accountant.Config.PlotNames.TryGetValue(Value, out var ret) ? ret : ToName();
 
     public bool Equals(PlotInfo other)
         => Zone == other.Zone
@@ -38,5 +44,11 @@ public readonly struct PlotInfo : IEquatable<PlotInfo>
         => HashCode.Combine((int)Zone, ServerId, Ward, Plot);
 
     public int GetStableHashCode()
-        => Helpers.CombineHashCodes((int) Zone, ServerId, Ward, Plot);
+        => Helpers.CombineHashCodes((int)Zone, ServerId, Ward, Plot);
+
+    public static PlotInfo FromValue(ulong value)
+        => new((InternalHousingZone)((value >> 32) & 0xFFFF)
+            , (ushort)((value >> 16) & 0xFFFF)
+            , (ushort)(value & 0xFFFF)
+            , (ushort)(value >> 48));
 }

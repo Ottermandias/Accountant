@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Accountant.Manager;
 
-namespace Accountant.Gui;
+namespace Accountant.Gui.Timer;
 
 public partial class TimerWindow
 {
@@ -58,7 +58,7 @@ public partial class TimerWindow
         protected virtual void UpdateInternal()
         { }
 
-        protected void Resetter()
+        public void Resetter()
             => _nextChange = DateTime.UtcNow;
     }
 }

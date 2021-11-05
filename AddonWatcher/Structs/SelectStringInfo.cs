@@ -32,9 +32,10 @@ public unsafe struct SelectStringInfo
             if (DescriptionNodeIdx >= count)
                 return SeString.Empty;
 
-            var node  = Pointer->AtkUnitBase.UldManager.NodeList[DescriptionNodeIdx];
+            var node = Pointer->AtkUnitBase.UldManager.NodeList[DescriptionNodeIdx];
             if (node == null)
                 return SeString.Empty;
+
             return Helpers.TextNodeToString((AtkTextNode*)node);
         }
     }
