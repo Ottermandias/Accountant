@@ -3,6 +3,7 @@ using System.Numerics;
 using Accountant.Classes;
 using Accountant.Enums;
 using Accountant.Gui.Helper;
+using Accountant.Gui.Timer;
 using Dalamud.Interface;
 using ImGuiNET;
 
@@ -19,6 +20,11 @@ public partial class ConfigWindow
             return;
 
         using var raii = ImGuiRaii.DeferredEnd(ImGui.EndTabItem);
+
+        if (!ImGui.BeginChild("##PlotNamesTab"))
+            return;
+
+        raii.Push(ImGui.EndChild);
 
         using var ids = ImGuiRaii.PushId("PlotNames");
         if (!ImGui.BeginTable("", 6, ImGuiTableFlags.None, -Vector2.One))
@@ -46,11 +52,11 @@ public partial class ConfigWindow
             DrawPlotRow(PlotInfo.FromValue(value));
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
-            if (ImGui.InputText($"##{value}", ref tmp, 32, ImGuiInputTextFlags.EnterReturnsTrue) && tmp != name)
-            {
-                change  = value;
-                newName = tmp;
-            }
+            if (!ImGui.InputText($"##{value}", ref tmp, 32, ImGuiInputTextFlags.EnterReturnsTrue) || tmp == name)
+                continue;
+
+            change  = value;
+            newName = tmp;
         }
 
         var newPlot = PlotInfo.FromValue(_newPlotInfo);
@@ -76,14 +82,14 @@ public partial class ConfigWindow
         ImGui.SetNextItemWidth(-1);
         ImGui.InputTextWithHint("##name", "New Plot Name...", ref _newPlotName, 32);
 
-        if (change != null)
-        {
-            if (newName != null && newName.Any())
-                Accountant.Config.PlotNames[change.Value] = newName;
-            else
-                Accountant.Config.PlotNames.Remove(change.Value);
-            Accountant.Config.Save();
-            _timerWindow.ResetCropCache();
-        }
+        if (change == null)
+            return;
+
+        if (newName != null && newName.Any())
+            Accountant.Config.PlotNames[change.Value] = newName;
+        else
+            Accountant.Config.PlotNames.Remove(change.Value);
+        Accountant.Config.Save();
+        _timerWindow.ResetCache(typeof(TimerWindow.CropCache));
     }
 }

@@ -19,7 +19,6 @@ public class Accountant : IDalamudPlugin
     public static   AccountantConfiguration Config    = null!;
     public static   IGameData               GameData  = null!;
     public static   IAddonWatcher           Watcher   = null!;
-    public static   RetainerManager         Retainers = null!;
     public readonly TimerManager            Timers;
     public readonly TimerWindow             TimerWindow;
     public readonly ConfigWindow            ConfigWindow;
@@ -32,7 +31,6 @@ public class Accountant : IDalamudPlugin
 
         Watcher   = AddonWatcherFactory.Create(Dalamud.GameGui, Dalamud.SigScanner);
         GameData  = GameDataFactory.Create(Dalamud.GameGui, Dalamud.ClientState, Dalamud.GameData);
-        Retainers = new RetainerManager(Dalamud.SigScanner);
 
         Timers       = new TimerManager();
         TimerWindow  = new TimerWindow(Timers);
@@ -59,6 +57,7 @@ public class Accountant : IDalamudPlugin
 
     public void Dispose()
     {
+        Timers.Dispose();
         ConfigWindow.Dispose();
         TimerWindow.Dispose();
         Dalamud.Commands.RemoveHandler("/accountant");

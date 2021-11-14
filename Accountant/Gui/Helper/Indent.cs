@@ -8,10 +8,10 @@ namespace Accountant.Gui.Helper;
 public static partial class ImGuiRaii
 {
     public static Indent PushIndent(float f, bool scaled = true, bool condition = true)
-        => new Indent().Push(f, condition);
+        => new Indent().Push(f, scaled, condition);
 
     public static Indent PushIndent(int i = 1, bool scaled = true, bool condition = true)
-        => new Indent().Push(i, condition);
+        => new Indent().Push(i, scaled, condition);
 
     public sealed class Indent : IDisposable
     {

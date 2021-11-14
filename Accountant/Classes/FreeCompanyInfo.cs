@@ -1,16 +1,19 @@
 using System;
+using Accountant.Timers;
 using Accountant.Util;
+using Newtonsoft.Json;
 
 namespace Accountant.Classes;
 
-public class FreeCompanyInfo : IEquatable<FreeCompanyInfo>
+public struct FreeCompanyInfo : IEquatable<FreeCompanyInfo>, ITimerIdentifier
 {
-    public readonly string Name;
-    public          string Tag;
-    public          string Leader;
-    public readonly uint   ServerId;
-
-    public FreeCompanyInfo(string name, uint serverId, string? tag = null, string? leader = null)
+    public string Name     { get; }
+    public string Tag      { get; set; }
+    public string Leader   { get; set; }
+    public ushort ServerId { get; }
+    
+    [JsonConstructor]
+    public FreeCompanyInfo(string name, ushort serverId, string? tag = null, string? leader = null)
     {
         Name     = name;
         ServerId = serverId;
@@ -18,26 +21,9 @@ public class FreeCompanyInfo : IEquatable<FreeCompanyInfo>
         Leader   = leader ?? string.Empty;
     }
 
-    public bool Equals(FreeCompanyInfo? other)
-    {
-        if (ReferenceEquals(null, other))
-            return false;
-        if (ReferenceEquals(this, other))
-            return true;
-
-        return Name == other.Name
-         && ServerId == other.ServerId;
-    }
-
-    public override bool Equals(object? obj)
-    {
-        if (ReferenceEquals(null, obj))
-            return false;
-        if (ReferenceEquals(this, obj))
-            return true;
-
-        return obj.GetType() == GetType() && Equals((FreeCompanyInfo)obj);
-    }
+    public bool Equals(FreeCompanyInfo other)
+        => ServerId == other.ServerId
+         && Name == other.Name;
 
     public override int GetHashCode()
         => HashCode.Combine(Name, ServerId);
@@ -45,12 +31,22 @@ public class FreeCompanyInfo : IEquatable<FreeCompanyInfo>
     public override string ToString()
         => $"{Name} ({Accountant.GameData?.GetWorldName(ServerId) ?? ServerId.ToString()}";
 
-    public int GetStableHashCode()
-        => Helpers.CombineHashCodes(Helpers.GetStableHashCode(Name), (int)ServerId);
+    public uint IdentifierHash()
+        => (uint)Helpers.CombineHashCodes(Helpers.GetStableHashCode(Name), ServerId);
 
+    [JsonIgnore]
     public string CastedName
         => $"{Name}{(char)ServerId}";
 
     public static PlayerInfo FromCastedName(string castedName)
         => new(castedName[..^1], castedName[^1]);
+
+    public override bool Equals(object? obj)
+        => obj is FreeCompanyInfo info && Equals(info);
+
+    public static bool operator ==(FreeCompanyInfo left, FreeCompanyInfo right)
+        => left.Equals(right);
+
+    public static bool operator !=(FreeCompanyInfo left, FreeCompanyInfo right)
+        => !(left == right);
 }

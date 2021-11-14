@@ -32,6 +32,12 @@ public static class StringIdExtensions
     public static IList<string> Filter<T>(this T s, SeString ss) where T : Enum
         => ((ILocFilter)LocalizationDict<T>.Get(s)).Filter(ss);
 
+    public static IList<string> Filter<T>(this T s, string ss) where T : Enum
+        => ((ILocFilter)LocalizationDict<T>.Get(s)).Filter(ss);
+
     public static bool Match<T>(this T s, SeString ss) where T : Enum
+        => ((ILocMatcher)LocalizationDict<T>.Get(s)).Matches(ss);
+
+    public static bool Match<T>(this T s, string ss) where T : Enum
         => ((ILocMatcher)LocalizationDict<T>.Get(s)).Matches(ss);
 }

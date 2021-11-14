@@ -1,11 +1,16 @@
 using System;
 using System.Numerics;
+using Accountant.Enums;
 using Accountant.Gui;
+using OtterLoc.Structs;
 
 namespace Accountant.Classes;
 
 public struct PlantInfo
 {
+    public const int PotsPerApartment = 2;
+    public const int PotsPerChamber   = 2;
+
     public DateTime PlantTime;
     public DateTime LastTending;
     public Vector3  Position;
@@ -87,5 +92,18 @@ public struct PlantInfo
             return (fin, DateTime.MinValue, wither, ColorId.TextCropWilted, wither, AccuratePlantTime);
 
         return (fin, wilt, wither, ColorId.TextCropGrowing, wilt, AccuratePlantTime);
+    }
+
+    public static string GetPrivateName(ushort idx)
+        => idx < PotsPerApartment
+            ? $"{StringId.Apartment.Value()}, {StringId.CropPot.Value()} {idx + 1}"
+            : $"{StringId.Chambers.Value()}, {StringId.CropPot.Value()} {idx + 1 - PotsPerApartment}";
+
+    public static string GetPlotName(PlotSize size, ushort idx)
+    {
+        var s = size.OutdoorBeds();
+        return idx < s
+            ? $"{StringId.CropBed.Value()} {(idx >> 3) + 1}-{(idx & 0b111) + 1}"
+            : $"{StringId.CropPot.Value()} {idx + 1 - s}";
     }
 }

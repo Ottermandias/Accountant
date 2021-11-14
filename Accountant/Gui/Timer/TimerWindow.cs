@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Numerics;
 using Accountant.Enums;
 using Accountant.Gui.Helper;
@@ -12,27 +14,31 @@ namespace Accountant.Gui.Timer;
 
 public partial class TimerWindow : IDisposable
 {
-    private readonly TimerManager _manager;
-
     private readonly float       _widthTotal;
     private readonly string      _completedString;
     private readonly string      _availableString;
     private readonly IconStorage _icons        = new(64);
     private          string      _headerString = "Timers###Accountant.Timers";
+    private          ColorId     _headerColor  = ColorId.NeutralHeader;
     private          bool        _drawData     = true;
 
-    private readonly RetainerCache _retainerCache;
-    private readonly MachineCache  _machineCache;
-    private readonly CropCache     _cropCache;
+    private readonly BaseCache[] _cache;
 
     private DateTime _now = DateTime.UtcNow;
 
+    private readonly CropCache     _cropCache;
+    private readonly RetainerCache _retainerCache;
+    private readonly MachineCache  _machineCache1;
+    private readonly MachineCache  _machineCache2;
+
     public TimerWindow(TimerManager manager)
     {
-        _manager         = manager;
-        _retainerCache   = new RetainerCache(this, manager);
-        _machineCache    = new MachineCache(this, manager);
-        _cropCache       = new CropCache(this, manager);
+        _cache = manager.CreateCaches(this);
+        SortCache();
+        _cropCache       = (CropCache)_cache.First(c => c is CropCache);
+        _retainerCache   = (RetainerCache)_cache.First(c => c is RetainerCache);
+        _machineCache1   = (MachineCache)_cache.First(c => c is MachineCache);
+        _machineCache2   = (MachineCache)_cache.Last(c => c is MachineCache);
         _completedString = StringId.Completed.Value();
         _availableString = StringId.Available.Value();
 
@@ -47,30 +53,32 @@ public partial class TimerWindow : IDisposable
         Dalamud.PluginInterface.UiBuilder.Draw += Draw;
     }
 
+    public void SortCache()
+        => Array.Sort(_cache, (l, r) => Accountant.Config.GetPriority(r.Name).CompareTo(Accountant.Config.GetPriority(l.Name)));
+
     public void Dispose()
     {
         Dalamud.PluginInterface.UiBuilder.Draw -= Draw;
         _icons.Dispose();
     }
 
-    public void Resubscribe(bool retainers, bool machines, bool crops)
+    public void ResetCache()
     {
-        if (retainers)
-            _retainerCache.Resubscribe();
-        if (machines)
-            _machineCache.Resubscribe();
-        if (crops)
-            _cropCache.Resubscribe();
+        foreach (var cache in _cache)
+            cache.Resetter();
     }
 
-    public void ResetRetainerCache()
-        => _retainerCache.Resetter();
+    public void ResetCache(Type type)
+    {
+        foreach (var cache in _cache.Where(c => c.GetType() == type))
+            cache.Resetter();
+    }
 
-    public void ResetMachineCache()
-        => _machineCache.Resetter();
-
-    public void ResetCropCache()
-        => _cropCache.Resetter();
+    public void ResetCache(Type type1, Type type2)
+    {
+        foreach (var cache in _cache.Where(c => c.GetType() == type1 || c.GetType() == type2))
+            cache.Resetter();
+    }
 
     private void Draw()
     {
@@ -90,7 +98,7 @@ public partial class TimerWindow : IDisposable
         if (!_drawData)
         {
             colors.Push(ImGuiCol.Border, ColorId.CollapsedBorder.Value())
-                .Push(ImGuiCol.TitleBgCollapsed, _cropCache.GlobalColor.Value());
+                .Push(ImGuiCol.TitleBgCollapsed, _headerColor.Value());
             using var style = ImGuiRaii.PushStyle(ImGuiStyleVar.WindowBorderSize, 1);
             _drawData = ImGui.Begin(_headerString, ref enabled);
             colors.Pop(2);
@@ -108,11 +116,19 @@ public partial class TimerWindow : IDisposable
 
         try
         {
-            DrawCrops();
-            DrawRetainers();
-            DrawMachines();
+            foreach (var cache in _cache)
+                cache.Draw(_now);
 
-            _headerString = $"{_retainerCache.Header}    {_machineCache.Header}###Accountant.Timers";
+            if (Accountant.Config.Flags.Check(ConfigFlags.Retainers))
+                _headerString = Accountant.Config.Flags.Any(ConfigFlags.Airships | ConfigFlags.Submersibles)
+                    ? $"{_retainerCache.Header}    {(_machineCache1.GlobalCounter + _machineCache2.GlobalCounter).GetHeader(StringId.Machines)}###Accountant.Timers"
+                    : $"{_retainerCache.Header}###Accountant.Timers";
+            else if (Accountant.Config.Flags.Any(ConfigFlags.Airships | ConfigFlags.Submersibles))
+                _headerString =
+                    $"{(_machineCache1.GlobalCounter + _machineCache2.GlobalCounter).GetHeader(StringId.Machines)}###Accountant.Timers";
+
+            if (Accountant.Config.Flags.Check(ConfigFlags.Crops))
+                _headerColor = _cropCache.Color;
         }
         finally
         {
@@ -120,6 +136,16 @@ public partial class TimerWindow : IDisposable
         }
     }
 
-    private static string TimeSpanString(TimeSpan span, int align = 2)
+    internal static string TimeSpanString(TimeSpan span, int align = 2)
         => $"{((int)span.TotalHours).ToString(align == 2 ? "D2" : "D3")}:{span.Minutes:D2}:{span.Seconds:D2}";
+
+    private string? StatusString(ObjectStatus status)
+        => status switch
+        {
+            ObjectStatus.Available => _availableString,
+            ObjectStatus.Completed => _completedString,
+            ObjectStatus.Sent      => null,
+            ObjectStatus.Limited   => "Limited",
+            _                      => throw new ArgumentOutOfRangeException(nameof(status), status, null),
+        };
 }

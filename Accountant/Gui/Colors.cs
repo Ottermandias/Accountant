@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Accountant.Classes;
+using Accountant.Timers;
 
 namespace Accountant.Gui;
 
@@ -26,8 +28,14 @@ public enum ColorId : byte
     HeaderCropGrowing,
     HeaderCropGuaranteed,
 
+    TextLeveCap,
+    TextLeveWarning,
+    HeaderLeveCap,
+    HeaderLeveWarning,
+
     CollapsedBorder,
     NeutralText,
+    NeutralHeader,
     DisabledText,
     Background,
 }
@@ -48,13 +56,18 @@ public static class ColorIdExtensions
             ColorId.TextCropGrown        => "Crop Grown Out",
             ColorId.TextCropGrowing      => "Crop Growing",
             ColorId.TextCropGuaranteed   => "Crop Self-Sufficient",
-            ColorId.HeaderCropGrown      => "Some Crops Withered",
-            ColorId.HeaderCropWithered   => "Some Crops Wilted",
-            ColorId.HeaderCropWilted     => "Some Crops Grown Out",
-            ColorId.HeaderCropGrowing    => "All Crops Growing",
-            ColorId.HeaderCropGuaranteed => "Some Crops Self-Sufficient",
+            ColorId.HeaderCropGrown      => "Some Crops Withered (Header)",
+            ColorId.HeaderCropWithered   => "Some Crops Wilted (Header)",
+            ColorId.HeaderCropWilted     => "Some Crops Grown Out (Header)",
+            ColorId.HeaderCropGrowing    => "All Crops Growing (Header)",
+            ColorId.HeaderCropGuaranteed => "Some Crops Self-Sufficient (Header)",
+            ColorId.TextLeveCap          => "Leve Allowances Capped",
+            ColorId.TextLeveWarning      => "Leve Allowances Nearing Cap",
+            ColorId.HeaderLeveCap        => "Leve Allowances Capped (Header)",
+            ColorId.HeaderLeveWarning    => "Leve Allowances Nearing Cap (Header)",
             ColorId.CollapsedBorder      => "Collapsed Header Border",
             ColorId.NeutralText          => "Default Text",
+            ColorId.NeutralHeader        => "Default Header",
             ColorId.DisabledText         => "Disabled Text",
             ColorId.Background           => "Background",
             _                            => throw new ArgumentOutOfRangeException(nameof(id), id, null),
@@ -88,8 +101,17 @@ public static class ColorIdExtensions
             ColorId.HeaderCropGrowing => "Used by the Crops header and the collapsed header if all crops are growing regularly.",
             ColorId.HeaderCropGuaranteed =>
                 "Used by the Crops header and the collapsed header if all crops are growing regularly and require no tending anymore.",
+            ColorId.TextLeveCap =>
+                $"Used by Leve Allowances per player when you have accrued more than {Leve.AllowanceError} allowances.",
+            ColorId.TextLeveWarning =>
+                $"Used by Leve Allowances per player when you have accrued more than than {Accountant.Config.LeveWarning} allowances. (Configure in Settings)",
+            ColorId.HeaderLeveCap =>
+                $"Used by Leve Allowances header when any player has accrued more than {Leve.AllowanceError} allowances.",
+            ColorId.HeaderLeveWarning =>
+                $"Used by Leve Allowances header when any player has accrued more than {Accountant.Config.LeveWarning} allowances. (Configure in Settings)",
             ColorId.CollapsedBorder => "Used by the collapsed header to give it a border to improve visibility.",
             ColorId.NeutralText     => "Used by all text that is not colored differently.",
+            ColorId.NeutralHeader   => "Used by all headers that are not colored differently.",
             ColorId.DisabledText    => "Used by disabled retainers or machines.",
             ColorId.Background      => "Used for the background color.",
             _                       => throw new ArgumentOutOfRangeException(nameof(id), id, null),
@@ -113,8 +135,13 @@ public static class ColorIdExtensions
         [ColorId.HeaderCropWilted]     = 0x80A000A0,
         [ColorId.HeaderCropGrowing]    = 0x8000A0A0,
         [ColorId.HeaderCropGuaranteed] = 0x80A0A000,
+        [ColorId.TextLeveCap]          = 0xFF2020D0,
+        [ColorId.TextLeveWarning]      = 0xFF20D0D0,
+        [ColorId.HeaderLeveCap]        = 0x800000A0,
+        [ColorId.HeaderLeveWarning]    = 0x8000A0A0,
         [ColorId.CollapsedBorder]      = 0xFFFFFFFF,
         [ColorId.NeutralText]          = 0xFFFFFFFF,
+        [ColorId.NeutralHeader]        = 0x4F969696,
         [ColorId.DisabledText]         = 0xFF808080,
         [ColorId.Background]           = 0xC0000000,
     }.Select(kvp => kvp.Value).ToArray();
@@ -125,8 +152,11 @@ public static class ColorIdExtensions
     public static uint Value(this ColorId color)
         => Accountant.Config.Colors[color];
 
-    public static ColorId CombineColor(this ColorId oldColor, ColorId newColor)
+    public static ColorId Combine(this ColorId oldColor, ColorId newColor)
         => (ColorId)Math.Min((int)oldColor, (int)newColor);
+
+    public static ColorId CombineInverse(this ColorId oldColor, ColorId newColor)
+        => (ColorId)Math.Max((int)oldColor, (int)newColor);
 
     public static ColorId TextToHeader(this ColorId color)
         => color switch
@@ -147,9 +177,15 @@ public static class ColorIdExtensions
             ColorId.HeaderCropGrown      => ColorId.HeaderCropGrown,
             ColorId.HeaderCropGrowing    => ColorId.HeaderCropGrowing,
             ColorId.HeaderCropGuaranteed => ColorId.HeaderCropGuaranteed,
+            ColorId.TextLeveCap          => ColorId.HeaderLeveCap,
+            ColorId.TextLeveWarning      => ColorId.HeaderLeveWarning,
+            ColorId.HeaderLeveCap        => ColorId.HeaderLeveCap,
+            ColorId.HeaderLeveWarning    => ColorId.HeaderLeveWarning,
             ColorId.CollapsedBorder      => ColorId.CollapsedBorder,
-            ColorId.NeutralText          => ColorId.NeutralText,
+            ColorId.NeutralText          => ColorId.NeutralHeader,
+            ColorId.NeutralHeader        => ColorId.NeutralHeader,
             ColorId.Background           => ColorId.Background,
+            ColorId.DisabledText         => ColorId.NeutralHeader,
             _                            => throw new ArgumentOutOfRangeException(nameof(color), color, null),
         };
 }

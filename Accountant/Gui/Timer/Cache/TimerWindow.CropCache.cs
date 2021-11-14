@@ -4,28 +4,25 @@ using System.Numerics;
 using Accountant.Classes;
 using Accountant.Gui.Helper;
 using Accountant.Manager;
+using Accountant.Timers;
 using ImGuiNET;
 
 namespace Accountant.Gui.Timer;
 
 public partial class TimerWindow
 {
-    private sealed partial class CropCache : BaseCache
+    internal sealed partial class CropCache : BaseCache
     {
-        public DateTime GlobalTime  = DateTime.MinValue;
-        public ColorId  GlobalColor = 0;
+        private readonly PlotCropTimers    _plotCrops;
+        private readonly PrivateCropTimers _privateCrops;
 
-        public CropCache(TimerWindow window, TimerManager manager)
-            : base(window, manager)
+        public CropCache(TimerWindow window, ConfigFlags requiredFlags, PlotCropTimers plotCrops, PrivateCropTimers privateCrops)
+            : base("Crops", requiredFlags, window)
         {
-            Resubscribe();
-        }
-
-        public void Resubscribe()
-        {
-            if (Manager.CropTimers != null)
-                Manager.CropTimers.CropChanged += Resetter;
-            Resetter();
+            _plotCrops            =  plotCrops;
+            _privateCrops         =  privateCrops;
+            _plotCrops.Changed    += Resetter;
+            _privateCrops.Changed += Resetter;
         }
 
         private static string TimeSpanString2(DateTime target, DateTime now)
@@ -42,7 +39,7 @@ public partial class TimerWindow
 
         private static Action GenerateTooltip(PlantInfo plant, CacheObject ret, string plantName, DateTime fin, DateTime wilt, DateTime wither)
         {
-            var plantTimeString = plant.PlantTime.ToString(CultureInfo.CurrentCulture);
+            var plantTimeString = plant.PlantTime.ToLocalTime().ToString(CultureInfo.CurrentCulture);
             return () =>
             {
                 ImGui.BeginTooltip();
@@ -76,7 +73,7 @@ public partial class TimerWindow
                 ImGui.SameLine();
                 ImGui.BeginGroup();
                 ImGui.Text(plantTimeString);
-                ImGui.Text(plant.LastTending.ToString(CultureInfo.CurrentCulture));
+                ImGui.Text(plant.LastTending.ToLocalTime().ToString(CultureInfo.CurrentCulture));
                 ImGui.Text(TimeSpanString2(fin, DateTime.UtcNow));
                 ImGui.Text(fin < wilt ? "Never" : TimeSpanString2(wilt,     DateTime.UtcNow));
                 ImGui.Text(fin < wither ? "Never" : TimeSpanString2(wither, DateTime.UtcNow));
@@ -89,8 +86,6 @@ public partial class TimerWindow
 
         protected override void UpdateInternal()
         {
-            GlobalColor = ColorId.HeaderCropGuaranteed;
-            GlobalTime  = DateTime.MinValue;
             if (Accountant.Config.OrderByCrop)
                 UpdateByCrop();
             else

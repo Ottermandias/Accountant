@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Accountant.Structs;
 
 namespace Accountant.Classes;
@@ -28,4 +29,7 @@ public class RetainerInfo
 
     private RetainerInfo()
     { }
+
+    public static RetainerInfo[] GenerateDefaultArray()
+        => Enumerable.Repeat(None, MaxSlots).ToArray();
 }

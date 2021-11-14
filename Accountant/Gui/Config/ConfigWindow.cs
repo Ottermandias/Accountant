@@ -1,16 +1,20 @@
 ﻿using System;
+using System.Numerics;
 using Accountant.Gui.Helper;
 using Accountant.Manager;
+using Dalamud.Interface;
 using ImGuiNET;
 
 namespace Accountant.Gui.Config;
 
 public partial class ConfigWindow : IDisposable
 {
-    private readonly TimerManager      _timers;
-    private readonly Timer.TimerWindow _timerWindow;
-    private readonly string            _header;
-    private          bool              _enabled = false;
+    private readonly        TimerManager      _timers;
+    private readonly        Timer.TimerWindow _timerWindow;
+    private readonly        string            _header;
+    private                 bool              _enabled = false;
+    private static readonly Vector2           _minSize = new(640, 480);
+
 
     public ConfigWindow(TimerManager timers, Timer.TimerWindow timerWindow)
     {
@@ -36,6 +40,7 @@ public partial class ConfigWindow : IDisposable
         if (!_enabled)
             return;
 
+        ImGui.SetNextWindowSizeConstraints(_minSize * ImGuiHelpers.GlobalScale, _minSize * 5);
         if (!ImGui.Begin(_header, ref _enabled))
         {
             ImGui.End();
@@ -53,5 +58,6 @@ public partial class ConfigWindow : IDisposable
         DrawColorsTab();
         DrawPlotNamesTab();
         DrawBlocklistsTab();
+        DrawOrderNamesTab();
     }
 }

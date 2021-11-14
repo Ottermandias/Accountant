@@ -104,6 +104,15 @@ internal static class Localization
             StringParser.FromRegex(data.Language, PlantingTextEn, PlantingTextFr, PlantingTextJp, PlantingTextDe, "seeds", "soil"));
     }
 
+    private static readonly Regex WheelTextEn = new(@"Place (the )?(?<wheel>.*?) on the wheel stand\?", RegexOptions.Compiled);
+
+    private static readonly Regex WheelTextFr = new(@"Installer (la |le )?(?<wheel>.*?).\?", RegexOptions.Compiled);
+
+    private static readonly Regex WheelTextDe = new(@"(Das )? (?<wheel>.*?) wirklich in den Ätherrad-Ständer einsetzen\?",
+        RegexOptions.Compiled);
+
+    private static readonly Regex WheelTextJp = new(@"「(<?wheel>.*?)」を.*ホイールスタンドに設置します。.*よろしいですか？", RegexOptions.Compiled);
+
     public static void Initialize(DataManager data)
     {
         if (_initialized)
@@ -155,6 +164,8 @@ internal static class Localization
         LocalizationDict<StringId>.Register(StringId.Submersible,
             addon.GetRow(data.Language == ClientLanguage.Japanese ? 6881u : 6888u)!.Text.RawString);
         LocalizationDict<StringId>.Register(StringId.Retainer, addon.GetRow(6163)!.Text.RawString);
+
+        LocalizationDict<StringId>.Register(StringId.WheelFilter, StringParser.FromRegex(data.Language, WheelTextEn, WheelTextFr, WheelTextJp, WheelTextDe, "wheel"));
 
         SetCropCommands(data);
     }

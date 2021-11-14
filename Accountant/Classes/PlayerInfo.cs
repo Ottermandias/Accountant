@@ -1,14 +1,15 @@
 using System;
+using Accountant.Timers;
 using Accountant.Util;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Newtonsoft.Json;
 
 namespace Accountant.Classes;
 
-public readonly struct PlayerInfo : IEquatable<PlayerInfo>
+public readonly struct PlayerInfo : IEquatable<PlayerInfo>, ITimerIdentifier
 {
-    public readonly string Name;
-    public readonly ushort ServerId;
+    public string Name     { get; }
+    public ushort ServerId { get; }
 
     [JsonConstructor]
     public PlayerInfo(string name, ushort serverId)
@@ -31,12 +32,19 @@ public readonly struct PlayerInfo : IEquatable<PlayerInfo>
     public override int GetHashCode()
         => HashCode.Combine(Name, ServerId);
 
-    public int GetStableHashCode()
-        => Helpers.CombineHashCodes(Helpers.GetStableHashCode(Name), ServerId);
+    public uint IdentifierHash()
+        => (uint)Helpers.CombineHashCodes(Helpers.GetStableHashCode(Name), ServerId);
 
+    [JsonIgnore]
     public string CastedName
         => $"{Name}{(char)ServerId}";
 
     public static PlayerInfo FromCastedName(string castedName)
         => new(castedName[..^1], castedName[^1]);
+
+    public static bool operator ==(PlayerInfo left, PlayerInfo right)
+        => left.Equals(right);
+
+    public static bool operator !=(PlayerInfo left, PlayerInfo right)
+        => !(left == right);
 }

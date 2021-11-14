@@ -1,15 +1,16 @@
 using System;
 using Accountant.Enums;
+using Accountant.Timers;
 using Accountant.Util;
 
 namespace Accountant.Classes;
 
-public readonly struct PlotInfo : IEquatable<PlotInfo>
+public readonly struct PlotInfo : IEquatable<PlotInfo>, ITimerIdentifier
 {
-    public readonly InternalHousingZone Zone;
-    public readonly ushort              ServerId;
-    public readonly ushort              Ward;
-    public readonly ushort              Plot;
+    public InternalHousingZone Zone     { get; }
+    public ushort              ServerId { get; }
+    public ushort              Ward     { get; }
+    public ushort              Plot     { get; }
 
     public PlotInfo(InternalHousingZone zone, ushort ward, ushort plot, ushort serverId)
     {
@@ -28,7 +29,7 @@ public readonly struct PlotInfo : IEquatable<PlotInfo>
     public ulong Value
         => Plot | ((ulong)Ward << 16) | ((ulong)Zone << 32) | ((ulong)ServerId << 48);
 
-    public string GetName()
+    public string Name
         => Accountant.Config.PlotNames.TryGetValue(Value, out var ret) ? ret : ToName();
 
     public bool Equals(PlotInfo other)
@@ -43,12 +44,18 @@ public readonly struct PlotInfo : IEquatable<PlotInfo>
     public override int GetHashCode()
         => HashCode.Combine((int)Zone, ServerId, Ward, Plot);
 
-    public int GetStableHashCode()
-        => Helpers.CombineHashCodes((int)Zone, ServerId, Ward, Plot);
+    public uint IdentifierHash()
+        => (uint)Helpers.CombineHashCodes((int)Zone, ServerId, Ward, Plot);
 
     public static PlotInfo FromValue(ulong value)
         => new((InternalHousingZone)((value >> 32) & 0xFFFF)
             , (ushort)((value >> 16) & 0xFFFF)
             , (ushort)(value & 0xFFFF)
             , (ushort)(value >> 48));
+
+    public static bool operator ==(PlotInfo left, PlotInfo right)
+        => left.Equals(right);
+
+    public static bool operator !=(PlotInfo left, PlotInfo right)
+        => !(left == right);
 }

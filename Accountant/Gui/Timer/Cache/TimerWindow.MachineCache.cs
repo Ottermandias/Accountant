@@ -1,123 +1,125 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Accountant.Classes;
 using Accountant.Enums;
-using Accountant.Manager;
-using OtterLoc.Structs;
+using Accountant.Timers;
+using ImGuiScene;
 
 namespace Accountant.Gui.Timer;
 
 public partial class TimerWindow
 {
-    private sealed class MachineCache : ObjectCache
+    internal sealed class MachineCache : BaseCache
     {
-        public MachineCache(TimerWindow window, TimerManager manager)
-            : base(window, manager)
+        private readonly AirshipTimers     _airships;
+        private readonly SubmersibleTimers _submersibles;
+        private readonly MachineType       _type;
+        public           string            Header = string.Empty;
+
+        private readonly TextureWrap   _icon;
+        public           ObjectCounter GlobalCounter;
+
+        public MachineCache(TimerWindow window, ConfigFlags requiredFlags, string name, MachineType type, AirshipTimers airships,
+            SubmersibleTimers submersibles)
+            : base(name, requiredFlags, window)
         {
-            Resubscribe();
+            _airships             =  airships;
+            _submersibles         =  submersibles;
+            _airships.Changed     += Resetter;
+            _submersibles.Changed += Resetter;
+            _type                 =  type;
+            _icon                 =  Window._icons[_type == MachineType.Airship ? Icons.AirshipIcon : Icons.SubmarineIcon];
         }
 
-        public void Resubscribe()
+        private CacheObject GenerateMachine(MachineInfo machine, ref ObjectCounter counter)
         {
-            if (Manager.MachineTimers != null)
-                Manager.MachineTimers.MachineChanged += Resetter;
-            Resetter();
-        }
-
-        private CacheObject GenerateMachine(MachineInfo machine)
-            => new()
+            var type = counter.Add(machine.Arrival, Now, MachineInfo.MaxSlots);
+            return new CacheObject
             {
                 Name          = machine.Name,
-                Children      = Array.Empty<CacheObject>(),
-                DisplayTime   = machine.Arrival,
-                Icon          = Window._icons[machine.Type == MachineType.Airship ? Icons.AirshipIcon : Icons.SubmarineIcon],
+                DisplayTime   = UpdateNextChange(machine.Arrival),
+                Icon          = _icon,
                 IconOffset    = 0.125f,
-                DisplayString = GetDisplayInfo(machine.Arrival),
-                Color         = ColorId.NeutralText,
+                DisplayString = Window.StatusString(type),
+                Color         = type == ObjectStatus.Limited ? ColorId.DisabledText : ColorId.NeutralText,
             };
+        }
 
-        private CacheObject GenerateCompany(FreeCompanyInfo company, IEnumerable<MachineInfo> machines)
+        private SmallHeader GenerateCompany(string name, FreeCompanyInfo company, IEnumerable<MachineInfo> data, ref ObjectCounter global)
         {
-            ResetCurrent();
-            var newObject = new CacheObject()
-            {
-                Name     = GetName(company.Name, company.ServerId),
-                Children = machines.Where(m => m.Type != MachineType.Unknown).Select(GenerateMachine).ToArray(),
-            };
-            if (newObject.Children.Length == 0)
-                return newObject;
+            var begin = Objects.Count;
 
-            if (CurrentSentObjects + CurrentCompletedObjects == 4)
+            var localMain = ObjectCounter.Create();
+            Objects.AddRange(data
+                .Where(a => a.Type != MachineType.Unknown)
+                .Select(a => GenerateMachine(a, ref localMain))
+                .OrderByDescending(a => Accountant.Config.GetPriority(a.Name)));
+
+            var localOff = ObjectCounter.Create();
+            switch (_type)
             {
-                CurrentLimitedObjects   = CurrentAvailableObjects;
-                CurrentAvailableObjects = 0;
-                for (var i = 0; i < newObject.Children.Length; ++i)
+                case MachineType.Submersible when Accountant.Config.Flags.Check(ConfigFlags.Airships)
+                 && _airships.Data.TryGetValue(company, out var airships):
                 {
-                    if (newObject.Children[i].DisplayString != StringId.Available.Value())
-                        continue;
-
-                    newObject.Children[i].Color         = ColorId.DisabledText;
-                    newObject.Children[i].DisplayString = "Limited";
+                    foreach (var airship in airships)
+                        localOff.Add(UpdateNextChange(airship.Arrival), Now, MachineInfo.MaxSlots);
+                    break;
+                }
+                case MachineType.Airship when Accountant.Config.Flags.Check(ConfigFlags.Submersibles)
+                 && _submersibles.Data.TryGetValue(company, out var submersibles):
+                {
+                    foreach (var submersible in submersibles)
+                        localOff.Add(UpdateNextChange(submersible.Arrival), Now, MachineInfo.MaxSlots);
+                    break;
                 }
             }
 
-            AddCurrent();
+            if ((localMain + localOff).VerifyLimit(MachineInfo.MaxSlots))
+            {
+                localMain.VerifyLimit(0);
+                var end             = Objects.Count;
+                var availableString = Window.StatusString(ObjectStatus.Available);
+                for (var i = begin; i < end; ++i)
+                {
+                    var o = Objects[i];
+                    if (o.DisplayString != availableString)
+                        continue;
 
-            if (CurrentSentObjects == newObject.Children.Length - CurrentLimitedObjects)
-            {
-                newObject.Color       = ColorId.TextObjectsAway;
-                newObject.DisplayTime = CurrentActualTimeForFirst;
-            }
-            else if (CurrentSentObjects > 0)
-            {
-                newObject.Color       = ColorId.TextObjectsMixed;
-                newObject.DisplayTime = CurrentTimeForAll;
-            }
-            else
-            {
-                newObject.Color         = CurrentCompletedObjects > 0 ? ColorId.TextObjectsHome : ColorId.NeutralText;
-                newObject.DisplayString = string.Empty;
+                    o.DisplayString = Window.StatusString(ObjectStatus.Limited);
+                    o.Color         = ColorId.DisabledText;
+                    Objects[i]      = o;
+                }
             }
 
-            return newObject;
-        }
+            global += localMain;
 
-        private void SetGlobals()
-        {
-            Header = $"{StringId.Machines.Value()}: {CompletedObjects} | {AvailableObjects} | {SentObjects}";
-            if (SentObjects == TotalObjects - LimitedObjects)
+            return new SmallHeader
             {
-                GlobalColor = ColorId.HeaderObjectsAway;
-                GlobalTime  = TimeForFirst;
-            }
-            else if (SentObjects > 0)
-            {
-                GlobalColor = ColorId.HeaderObjectsMixed;
-                GlobalTime  = TimeForAll;
-            }
-            else
-            {
-                GlobalColor = ColorId.HeaderObjectsHome;
-                GlobalTime  = DateTime.MinValue;
-            }
+                Name         = name,
+                ObjectsBegin = begin,
+                ObjectsCount = Objects.Count - begin,
+                DisplayTime  = localMain.GetTime(),
+                Color        = localMain.GetColorText(),
+            };
         }
 
         protected override void UpdateInternal()
         {
-            base.UpdateInternal();
-            LimitedObjects = 0;
-            foreach (var (company, machines) in Manager.MachineTimers!.Machines
-                         .Where(r => !Accountant.Config.BlockedCompanies.Contains(r.Key.CastedName)))
+            GlobalCounter = ObjectCounter.Create();
+            foreach (var (name, company, data) in (_type == MachineType.Airship ? _airships.Data : _submersibles.Data)
+                     .Where(c => _type == MachineType.Airship
+                         ? !Accountant.Config.BlockedCompaniesAirships.Contains(c.Key.CastedName)
+                         : !Accountant.Config.BlockedCompaniesSubmersibles.Contains(c.Key.CastedName))
+                     .Select(c => (GetName(c.Key.Name, c.Key.ServerId), c.Key, c.Value))
+                     .OrderByDescending(p => Accountant.Config.GetPriority(p.Item1)))
             {
-                var p = GenerateCompany(company, machines);
-                if (p.Children.Length == 0)
-                    continue;
-
-                Objects.Add(p);
+                var machine = GenerateCompany(name, company, data, ref GlobalCounter);
+                if (machine.ObjectsCount > 0)
+                    Headers.Add(machine);
             }
 
-            SetGlobals();
+            Color       = GlobalCounter.GetColorHeader();
+            DisplayTime = GlobalCounter.GetTime();
         }
     }
 }

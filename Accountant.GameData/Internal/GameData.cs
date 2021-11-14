@@ -15,8 +15,10 @@ namespace Accountant.Internal;
 
 internal class GameData : IGameData
 {
-    public const   int                       CurrentVersion = 1;
+    public const   int                       CurrentVersion = 3;
     private static Crops?                    _crops;
+    private static Wheels?                   _wheels;
+    private static Maps?                     _maps;
     private static Plots?                    _plots;
     private static Dictionary<uint, string>? _worldNames;
     private static Dictionary<string, uint>? _worldIds;
@@ -35,6 +37,15 @@ internal class GameData : IGameData
 
     public CropData FindCrop(string name)
         => _crops?.Find(name) ?? throw NotReadyException();
+
+    public (Item Item, byte Grade) FindWheel(uint itemId)
+        => _wheels?.Find(itemId) ?? throw NotReadyException();
+
+    public (Item Item, byte Grade) FindWheel(string name)
+        => _wheels?.Find(name) ?? throw NotReadyException();
+
+    public Item? FindMap(uint itemId)
+        => _maps == null ? throw NotReadyException() : _maps.Find(itemId);
 
     public int GetNumWards(InternalHousingZone zone = InternalHousingZone.Mist)
         => _plots?.GetNumWards(zone) ?? throw NotReadyException();
@@ -64,6 +75,8 @@ internal class GameData : IGameData
     public GameData(GameGui gui, ClientState state, DataManager data)
     {
         _crops     ??= new Crops(data);
+        _wheels    ??= new Wheels(data);
+        _maps      ??= new Maps(data);
         _fcTracker ??= new FreeCompanyTracker(gui, state);
         _plots     ??= new Plots(data);
         _worldNames ??= data.GameData.GetExcelSheet<World>()!

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Accountant.Enums;
 
 namespace Accountant.Classes;
@@ -28,4 +29,7 @@ public class MachineInfo
         };
 
     public static readonly MachineInfo None = new(string.Empty, DateTime.MinValue, MachineType.Unknown);
+
+    public static MachineInfo[] GenerateDefaultArray()
+        => Enumerable.Repeat(None, MaxSlots).ToArray();
 }

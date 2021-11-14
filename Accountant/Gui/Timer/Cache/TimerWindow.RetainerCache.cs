@@ -3,115 +3,80 @@ using System.Collections.Generic;
 using System.Linq;
 using Accountant.Classes;
 using Accountant.Enums;
-using Accountant.Manager;
+using Accountant.Timers;
 using OtterLoc.Structs;
 
 namespace Accountant.Gui.Timer;
 
 public partial class TimerWindow
 {
-    private sealed class RetainerCache : ObjectCache
+    internal sealed class RetainerCache : BaseCache
     {
-        public RetainerCache(TimerWindow window, TimerManager manager)
-            : base(window, manager)
+        private readonly RetainerTimers _retainers;
+        public           string         Header = string.Empty;
+
+        public RetainerCache(TimerWindow window, ConfigFlags requiredFlags, RetainerTimers retainers)
+            : base("Retainers", requiredFlags, window)
         {
-            Resubscribe();
+            _retainers         =  retainers;
+            _retainers.Changed += Resetter;
         }
 
-        public void Resubscribe()
+        private CacheObject GenerateRetainer(RetainerInfo retainer, ref ObjectCounter counter)
         {
-            if (Manager.RetainerTimers != null)
-                Manager.RetainerTimers.RetainerChanged += Resetter;
-            Resetter();
-        }
-
-        private CacheObject GenerateRetainer(RetainerInfo retainer)
-        {
-            var ret = new CacheObject()
+            var type = counter.Add(retainer.Venture, Now, retainer.Available ? 10 : 0);
+            return new CacheObject
             {
                 Name          = retainer.Name,
-                Children      = Array.Empty<CacheObject>(),
-                DisplayTime   = retainer.Venture,
+                DisplayTime   = UpdateNextChange(retainer.Venture),
                 Icon          = Window._icons[Icons.JobIcons[retainer.JobId]],
                 IconOffset    = 0.25f,
-                DisplayString = GetDisplayInfo(retainer.Venture),
+                DisplayString = Window.StatusString(type),
                 Color         = retainer.Available ? ColorId.NeutralText : ColorId.DisabledText,
             };
-            if (!retainer.Available)
-            {
-                ++CurrentLimitedObjects;
-                --CurrentAvailableObjects;
-            }
-
-            return ret;
         }
 
-        private CacheObject GeneratePlayer(PlayerInfo player, IEnumerable<RetainerInfo> retainers)
+        private SmallHeader GeneratePlayer(string player, IEnumerable<RetainerInfo> retainers, ref ObjectCounter globalCount)
         {
-            ResetCurrent();
-            var newObject = new CacheObject()
+            var local = ObjectCounter.Create();
+            var newObject = new SmallHeader
             {
-                Name     = GetName(player.Name, player.ServerId),
-                Children = retainers.Where(r => r.RetainerId != 0).Select(GenerateRetainer).ToArray(),
+                Name         = player,
+                ObjectsBegin = Objects.Count,
+                Color        = ColorId.NeutralHeader,
+                DisplayTime  = DateTime.MinValue,
             };
-            if (newObject.Children.Length == 0)
-                return newObject;
 
-            if (CurrentSentObjects == newObject.Children.Length)
-            {
-                newObject.Color       = ColorId.TextObjectsAway;
-                newObject.DisplayTime = CurrentTimeForFirst;
-            }
-            else if (CurrentSentObjects > 0)
-            {
-                newObject.Color       = ColorId.TextObjectsMixed;
-                newObject.DisplayTime = CurrentTimeForAll;
-            }
-            else
-            {
-                newObject.Color         = CurrentCompletedObjects > 0 ? ColorId.TextObjectsHome : ColorId.NeutralText;
-                newObject.DisplayString = string.Empty;
-            }
-
-            AddCurrent();
+            Objects.AddRange(retainers
+                .Where(r => r.RetainerId != 0)
+                .Select(r => GenerateRetainer(r, ref local))
+                .OrderByDescending(r => Accountant.Config.GetPriority(r.Name)));
+            newObject.ObjectsCount =  Objects.Count - newObject.ObjectsBegin;
+            newObject.Color        =  local.GetColorText();
+            newObject.DisplayTime  =  local.GetTime();
+            globalCount            += local;
 
             return newObject;
         }
 
-        private void SetGlobals()
-        {
-            Header = $"{StringId.Retainers.Value()}: {CompletedObjects} | {AvailableObjects} | {SentObjects}";
-            if (SentObjects == TotalObjects - LimitedObjects)
-            {
-                GlobalColor = ColorId.HeaderObjectsAway;
-                GlobalTime  = TimeForFirst;
-            }
-            else if (SentObjects > 0)
-            {
-                GlobalColor = ColorId.HeaderObjectsMixed;
-                GlobalTime  = TimeForAll;
-            }
-            else
-            {
-                GlobalColor = ColorId.HeaderObjectsHome;
-                GlobalTime  = DateTime.MinValue;
-            }
-        }
-
         protected override void UpdateInternal()
         {
-            base.UpdateInternal();
-            foreach (var (player, retainers) in Manager.RetainerTimers!.Retainers
-                         .Where(r => !Accountant.Config.BlockedPlayers.Contains(r.Key.CastedName)))
+            var global = ObjectCounter.Create();
+            foreach (var (player, retainers) in _retainers.Data
+                         .Where(r => !Accountant.Config.BlockedPlayersRetainers.Contains(r.Key.CastedName))
+                         .Select(p => (GetName(p.Key.Name, p.Key.ServerId), p.Value))
+                         .OrderByDescending(p => Accountant.Config.GetPriority(p.Item1)))
             {
-                var p = GeneratePlayer(player, retainers);
-                if (p.Children.Length == 0)
+                var p = GeneratePlayer(player, retainers, ref global);
+                if (p.ObjectsCount == 0)
                     continue;
 
-                Objects.Add(p);
+                Headers.Add(p);
             }
 
-            SetGlobals();
+            Color       = global.GetColorHeader();
+            DisplayTime = global.GetTime();
+            Header      = global.GetHeader(StringId.Retainers);
         }
     }
 }

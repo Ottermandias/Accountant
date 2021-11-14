@@ -8,6 +8,7 @@ using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.Gui;
 using Dalamud.Game.Text.SeStringHandling;
+using Lumina.Excel.GeneratedSheets;
 
 namespace Accountant;
 
@@ -28,6 +29,14 @@ public interface IGameData : IDisposable
     // Obtain the crop data for the crop or seed with the given name or singular (case insensitive).
     // If the name does not correspond to any crop or seed, returns item 0 with times (0, 0).
     public CropData FindCrop(string name);
+
+    // Obtain the corresponding item and grade (1-3) to an aetherial wheel id or name.
+    // If the given parameter does not correspond to a aetherial wheel, Grade is 0 and Item is default constructed.
+    public (Item Item, byte Grade) FindWheel(uint itemId);
+    public (Item Item, byte Grade) FindWheel(string name);
+
+    // Obtain the corresponding item to a treasure hunt map, if it represents one.
+    public Item? FindMap(uint itemId);
 
     // Obtain the number of available wards in a given housing zone.
     public int GetNumWards(InternalHousingZone zone = InternalHousingZone.Mist);

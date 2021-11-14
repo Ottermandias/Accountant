@@ -15,6 +15,19 @@ public class FreeCompanyStorage
 
     public List<FreeCompanyInfo> Infos = new();
 
+    public FreeCompanyInfo? GetCurrentCompanyInfo()
+    {
+        if (!Accountant.GameData.Valid)
+            return null;
+
+        if (Dalamud.ClientState.LocalPlayer == null)
+            return null;
+
+        var (tag, name, leader) = Accountant.GameData.FreeCompanyInfo();
+        var id = (ushort) Dalamud.ClientState.LocalPlayer.HomeWorld.Id;
+        return FindByAndUpdateInfo(tag, name, leader, id);
+    }
+
     private static FileInfo FileInfo
         => new(Path.Combine(Dalamud.PluginInterface.GetPluginConfigDirectory(), FileName));
 
@@ -27,7 +40,7 @@ public class FreeCompanyStorage
     public FreeCompanyInfo? FindByName(string name, uint serverId)
         => Infos.FirstOrDefault(f => f.Name == name && f.ServerId == serverId);
 
-    public FreeCompanyInfo? FindByAndUpdateInfo(SeString tag, SeString? name, SeString? leader, uint serverId)
+    public FreeCompanyInfo? FindByAndUpdateInfo(SeString tag, SeString? name, SeString? leader, ushort serverId)
     {
         if (tag == SeString.Empty)
             return null;
@@ -43,7 +56,7 @@ public class FreeCompanyStorage
                 : infos.FirstOrDefault(i => i.Tag == t);
 
         var i = infos.FirstOrDefault(i => i.Name == n);
-        if (i == null)
+        if (i.ServerId == 0)
         {
             if (!l.Any())
                 return null;

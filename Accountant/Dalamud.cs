@@ -39,7 +39,7 @@ public class Dalamud
         //[PluginService][RequiredVersion("1.0")] public static ChatHandlers           ChatHandlers    { get; private set; } = null!;
         [PluginService][RequiredVersion("1.0")] public static Framework              Framework       { get; private set; } = null!;
         [PluginService][RequiredVersion("1.0")] public static GameNetwork            Network         { get; private set; } = null!;
-        //[PluginService][RequiredVersion("1.0")] public static Condition              Conditions      { get; private set; } = null!;
+        [PluginService][RequiredVersion("1.0")] public static Condition              Conditions      { get; private set; } = null!;
         //[PluginService][RequiredVersion("1.0")] public static KeyState               Keys            { get; private set; } = null!;
         [PluginService][RequiredVersion("1.0")] public static GameGui                GameGui         { get; private set; } = null!;
         //[PluginService][RequiredVersion("1.0")] public static FlyTextGui             FlyTexts        { get; private set; } = null!;

@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Accountant.Classes;
 using Accountant.Gui.Helper;
+using Accountant.Gui.Timer;
 using Dalamud.Interface;
 using ImGuiNET;
 
@@ -19,15 +22,27 @@ public partial class ConfigWindow
 
         if (_newWorld == 0 && Dalamud.ClientState.LocalPlayer != null)
             _newWorld = (ushort)Dalamud.ClientState.LocalPlayer.CurrentWorld.Id;
-
         using var raii = ImGuiRaii.DeferredEnd(ImGui.EndTabItem);
+
+        if (!ImGui.BeginChild("##BlockListTab"))
+            return;
+
+        raii.Push(ImGui.EndChild);
 
         if (ImGui.CollapsingHeader("Blocked Plots"))
             DrawBlockedPlots();
-        if (ImGui.CollapsingHeader("Blocked Players"))
-            DrawBlockedPlayers();
-        if (ImGui.CollapsingHeader("Blocked Free Companies"))
-            DrawBlockedCompanies();
+        if (ImGui.CollapsingHeader("Blocked Players (Crops)"))
+            DrawBlockedPlayers("Crops", Accountant.Config.BlockedPlayersCrops, typeof(TimerWindow.CropCache));
+        if (ImGui.CollapsingHeader("Blocked Players (Retainers)"))
+            DrawBlockedPlayers("Retainers", Accountant.Config.BlockedPlayersRetainers, typeof(TimerWindow.RetainerCache));
+        if (ImGui.CollapsingHeader("Blocked Players (Tasks)"))
+            DrawBlockedPlayers("Tasks", Accountant.Config.BlockedPlayersTasks, typeof(TimerWindow.TaskCache));
+        if (ImGui.CollapsingHeader("Blocked Free Companies (Airships)"))
+            DrawBlockedCompanies("Airships", Accountant.Config.BlockedCompaniesAirships, typeof(TimerWindow.MachineCache));
+        if (ImGui.CollapsingHeader("Blocked Free Companies (Submersibles)"))
+            DrawBlockedCompanies("Submersibles", Accountant.Config.BlockedCompaniesSubmersibles, typeof(TimerWindow.MachineCache));
+        if (ImGui.CollapsingHeader("Blocked Free Companies (Aetherial Wheels)"))
+            DrawBlockedCompanies("Wheels", Accountant.Config.BlockedCompaniesWheels, typeof(TimerWindow.WheelCache));
     }
 
     private void DrawBlockedPlots()
@@ -58,7 +73,7 @@ public partial class ConfigWindow
         {
             Accountant.Config.BlockedPlots.Remove(change.Value);
             Accountant.Config.Save();
-            _timerWindow.ResetCropCache();
+            _timerWindow.ResetCache(typeof(TimerWindow.CropCache));
         }
 
         using var _ = ImGuiRaii.PushFont(UiBuilder.IconFont);
@@ -68,7 +83,7 @@ public partial class ConfigWindow
             if (Accountant.Config.BlockedPlots.Add(_newPlotInfo))
             {
                 Accountant.Config.Save();
-                _timerWindow.ResetCropCache();
+                _timerWindow.ResetCache(typeof(TimerWindow.CropCache));
             }
 
         _.Pop();
@@ -76,9 +91,9 @@ public partial class ConfigWindow
         ImGui.NewLine();
     }
 
-    private void DrawBlockedPlayers()
+    private void DrawBlockedPlayers(string label, ISet<string> list, Type resetType)
     {
-        using var id = ImGuiRaii.PushId("BlockedPlayers");
+        using var id = ImGuiRaii.PushId($"BlockedPlayers{label}");
         if (!ImGui.BeginTable(string.Empty, 3))
             return;
 
@@ -90,7 +105,7 @@ public partial class ConfigWindow
         ImGui.TableSetupScrollFreeze(0, 1);
 
         string? change = null;
-        foreach (var castedName in Accountant.Config.BlockedPlayers)
+        foreach (var castedName in list)
         {
             var info = PlayerInfo.FromCastedName(castedName);
             ImGui.TableNextRow();
@@ -107,25 +122,24 @@ public partial class ConfigWindow
 
         if (change != null)
         {
-            Accountant.Config.BlockedPlayers.Remove(change);
+            list.Remove(change);
             Accountant.Config.Save();
-            _timerWindow.ResetCropCache();
-            _timerWindow.ResetRetainerCache();
+            _timerWindow.ResetCache(resetType);
         }
 
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
         using var _ = ImGuiRaii.PushFont(UiBuilder.IconFont);
         if (ImGui.Button(FontAwesomeIcon.Plus.ToIconString()) && _newWorld != 0 && _newBlockedPlayerName.Any())
-            if (Accountant.Config.BlockedPlayers.Add(new PlayerInfo(_newBlockedPlayerName, _newWorld).CastedName))
+            if (list.Add(new PlayerInfo(_newBlockedPlayerName, _newWorld).CastedName))
             {
                 Accountant.Config.Save();
-                _timerWindow.ResetCropCache();
-                _timerWindow.ResetRetainerCache();
+                _timerWindow.ResetCache(resetType);
             }
 
         _.Pop();
         ImGui.TableNextColumn();
+        ImGui.SetNextItemWidth(-1);
         DrawWorldsCombo(ref _newWorld);
         ImGui.TableNextColumn();
         ImGui.SetNextItemWidth(-1);
@@ -133,9 +147,9 @@ public partial class ConfigWindow
         ImGui.NewLine();
     }
 
-    private void DrawBlockedCompanies()
+    private void DrawBlockedCompanies(string label, ISet<string> list, Type resetType)
     {
-        using var id = ImGuiRaii.PushId("BlockedCompanies");
+        using var id = ImGuiRaii.PushId($"BlockedCompanies{label}");
         if (!ImGui.BeginTable(string.Empty, 3))
             return;
 
@@ -147,7 +161,7 @@ public partial class ConfigWindow
         ImGui.TableSetupScrollFreeze(0, 1);
 
         string? change = null;
-        foreach (var castedName in Accountant.Config.BlockedCompanies)
+        foreach (var castedName in list)
         {
             var info = FreeCompanyInfo.FromCastedName(castedName);
             ImGui.TableNextRow();
@@ -164,19 +178,19 @@ public partial class ConfigWindow
 
         if (change != null)
         {
-            Accountant.Config.BlockedCompanies.Remove(change);
+            list.Remove(change);
             Accountant.Config.Save();
-            _timerWindow.ResetMachineCache();
+            _timerWindow.ResetCache(resetType);
         }
 
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
         using var _ = ImGuiRaii.PushFont(UiBuilder.IconFont);
         if (ImGui.Button(FontAwesomeIcon.Plus.ToIconString()) && _newWorld != 0 && _newBlockedCompanyName.Any())
-            if (Accountant.Config.BlockedCompanies.Add(new FreeCompanyInfo(_newBlockedCompanyName, _newWorld).CastedName))
+            if (list.Add(new FreeCompanyInfo(_newBlockedCompanyName, _newWorld).CastedName))
             {
                 Accountant.Config.Save();
-                _timerWindow.ResetMachineCache();
+                _timerWindow.ResetCache(resetType);
             }
 
         _.Pop();

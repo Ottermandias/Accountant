@@ -38,4 +38,5 @@ public enum StringId
     PlantMatcher,
     PatchMatcher,
     SeedMatcher,
+    WheelFilter,
 }

@@ -9,13 +9,12 @@ namespace Accountant.Gui.Timer;
 
 public partial class TimerWindow
 {
-    private sealed partial class CropCache
+    internal sealed partial class CropCache
     {
         private CacheObject GeneratePlant(PlantInfo plant, string name)
         {
-            var ret = new CacheObject()
+            var ret = new CacheObject
             {
-                Children   = Array.Empty<CacheObject>(),
                 Name       = name,
                 IconOffset = 0,
             };
@@ -24,7 +23,7 @@ public partial class TimerWindow
             {
                 var (data, plantName)                   = Accountant.GameData.FindCrop(plant.PlantId);
                 var (fin, wilt, wither, color, time, _) = plant.GetCropTimes(Now);
-                ret.DisplayTime                         = time;
+                ret.DisplayTime                         = UpdateNextChange(time);
                 ret.DisplayString                       = time < Now ? string.Empty : null;
                 ret.Icon                                = Window._icons[data.Item.Icon];
                 ret.Color                               = color;
@@ -40,56 +39,50 @@ public partial class TimerWindow
             return ret;
         }
 
-        private CacheObject GenerateOwner(PlayerInfo player, IList<PlantInfo> plants)
+        private SmallHeader GenerateOwner(PlayerInfo player, IList<PlantInfo> plants)
         {
-            var owner = new CacheObject()
+            var owner = new SmallHeader
             {
-                Name     = GetName(player.Name, player.ServerId),
-                Children = new CacheObject[plants.Count],
-                Color    = ColorId.NeutralText,
+                Name         = GetName(player.Name, player.ServerId),
+                ObjectsBegin = Objects.Count,
+                ObjectsCount = plants.Count,
+                Color        = ColorId.NeutralText,
             };
+
             for (ushort i = 0; i < plants.Count; ++i)
             {
-                owner.Children[i] = GeneratePlant(plants[i], Manager.CropTimers!.GetPrivateName(i));
-                UpdateParent(owner.Children[i].Color, owner.Children[i].DisplayTime, ref owner.Color, ref owner.DisplayTime);
+                Objects.Add(GeneratePlant(plants[i], PlantInfo.GetPrivateName(i)));
+                UpdateParent(Objects.Last().Color, Objects.Last().DisplayTime, ref owner.Color, ref owner.DisplayTime);
             }
 
-            if (owner.DisplayTime < Now)
-                owner.DisplayString = string.Empty;
-
-            UpdateParent(owner.Color, owner.DisplayTime, ref GlobalColor, ref GlobalTime);
-            GlobalColor = GlobalColor.TextToHeader();
-
+            UpdateParent(owner.Color.TextToHeader(), owner.DisplayTime, ref Color, ref DisplayTime);
             return owner;
         }
 
-        private CacheObject GenerateOwner(PlotInfo plot, IList<PlantInfo> plants)
+        private SmallHeader GenerateOwner(PlotInfo plot, IList<PlantInfo> plants)
         {
-            var owner = new CacheObject()
+            var owner = new SmallHeader
             {
-                Name     = GetName(plot.GetName(), plot.ServerId),
-                Children = new CacheObject[plants.Count],
-                Color    = ColorId.NeutralText,
+                Name         = GetName(plot.Name, plot.ServerId),
+                ObjectsBegin = Objects.Count,
+                ObjectsCount = plants.Count,
+                Color        = ColorId.NeutralText,
             };
+
             for (ushort i = 0; i < plants.Count; ++i)
             {
-                owner.Children[i] = GeneratePlant(plants[i],
-                    Manager.CropTimers!.GetPlotName(Accountant.GameData.GetPlotSize(plot.Zone, plot.Plot), i));
-                UpdateParent(owner.Children[i].Color, owner.Children[i].DisplayTime, ref owner.Color, ref owner.DisplayTime);
+                Objects.Add(GeneratePlant(plants[i], PlantInfo.GetPlotName(Accountant.GameData.GetPlotSize(plot.Zone, plot.Plot), i)));
+                UpdateParent(Objects.Last().Color, Objects.Last().DisplayTime, ref owner.Color, ref owner.DisplayTime);
             }
 
-            if (owner.DisplayTime < Now)
-                owner.DisplayString = string.Empty;
-
-            UpdateParent(owner.Color, owner.DisplayTime, ref GlobalColor, ref GlobalTime);
-            GlobalColor = GlobalColor.TextToHeader();
+            UpdateParent(owner.Color.TextToHeader(), owner.DisplayTime, ref Color, ref DisplayTime);
 
             return owner;
         }
 
         private static void UpdateParent(ColorId newColor, DateTime displayTime, ref ColorId oldColor, ref DateTime oldDisplayTime)
         {
-            var tmp = oldColor.CombineColor(newColor);
+            var tmp = oldColor.Combine(newColor);
             if (tmp != oldColor)
             {
                 oldColor       = newColor;
@@ -103,13 +96,16 @@ public partial class TimerWindow
 
         private void UpdateByOwner()
         {
-            foreach (var (plot, plants) in Manager.CropTimers!.PlotCrops
+            foreach (var (plot, plants) in _plotCrops.Data
                          .Where(p => !Accountant.Config.BlockedPlots.Contains(p.Key.Value)))
-                Objects.Add(GenerateOwner(plot, plants));
+                Headers.Add(GenerateOwner(plot, plants));
 
-            foreach (var (player, plants) in Manager.CropTimers!.PrivateCrops
-                         .Where(p => !Accountant.Config.BlockedPlayers.Contains(p.Key.CastedName)))
-                Objects.Add(GenerateOwner(player, plants));
+            foreach (var (player, plants) in _privateCrops.Data
+                         .Where(p => !Accountant.Config.BlockedPlayersCrops.Contains(p.Key.CastedName)))
+                Headers.Add(GenerateOwner(player, plants));
+
+            if (Accountant.Config.Priorities.Count > 0)
+                Headers.Sort((a, b) => Accountant.Config.GetPriority(b.Name).CompareTo(Accountant.Config.GetPriority(a.Name)));
         }
     }
 }

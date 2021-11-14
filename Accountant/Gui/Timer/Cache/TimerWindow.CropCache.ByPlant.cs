@@ -8,7 +8,7 @@ namespace Accountant.Gui.Timer;
 
 public partial class TimerWindow
 {
-    private sealed partial class CropCache
+    internal sealed partial class CropCache
     {
         private readonly Dictionary<uint, (List<CacheObject>, (CropData, string))> _seenItems = new();
 
@@ -25,8 +25,7 @@ public partial class TimerWindow
             var cache = new CacheObject
             {
                 Name          = childName,
-                Children      = Array.Empty<CacheObject>(),
-                DisplayTime   = time,
+                DisplayTime   = UpdateNextChange(time),
                 Color         = color,
                 DisplayString = time < Now ? string.Empty : null,
                 Icon          = Window._icons[data.Item.Icon],
@@ -35,72 +34,71 @@ public partial class TimerWindow
             list.Item1.Add(cache);
         }
 
-        private string GetPlantChildName(string name, PlotInfo plot, int idx)
-            => $"{Manager.CropTimers!.GetPlotName(Accountant.GameData.GetPlotSize(plot.Zone, plot.Plot), (ushort)idx)}, {name}";
+        private static string GetPlantChildName(string name, PlotInfo plot, int idx)
+            => $"{PlantInfo.GetPlotName(Accountant.GameData.GetPlotSize(plot.Zone, plot.Plot), (ushort)idx)}, {name}";
 
         private static string GetPlantChildName(string name, int idx)
             => $"{name} {idx + 1}";
 
-        private CacheObject GeneratePlantParent(string name, List<CacheObject> children)
+        private SmallHeader GeneratePlantParent(string name, List<CacheObject> children)
         {
-            var ret = new CacheObject()
+            var ret = new SmallHeader
             {
-                Name     = $"{name} ({children.Count})",
-                Children = children.ToArray(),
-                Color    = ColorId.NeutralText,
+                Name         = $"{name} ({children.Count})###{name}",
+                ObjectsBegin = Objects.Count,
+                ObjectsCount = children.Count,
+                Color        = ColorId.NeutralText,
+                DisplayTime  = DateTime.MinValue,
             };
-            foreach (var child in ret.Children)
-            {
-                var newColor = ret.Color.CombineColor(child.Color);
-                if (newColor != ret.Color)
-                {
-                    ret.Color       = newColor;
-                    ret.DisplayTime = child.DisplayTime;
-                }
-                else if (ret.DisplayTime > child.DisplayTime)
-                {
-                    ret.DisplayTime = child.DisplayTime;
-                }
-            }
+            Objects.AddRange(children);
+            foreach (var child in children)
+                UpdateParent(child.Color, child.DisplayTime, ref ret.Color, ref ret.DisplayTime);
 
-            if (ret.DisplayTime < Now)
-                ret.DisplayString = string.Empty;
             return ret;
+        }
+
+        private static string NameWithoutCount(string nameWithCount)
+        {
+            var pos = nameWithCount.IndexOf('(');
+            if (pos < 1 || nameWithCount[pos - 1] != ' ')
+                return nameWithCount;
+
+            return nameWithCount[..(pos - 1)];
         }
 
         private void UpdateByCrop()
         {
             _seenItems.Clear();
-            foreach (var (plot, plants) in Manager.CropTimers!.PlotCrops
+            foreach (var (plot, plants) in _plotCrops.Data
                          .Where(p => !Accountant.Config.BlockedPlots.Contains(p.Key.Value)))
             {
-                var plotName = GetName(plot.GetName(), plot.ServerId);
-                foreach (var (plant, idx) in plants.Select((p, i) => (p, i)).Where(p => p.Item1.PlantId != 0))
+                var plotName = GetName(plot.Name, plot.ServerId);
+                foreach (var (plant, idx) in plants
+                             .Select((p, i) => (p, i))
+                             .Where(p => p.p.PlantId != 0))
                     GeneratePlantChild(GetPlantChildName(plotName, plot, idx), plant);
             }
 
-            foreach (var (player, plants) in Manager.CropTimers!.PrivateCrops
-                         .Where(p => !Accountant.Config.BlockedPlayers.Contains(p.Key.CastedName)))
+            foreach (var (player, plants) in _privateCrops.Data
+                         .Where(p => !Accountant.Config.BlockedPlayersCrops.Contains(p.Key.CastedName)))
             {
                 var playerName = GetName(player.Name, player.ServerId);
-                foreach (var (plant, idx) in plants.Select((p, i) => (p, i)).Where(p => p.Item1.PlantId != 0))
+                foreach (var (plant, idx) in plants
+                             .Select((p, i) => (p, i))
+                             .Where(p => p.Item1.PlantId != 0))
                     GeneratePlantChild(GetPlantChildName(playerName, idx), plant);
             }
 
             foreach (var (_, (list, (_, name))) in _seenItems)
             {
-                Objects.Add(GeneratePlantParent(name, list));
-                var newColor = GlobalColor.CombineColor(Objects.Last().Color.TextToHeader());
-                if (newColor != GlobalColor)
-                {
-                    GlobalColor = newColor;
-                    GlobalTime  = Objects.Last().DisplayTime;
-                }
-                else if (GlobalTime > Objects.Last().DisplayTime)
-                {
-                    GlobalTime = Objects.Last().DisplayTime;
-                }
+                Headers.Add(GeneratePlantParent(name, list));
+                UpdateParent(Headers.Last().Color.TextToHeader(), Headers.Last().DisplayTime, ref Color, ref DisplayTime);
             }
+
+            if (Accountant.Config.Priorities.Count > 0)
+                Headers.Sort((a, b)
+                    => Accountant.Config.GetPriority(NameWithoutCount(b.Name))
+                        .CompareTo(Accountant.Config.GetPriority(NameWithoutCount(a.Name))));
         }
     }
 }
