@@ -206,7 +206,8 @@ public partial class TimerWindow
 
         protected override void UpdateInternal()
         {
-            if (!Accountant.Config.Flags.Check(ConfigFlags.Enabled) || !Accountant.Config.Flags.Any(ConfigFlags.LeveAllowances))
+            if (!Accountant.Config.Flags.Check(ConfigFlags.Enabled)
+             || !Accountant.Config.Flags.Any(ConfigFlags.LeveAllowances | ConfigFlags.Squadron | ConfigFlags.MapAllowance))
                 return;
 
             var data = _tasks.Data
