@@ -61,6 +61,7 @@ public sealed class WheelTimers : TimersBase<FreeCompanyInfo, WheelInfo[]>
 
     public bool RemoveWheel(FreeCompanyInfo company, byte slot)
     {
+        --slot;
         if (slot >= WheelInfo.MaxSlots)
         {
             PluginLog.Error($"Only {WheelInfo.MaxSlots} aetherial wheels supported.");
