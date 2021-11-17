@@ -24,7 +24,7 @@ public class FreeCompanyStorage
             return null;
 
         var (tag, name, leader) = Accountant.GameData.FreeCompanyInfo();
-        var id = (ushort) Dalamud.ClientState.LocalPlayer.HomeWorld.Id;
+        var id = (ushort)Dalamud.ClientState.LocalPlayer.HomeWorld.Id;
         return FindByAndUpdateInfo(tag, name, leader, id);
     }
 
@@ -48,15 +48,18 @@ public class FreeCompanyStorage
         var t     = tag.TextValue;
         var l     = leader?.TextValue ?? string.Empty;
         var n     = name?.TextValue ?? string.Empty;
-        var infos = Infos.Where(i => i.ServerId == serverId);
+
 
         if (!n.Any())
+        {
+            var infos = Infos.Where(i => i.ServerId == serverId);
             return l.Any()
-                ? infos.FirstOrDefault(i => i.Tag == t && i.Leader == l)
-                : infos.FirstOrDefault(i => i.Tag == t);
+                ? infos.Cast<FreeCompanyInfo?>().FirstOrDefault(i => i!.Value.Tag == t && i!.Value.Leader == l)
+                : infos.Cast<FreeCompanyInfo?>().FirstOrDefault(i => i!.Value.Tag == t);
+        }
 
-        var i = infos.FirstOrDefault(i => i.Name == n);
-        if (i.ServerId == 0)
+        var idx  = Infos.FindIndex(i => i.Name == n && i.ServerId == serverId);
+        if (idx == -1 && serverId != 0)
         {
             if (!l.Any())
                 return null;
@@ -69,14 +72,16 @@ public class FreeCompanyStorage
             Save();
             return Infos.Last();
         }
+        if (Infos[idx].Tag == t && Infos[idx].Leader == l)
+            return Infos[idx];
 
-        if (i.Tag == t && i.Leader == l)
-            return i;
-
-        i.Tag    = t;
-        i.Leader = l;
+        Infos[idx] = new FreeCompanyInfo(n, serverId)
+        {
+            Leader = l,
+            Tag    = t,
+        };
         Save();
-        return i;
+        return Infos[idx];
     }
 
     public static FreeCompanyStorage Load()
