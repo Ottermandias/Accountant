@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Accountant.Classes;
+using Accountant.Enums;
 using Accountant.Structs;
 
 namespace Accountant.Gui.Timer;
@@ -73,10 +74,15 @@ public partial class TimerWindow
                          .Where(p => !Accountant.Config.BlockedPlots.Contains(p.Key.Value)))
             {
                 var plotName = GetName(plot.Name, plot.ServerId);
+                var plotSize = Accountant.GameData.GetPlotSize(plot.Zone, plot.Plot);
+                var count    = plants.Length - plotSize.IndoorBeds();
                 foreach (var (plant, idx) in plants
                              .Select((p, i) => (p, i))
                              .Where(p => p.p.PlantId != 0))
-                    GeneratePlantChild(GetPlantChildName(plotName, plot, idx), plant);
+                {
+                    if (!Accountant.Config.IgnoreIndoorPlants || idx < count)
+                        GeneratePlantChild(GetPlantChildName(plotName, plot, idx), plant);
+                }
             }
 
             foreach (var (player, plants) in _privateCrops.Data

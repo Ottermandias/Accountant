@@ -32,6 +32,19 @@ internal static class Localization
         }
     }
 
+    [Sheet("GoldSaucerTalk")]
+    private class GoldSaucerTalk : ExcelRow
+    {
+        public SeString String { get; set; } = null!;
+
+        public override void PopulateData(RowParser parser, Lumina.GameData gameData, Language language)
+        {
+            RowId    = parser.Row;
+            SubRowId = parser.SubRow;
+            String   = SeString.Parse(parser.ReadColumn<Lumina.Text.SeString>(17)!.RawData);
+        }
+    }
+
     private static readonly Regex PlantingTextEn =
         new(@"Prepare the bed with (?<soil>.*?) and (a |an )?(?<seeds>.*?)\?", RegexOptions.Compiled);
 
@@ -113,6 +126,14 @@ internal static class Localization
 
     private static readonly Regex WheelTextJp = new(@"「(<?wheel>.*?)」を.*ホイールスタンドに設置します。.*よろしいですか？", RegexOptions.Compiled);
 
+    private static readonly Regex JumboTextEn = new(@"number\s+(?<ticket>\d{4})", RegexOptions.Compiled);
+    private static readonly Regex JumboTextFr = new(@"(?<ticket>\d{4})\s+pour", RegexOptions.Compiled);
+
+    private static readonly Regex JumboTextDe = new(@"Nummer\s+(?<ticket>\d{4})",
+        RegexOptions.Compiled);
+
+    private static readonly Regex JumboTextJp = new(@"(?<ticket>\d{4})番を", RegexOptions.Compiled);
+
     public static void Initialize(DataManager data)
     {
         if (_initialized)
@@ -122,6 +143,13 @@ internal static class Localization
         var territories = data.Excel.GetSheet<TerritoryType>()!;
         var names       = data.Excel.GetSheet<PlaceName>()!;
         var addon       = data.Excel.GetSheet<Addon>()!;
+        var goldSaucerTalk = data.Excel.GetType().GetMethod("GetSheet", BindingFlags.Instance | BindingFlags.NonPublic)!
+            .MakeGenericMethod(typeof(GoldSaucerTalk)).Invoke(data.Excel, new object?[]
+            {
+                "goldsaucertalk",
+                data.Language.ToLumina(),
+                null,
+            }) as ExcelSheet<GoldSaucerTalk>;
 
         var territory = territories.GetRow((uint)HousingZone.Mist)!;
         var name      = names.GetRow(territory.PlaceName.Row)!;
@@ -165,8 +193,14 @@ internal static class Localization
             addon.GetRow(data.Language == ClientLanguage.Japanese ? 6881u : 6888u)!.Text.RawString);
         LocalizationDict<StringId>.Register(StringId.Retainer, addon.GetRow(6163)!.Text.RawString);
 
-        LocalizationDict<StringId>.Register(StringId.WheelFilter, StringParser.FromRegex(data.Language, WheelTextEn, WheelTextFr, WheelTextJp, WheelTextDe, "wheel"));
+        LocalizationDict<StringId>.Register(StringId.WheelFilter,
+            StringParser.FromRegex(data.Language, WheelTextEn, WheelTextFr, WheelTextJp, WheelTextDe, "wheel"));
 
+        LocalizationDict<StringId>.Register(StringId.BuyMiniCactpotTicket,
+            new StringMatcherLetters(goldSaucerTalk!.GetRow(16)!.String.TextValue));
+        LocalizationDict<StringId>.Register(StringId.BuyJumboCactpotTicket, new StringMatcherLetters(SeString.Parse(addon!.GetRow(9276)!.Text.RawData).TextValue));
+        LocalizationDict<StringId>.Register(StringId.FilterJumboCactpotTicket,
+            StringParser.FromRegex(data.Language, JumboTextEn, JumboTextFr, JumboTextJp, JumboTextDe, "ticket"));
         SetCropCommands(data);
     }
 }

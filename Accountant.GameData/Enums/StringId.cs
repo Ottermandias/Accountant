@@ -39,4 +39,8 @@ public enum StringId
     PatchMatcher,
     SeedMatcher,
     WheelFilter,
+
+    BuyMiniCactpotTicket,
+    BuyJumboCactpotTicket,
+    FilterJumboCactpotTicket,
 }

@@ -10,19 +10,24 @@ namespace Accountant;
 [Flags]
 public enum ConfigFlags : uint
 {
-    None            = 0x0000,
-    Enabled         = 0x0001,
-    WindowVisible   = 0x0002,
-    Retainers       = 0x0004,
-    Airships        = 0x0008,
-    Submersibles    = 0x0010,
-    AetherialWheels = 0x0020,
-    Crops           = 0x0040,
-    OrderByCrop     = 0x0080,
-    LeveAllowances  = 0x0100,
-    HideDisabled    = 0x0200,
-    Squadron        = 0x0400,
-    MapAllowance    = 0x0800,
+    None               = 0x000000,
+    Enabled            = 0x000001,
+    WindowVisible      = 0x000002,
+    Retainers          = 0x000004,
+    Airships           = 0x000008,
+    Submersibles       = 0x000010,
+    AetherialWheels    = 0x000020,
+    Crops              = 0x000040,
+    OrderByCrop        = 0x000080,
+    LeveAllowances     = 0x000100,
+    HideDisabled       = 0x000200,
+    Squadron           = 0x000400,
+    MapAllowance       = 0x000800,
+    ProhibitResize     = 0x001000,
+    ProhibitMoving     = 0x002000,
+    IgnoreIndoorPlants = 0x004000,
+    MiniCactpot        = 0x008000,
+    JumboCactpot       = 0x010000,
 }
 
 public static class ConfigFlagExtensions
@@ -64,9 +69,11 @@ public class AccountantConfiguration : IPluginConfiguration
       | ConfigFlags.AetherialWheels
       | ConfigFlags.Squadron
       | ConfigFlags.MapAllowance
+      | ConfigFlags.MiniCactpot
+      | ConfigFlags.JumboCactpot
       | ConfigFlags.LeveAllowances;
 
-    public int Version { get; set; } = 3;
+    public int Version { get; set; } = 4;
 
     [JsonIgnore]
     public ConfigFlags Flags = DefaultFlags;
@@ -141,6 +148,36 @@ public class AccountantConfiguration : IPluginConfiguration
     {
         get => Flags.Check(ConfigFlags.MapAllowance);
         set => Flags.Set(ConfigFlags.MapAllowance, value);
+    }
+
+    public bool ProhibitResize
+    {
+        get => Flags.Check(ConfigFlags.ProhibitResize);
+        set => Flags.Set(ConfigFlags.ProhibitResize, value);
+    }
+
+    public bool ProhibitMoving
+    {
+        get => Flags.Check(ConfigFlags.ProhibitMoving);
+        set => Flags.Set(ConfigFlags.ProhibitMoving, value);
+    }
+
+    public bool IgnoreIndoorPlants
+    {
+        get => Flags.Check(ConfigFlags.IgnoreIndoorPlants);
+        set => Flags.Set(ConfigFlags.IgnoreIndoorPlants, value);
+    }
+
+    public bool EnableMiniCactpot
+    {
+        get => Flags.Check(ConfigFlags.MiniCactpot);
+        set => Flags.Set(ConfigFlags.MiniCactpot, value);
+    }
+
+    public bool EnableJumboCactpot
+    {
+        get => Flags.Check(ConfigFlags.JumboCactpot);
+        set => Flags.Set(ConfigFlags.JumboCactpot, value);
     }
 
     public int LeveWarning { get; set; } = 85;

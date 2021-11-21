@@ -4,7 +4,7 @@ using Dalamud.Game;
 using Dalamud.Hooking;
 using Dalamud.Logging;
 
-namespace AddonWatcher.SeFunctions;
+namespace Accountant.SeFunctions;
 
 public class SeFunctionBase<T> where T : Delegate
 {

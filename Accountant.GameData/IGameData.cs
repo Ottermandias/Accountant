@@ -59,6 +59,9 @@ public interface IGameData : IDisposable
     // Obtain the id of a world by its name.
     public uint GetWorldId(string worldName);
 
+    // Obtain the hour the jumbo cactpot resets on a specific world.
+    public byte GetJumboCactpotResetHour(uint worldId);
+
     // Checks if the GameData is still valid.
     public bool Valid { get; }
 

@@ -1,4 +1,6 @@
-﻿using Dalamud.Game.Text.SeStringHandling;
+﻿using System.Linq;
+using System.Text;
+using Dalamud.Game.Text.SeStringHandling;
 using OtterLoc.Enums;
 using OtterLoc.Structs;
 
@@ -22,4 +24,5 @@ public sealed class StringMatcher : ILocMatcher
 
     public bool Matches(SeString s)
         => Matches(s.TextValue);
+
 }

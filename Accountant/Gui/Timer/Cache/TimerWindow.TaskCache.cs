@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Numerics;
+using System.Text;
 using Accountant.Classes;
 using Accountant.Enums;
-using Accountant.Gui.Helper;
-using Accountant.Manager;
 using Accountant.Timers;
-using Dalamud.Game;
-using Dalamud.Interface;
-using Dalamud.Utility;
 using ImGuiNET;
-using Lumina.Data.Files;
 using OtterLoc.Structs;
 
 namespace Accountant.Gui.Timer;
@@ -75,6 +68,24 @@ public partial class TimerWindow
             };
         }
 
+        private static unsafe Action GenerateTooltip(JumboCactpot jumbo)
+        {
+            var sb = new StringBuilder(Classes.JumboCactpot.MaxTickets * 5);
+            for (var i = 0; i < jumbo.Count(); ++i)
+            {
+                if (sb.Length > 0)
+                    sb.Append('\n');
+                sb.Append(jumbo.Tickets[i].ToString("D4"));
+            }
+
+            var ticketString = sb.ToString();
+            return () =>
+            {
+                if (ticketString.Any())
+                    ImGui.SetTooltip(ticketString);
+            };
+        }
+
         private CacheObject SquadronObject(string player, Squadron info)
         {
             var ret = new CacheObject
@@ -129,8 +140,65 @@ public partial class TimerWindow
             return ret;
         }
 
+        private CacheObject MiniCactpotObject(string player, MiniCactpot mini)
+        {
+            var nextReset = mini.NextReset();
+            var ret = new CacheObject
+            {
+                Name        = player,
+                Icon        = Window._icons[Icons.MiniCactpotIcon],
+                DisplayTime = UpdateNextChange(nextReset),
+            };
+            if (nextReset < Now || mini.Tickets == 0)
+            {
+                ret.DisplayString = $"0/{Classes.MiniCactpot.MaxTickets}";
+                ret.Color         = ColorId.TextObjectsHome;
+            }
+            else if (mini.Tickets == Classes.MiniCactpot.MaxTickets)
+            {
+                ret.DisplayString = null;
+                ret.Color         = ColorId.TextObjectsAway;
+            }
+            else
+            {
+                ret.DisplayString = $"{mini.Tickets}/{Classes.MiniCactpot.MaxTickets}";
+                ret.Color         = ColorId.TextObjectsMixed;
+            }
 
-        private SmallHeader Leves(IReadOnlyCollection<(string, TaskInfo)> data)
+            return ret;
+        }
+
+        private CacheObject JumboCactpotObject(string player, ushort worldId, JumboCactpot jumbo)
+        {
+            var nextReset = jumbo.NextReset(worldId);
+            var ret = new CacheObject
+            {
+                Name            = player,
+                Icon            = Window._icons[Icons.JumboCactpotIcon],
+                DisplayTime     = UpdateNextChange(nextReset),
+                TooltipCallback = GenerateTooltip(jumbo),
+            };
+            if (nextReset < Now || jumbo.IsEmpty())
+            {
+                ret.DisplayString = $"0/{Classes.JumboCactpot.MaxTickets}";
+                ret.Color         = ColorId.TextObjectsHome;
+            }
+            else if (jumbo.IsFull())
+            {
+                ret.DisplayString = null;
+                ret.Color         = ColorId.TextObjectsAway;
+            }
+            else
+            {
+                ret.DisplayString = $"{jumbo.Count()}/{Classes.JumboCactpot.MaxTickets}";
+                ret.Color         = ColorId.TextObjectsMixed;
+            }
+
+            return ret;
+        }
+
+
+        private SmallHeader Leves(IReadOnlyCollection<(string, ushort, TaskInfo)> data)
         {
             var ret = new SmallHeader
             {
@@ -140,7 +208,7 @@ public partial class TimerWindow
                 Color        = ColorId.NeutralText,
             };
             var leveSum = 0;
-            foreach (var (name, leves) in data.Select(p => (p.Item1, p.Item2.Leves.CurrentAllowances(Now))))
+            foreach (var (name, leves) in data.Select(p => (p.Item1, p.Item3.Leves.CurrentAllowances(Now))))
             {
                 Objects.Add(LeveObject(name, leves));
                 if (leves < Leve.AllowanceCap)
@@ -153,7 +221,7 @@ public partial class TimerWindow
             return ret;
         }
 
-        private SmallHeader Squadrons(IReadOnlyCollection<(string, TaskInfo)> data)
+        private SmallHeader Squadrons(IReadOnlyCollection<(string, ushort, TaskInfo)> data)
         {
             var ret = new SmallHeader
             {
@@ -163,7 +231,7 @@ public partial class TimerWindow
                 DisplayTime  = DateTime.MaxValue,
                 Color        = ColorId.NeutralText,
             };
-            foreach (var (name, task) in data)
+            foreach (var (name, _, task) in data)
             {
                 Objects.Add(SquadronObject(name, task.Squadron));
                 if (Objects.Last().DisplayTime > Now && Objects.Last().DisplayTime < ret.DisplayTime)
@@ -179,7 +247,7 @@ public partial class TimerWindow
             return ret;
         }
 
-        private SmallHeader Maps(IReadOnlyCollection<(string, TaskInfo)> data)
+        private SmallHeader Maps(IReadOnlyCollection<(string, ushort, TaskInfo)> data)
         {
             var ret = new SmallHeader
             {
@@ -189,7 +257,7 @@ public partial class TimerWindow
                 DisplayTime  = DateTime.MaxValue,
                 Color        = ColorId.NeutralText,
             };
-            foreach (var (name, task) in data)
+            foreach (var (name, _, task) in data)
             {
                 Objects.Add(MapObject(name, task.Map));
                 if (Objects.Last().DisplayTime > Now && Objects.Last().DisplayTime < ret.DisplayTime)
@@ -204,6 +272,58 @@ public partial class TimerWindow
             return ret;
         }
 
+        private SmallHeader MiniCactpot(IReadOnlyCollection<(string, ushort, TaskInfo)> data)
+        {
+            var ret = new SmallHeader
+            {
+                Name         = "Mini Cactpot",
+                ObjectsBegin = Objects.Count,
+                ObjectsCount = data.Count,
+                DisplayTime  = DateTime.MaxValue,
+                Color        = ColorId.TextObjectsHome,
+            };
+            foreach (var (name, _, task) in data)
+            {
+                Objects.Add(MiniCactpotObject(name, task.MiniCactpot));
+                if (Objects.Last().DisplayTime > Now && Objects.Last().DisplayTime < ret.DisplayTime)
+                    ret.DisplayTime = Objects.Last().DisplayTime;
+                ret.Color = Objects.Last().Color switch
+                {
+                    ColorId.TextObjectsAway => ret.Color == ColorId.TextObjectsAway ? ColorId.TextObjectsAway : ColorId.TextObjectsMixed,
+                    ColorId.TextObjectsHome => ret.Color == ColorId.TextObjectsHome ? ColorId.TextObjectsHome : ColorId.TextObjectsMixed,
+                    _                       => ColorId.TextObjectsMixed,
+                };
+            }
+
+            return ret;
+        }
+
+        private SmallHeader JumboCactpot(IReadOnlyCollection<(string, ushort, TaskInfo)> data)
+        {
+            var ret = new SmallHeader
+            {
+                Name         = "Jumbo Cactpot",
+                ObjectsBegin = Objects.Count,
+                ObjectsCount = data.Count,
+                DisplayTime  = DateTime.MaxValue,
+                Color        = ColorId.TextObjectsHome,
+            };
+            foreach (var (name, serverId, task) in data)
+            {
+                Objects.Add(JumboCactpotObject(name, serverId, task.JumboCactpot));
+                if (Objects.Last().DisplayTime > Now && Objects.Last().DisplayTime < ret.DisplayTime)
+                    ret.DisplayTime = Objects.Last().DisplayTime;
+                ret.Color = Objects.Last().Color switch
+                {
+                    ColorId.TextObjectsAway => ret.Color == ColorId.TextObjectsAway ? ColorId.TextObjectsAway : ColorId.TextObjectsMixed,
+                    ColorId.TextObjectsHome => ret.Color == ColorId.TextObjectsHome ? ColorId.TextObjectsHome : ColorId.TextObjectsMixed,
+                    _                       => ColorId.TextObjectsMixed,
+                };
+            }
+
+            return ret;
+        }
+
         protected override void UpdateInternal()
         {
             if (!Accountant.Config.Flags.Check(ConfigFlags.Enabled)
@@ -212,7 +332,7 @@ public partial class TimerWindow
 
             var data = _tasks.Data
                 .Where(p => !Accountant.Config.BlockedPlayersTasks.Contains(p.Key.CastedName))
-                .Select(p => (GetName(p.Key.Name, p.Key.ServerId), p.Value))
+                .Select(p => (GetName(p.Key.Name, p.Key.ServerId), p.Key.ServerId, p.Value))
                 .OrderByDescending(p => Accountant.Config.GetPriority(p.Item1))
                 .ToArray();
             if (Accountant.Config.Flags.Check(ConfigFlags.LeveAllowances))
@@ -221,6 +341,10 @@ public partial class TimerWindow
                 Headers.Add(Squadrons(data));
             if (Accountant.Config.Flags.Check(ConfigFlags.MapAllowance))
                 Headers.Add(Maps(data));
+            if (Accountant.Config.Flags.Check(ConfigFlags.MiniCactpot))
+                Headers.Add(MiniCactpot(data));
+            if (Accountant.Config.Flags.Check(ConfigFlags.JumboCactpot))
+                Headers.Add(JumboCactpot(data));
 
             if (Accountant.Config.Priorities.Count > 0)
                 Headers.Sort((a, b)

@@ -1,12 +1,16 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 using Accountant.Classes;
+using Dalamud.Logging;
 
 namespace Accountant.Timers;
 
 public sealed class TaskTimers : TimersBase<PlayerInfo, TaskInfo>
 {
-    public const ConfigFlags TaskFlags = ConfigFlags.LeveAllowances;
+    public const ConfigFlags TaskFlags = ConfigFlags.LeveAllowances
+      | ConfigFlags.MapAllowance
+      | ConfigFlags.Squadron
+      | ConfigFlags.MiniCactpot
+      | ConfigFlags.JumboCactpot;
 
     protected override string FolderName
         => "tasks";
@@ -91,6 +95,107 @@ public sealed class TaskTimers : TimersBase<PlayerInfo, TaskInfo>
             return false;
 
         tasks.Squadron = squadron;
+        Invoke();
+        return true;
+    }
+
+    public bool AddOrUpdateMiniCactpot(PlayerInfo player, MiniCactpot mini)
+    {
+        if (!InternalData.TryGetValue(player, out var oldInfo))
+        {
+            InternalData[player] = new TaskInfo()
+            {
+                MiniCactpot = mini,
+            };
+            Invoke();
+            return true;
+        }
+
+        if (oldInfo.MiniCactpot.Tickets == mini.Tickets && oldInfo.MiniCactpot.NextReset() > mini.LastUpdate)
+            return false;
+
+        InternalData[player].MiniCactpot = mini;
+        Invoke();
+        return true;
+    }
+
+    public bool AddOrUpdateJumboCactpot(PlayerInfo player, JumboCactpot jumbo)
+    {
+        if (!InternalData.TryGetValue(player, out var oldInfo))
+        {
+            InternalData[player] = new TaskInfo()
+            {
+                JumboCactpot = jumbo,
+            };
+            Invoke();
+            return true;
+        }
+
+        if (oldInfo.JumboCactpot.EqualTickets(jumbo) && oldInfo.JumboCactpot.NextReset(player.ServerId) > jumbo.LastUpdate)
+            return false;
+
+        InternalData[player].JumboCactpot = jumbo;
+        Invoke();
+        return true;
+    }
+
+
+    public bool AddOrUpdateMini(PlayerInfo player)
+    {
+        if (!InternalData.TryGetValue(player, out var oldInfo))
+        {
+            InternalData[player] = new TaskInfo()
+            {
+                MiniCactpot = new MiniCactpot()
+                {
+                    Tickets    = 1,
+                    LastUpdate = DateTime.UtcNow,
+                },
+            };
+            Invoke();
+            return true;
+        }
+
+        var now = DateTime.UtcNow;
+        if (now >= oldInfo.MiniCactpot.NextReset())
+            oldInfo.MiniCactpot.Tickets = 0;
+        if (oldInfo.MiniCactpot.Tickets == MiniCactpot.MaxTickets)
+        {
+            PluginLog.Error($"Increasing Mini Cactpot Tickets to more than {MiniCactpot.MaxTickets} is not possible.");
+            return false;
+        }
+
+        ++oldInfo.MiniCactpot.Tickets;
+        oldInfo.MiniCactpot.LastUpdate = now;
+        Invoke();
+        return true;
+    }
+
+    public bool AddOrUpdateJumbo(PlayerInfo player, ushort ticket)
+    {
+        if (!InternalData.TryGetValue(player, out var oldInfo))
+        {
+            var newInfo = new TaskInfo()
+            {
+                JumboCactpot = new JumboCactpot() { LastUpdate = DateTime.UtcNow },
+            };
+            newInfo.JumboCactpot.SetFirstTicket(ticket);
+            InternalData[player] = newInfo;
+            Invoke();
+            return true;
+        }
+
+        var now = DateTime.UtcNow;
+        if (now >= oldInfo.JumboCactpot.NextReset(player.ServerId))
+            oldInfo.JumboCactpot.ClearTickets();
+        if (oldInfo.JumboCactpot.IsFull())
+        {
+            PluginLog.Error($"Buying more than {JumboCactpot.MaxTickets} jumbo cactpot tickets per week is not possible.");
+            return false;
+        }
+
+        oldInfo.JumboCactpot.SetFirstTicket(ticket);
+        oldInfo.JumboCactpot.LastUpdate = now;
         Invoke();
         return true;
     }

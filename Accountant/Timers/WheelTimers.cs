@@ -5,6 +5,7 @@ using Dalamud.Logging;
 
 namespace Accountant.Timers;
 
+
 public sealed class WheelTimers : TimersBase<FreeCompanyInfo, WheelInfo[]>
 {
     protected override string FolderName

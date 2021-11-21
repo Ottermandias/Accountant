@@ -87,6 +87,12 @@ public partial class TimerWindow : IDisposable
 
         _now = DateTime.UtcNow;
 
+        var flags = ImGuiWindowFlags.None;
+        if (Accountant.Config.ProhibitMoving)
+            flags |= ImGuiWindowFlags.NoMove;
+        if (Accountant.Config.ProhibitResize)
+            flags |= ImGuiWindowFlags.NoResize;
+
         var minSize = new Vector2(_widthTotal * ImGuiHelpers.GlobalScale,
             ImGui.GetFrameHeightWithSpacing() * 4 + ImGui.GetStyle().ItemSpacing.Y * 3);
         var maxSize = new Vector2(minSize.X, 100000);
@@ -100,12 +106,12 @@ public partial class TimerWindow : IDisposable
             colors.Push(ImGuiCol.Border, ColorId.CollapsedBorder.Value())
                 .Push(ImGuiCol.TitleBgCollapsed, _headerColor.Value());
             using var style = ImGuiRaii.PushStyle(ImGuiStyleVar.WindowBorderSize, 1);
-            _drawData = ImGui.Begin(_headerString, ref enabled);
+            _drawData = ImGui.Begin(_headerString, ref enabled, flags);
             colors.Pop(2);
         }
         else
         {
-            _drawData = ImGui.Begin(_headerString, ref enabled);
+            _drawData = ImGui.Begin(_headerString, ref enabled, flags);
         }
 
         if (!enabled)

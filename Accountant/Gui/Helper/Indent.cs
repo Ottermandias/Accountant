@@ -32,11 +32,12 @@ public static partial class ImGuiRaii
             return this;
         }
 
-        public Indent Push(uint i = 1, bool scaled = true, bool condition = true)
+        public Indent Push(int i = 1, bool scaled = true, bool condition = true)
         {
             if (condition)
             {
                 var spacing = i * ImGui.GetStyle().IndentSpacing * (scaled ? ImGuiHelpers.GlobalScale : 1f);
+                Debug.Assert(spacing >= 0);
                 ImGui.Indent(spacing);
                 _indentation += spacing;
             }
@@ -54,11 +55,12 @@ public static partial class ImGuiRaii
             _indentation -= indent;
         }
 
-        public void Pop(uint i, bool scaled = true)
+        public void Pop(int i, bool scaled = true)
         {
             var spacing = i * ImGui.GetStyle().IndentSpacing * (scaled ? ImGuiHelpers.GlobalScale : 1f);
+            Debug.Assert(spacing >= 0);
             ImGui.Unindent(spacing);
-            _indentation += spacing;
+            _indentation -= spacing;
         }
 
         public void Dispose()

@@ -38,7 +38,13 @@ public class Accountant : IDalamudPlugin
 
         Dalamud.Commands.AddHandler("/accountant", new CommandInfo(OnAccountant)
         {
-            HelpMessage = "Open Accountant config. Use '/accountant timers' to toggle the timer window.",
+            HelpMessage = "Open Accountant config. Use '/acct' or '/accountant timers' to toggle the timer window.",
+            ShowInHelp  = true,
+        });
+
+        Dalamud.Commands.AddHandler("/acct", new CommandInfo(OnAcct)
+        {
+            HelpMessage = "Toggle the timer window.",
             ShowInHelp  = true,
         });
     }
@@ -55,12 +61,16 @@ public class Accountant : IDalamudPlugin
         Config.Save();
     }
 
+    private void OnAcct(string command, string _)
+        => ConfigWindow.Toggle();
+
     public void Dispose()
     {
         Timers.Dispose();
         ConfigWindow.Dispose();
         TimerWindow.Dispose();
         Dalamud.Commands.RemoveHandler("/accountant");
+        Dalamud.Commands.RemoveHandler("/acct");
         Timers.Dispose();
         GameData.Dispose();
         Watcher.Dispose();

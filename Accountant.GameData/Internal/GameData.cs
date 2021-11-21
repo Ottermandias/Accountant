@@ -21,9 +21,11 @@ internal class GameData : IGameData
     private static Maps?                     _maps;
     private static Plots?                    _plots;
     private static Dictionary<uint, string>? _worldNames;
+    private static Dictionary<uint, byte>?   _worldCactpotHours;
     private static Dictionary<string, uint>? _worldIds;
     private static FreeCompanyTracker?       _fcTracker;
     private static int                       _subscribers;
+
     public         bool                      Valid { get; private set; } = true;
 
     public int Version
@@ -72,6 +74,11 @@ internal class GameData : IGameData
             ? ret
             : throw new ArgumentOutOfRangeException($"{worldName} is not a valid world id.");
 
+    public byte GetJumboCactpotResetHour(uint worldId)
+        => _worldCactpotHours!.TryGetValue(worldId, out var ret)
+            ? ret
+            : throw new ArgumentOutOfRangeException($"{worldId} is not a valid world id.");
+
     public GameData(GameGui gui, ClientState state, DataManager data)
     {
         _crops     ??= new Crops(data);
@@ -79,12 +86,36 @@ internal class GameData : IGameData
         _maps      ??= new Maps(data);
         _fcTracker ??= new FreeCompanyTracker(gui, state);
         _plots     ??= new Plots(data);
-        _worldNames ??= data.GameData.GetExcelSheet<World>()!
-            .Where(w => w.IsPublic && !w.Name.RawData.IsEmpty)
-            .ToDictionary(w => w.RowId, w => w.Name.RawString);
-        _worldIds ??= _worldNames.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
+        SetupWorlds(data);
         ++_subscribers;
         Localization.Initialize(data);
+    }
+
+    private static void SetupWorlds(DataManager data)
+    {
+        if (_worldNames != null)
+            return;
+
+        var sheet = data.GameData.GetExcelSheet<World>()!;
+        _worldNames = sheet.Where(w => w.IsPublic && !w.Name.RawData.IsEmpty)
+            .ToDictionary(w => w.RowId, w => w.Name.RawString);
+        _worldIds = _worldNames.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
+        _worldCactpotHours = _worldNames.ToDictionary(kvp => kvp.Key, kvp =>
+        {
+            var world = sheet.GetRow(kvp.Key)!;
+            return (byte)(world.DataCenter.Row switch
+            {
+                1 => 12,
+                2 => 12,
+                3 => 12,
+                4 => 26,
+                5 => 26,
+                6 => 19,
+                7 => 20,
+                8 => 26,
+                _ => 12,
+            });
+        });
     }
 
     public (SeString Tag, SeString? Name, SeString? Leader) FreeCompanyInfo()

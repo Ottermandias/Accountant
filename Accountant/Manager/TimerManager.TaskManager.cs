@@ -1,4 +1,6 @@
+using System.Linq;
 using Accountant.Gui.Timer;
+using Accountant.SeFunctions;
 using Accountant.Timers;
 
 namespace Accountant.Manager;
@@ -14,6 +16,8 @@ public partial class TimerManager
 
         private readonly ITimerManager[] _subTasks;
 
+        private readonly UpdateGoldSaucerData _goldSaucerUpdate = new(Dalamud.SigScanner);
+
         public TaskManager(TaskTimers tasks)
         {
             _tasks = tasks;
@@ -22,7 +26,10 @@ public partial class TimerManager
                 new LeveManager(tasks),
                 new SquadronManager(tasks),
                 new MapManager(tasks),
+                new MiniCactpotManager(tasks, _goldSaucerUpdate),
+                new JumboCactpotManager(tasks, _goldSaucerUpdate),
             };
+
             SetState();
         }
 

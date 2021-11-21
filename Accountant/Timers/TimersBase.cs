@@ -19,7 +19,7 @@ public class TimersBase<TIdent, TInfo> : ITimers<TIdent, TInfo>
 
     public event TimerChange? Changed;
 
-    protected void Invoke()
+    internal void Invoke()
     {
         PluginLog.Verbose("Change triggered in {TIdent}, {TInfo}.", typeof(TIdent), typeof(TInfo));
         Changed?.Invoke();

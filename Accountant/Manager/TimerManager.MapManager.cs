@@ -41,7 +41,7 @@ public partial class TimerManager
 
         public void SetState()
         {
-            if (Accountant.Config.Flags.Check(ConfigFlags.Enabled | ConfigFlags.MapAllowance))
+            if (Accountant.Config.Flags.Check(RequiredFlags))
                 Enable();
             else
                 Disable();

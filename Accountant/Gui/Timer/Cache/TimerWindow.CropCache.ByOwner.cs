@@ -69,9 +69,13 @@ public partial class TimerWindow
                 Color        = ColorId.NeutralText,
             };
 
-            for (ushort i = 0; i < plants.Count; ++i)
+            var plotSize = Accountant.GameData.GetPlotSize(plot.Zone, plot.Plot);
+            var count    = plants.Count;
+            if (Accountant.Config.IgnoreIndoorPlants)
+                count -= plotSize.IndoorBeds();
+            for (ushort i = 0; i < count; ++i)
             {
-                Objects.Add(GeneratePlant(plants[i], PlantInfo.GetPlotName(Accountant.GameData.GetPlotSize(plot.Zone, plot.Plot), i)));
+                Objects.Add(GeneratePlant(plants[i], PlantInfo.GetPlotName(plotSize, i)));
                 UpdateParent(Objects.Last().Color, Objects.Last().DisplayTime, ref owner.Color, ref owner.DisplayTime);
             }
 
