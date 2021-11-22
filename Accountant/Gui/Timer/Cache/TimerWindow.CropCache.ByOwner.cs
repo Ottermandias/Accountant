@@ -65,7 +65,6 @@ public partial class TimerWindow
             {
                 Name         = GetName(plot.Name, plot.ServerId),
                 ObjectsBegin = Objects.Count,
-                ObjectsCount = plants.Count,
                 Color        = ColorId.NeutralText,
             };
 
@@ -78,6 +77,8 @@ public partial class TimerWindow
                 Objects.Add(GeneratePlant(plants[i], PlantInfo.GetPlotName(plotSize, i)));
                 UpdateParent(Objects.Last().Color, Objects.Last().DisplayTime, ref owner.Color, ref owner.DisplayTime);
             }
+
+            owner.ObjectsCount = count;
 
             UpdateParent(owner.Color.TextToHeader(), owner.DisplayTime, ref Color, ref DisplayTime);
 
