@@ -12,8 +12,8 @@ public partial class ConfigWindow : IDisposable
     private readonly        TimerManager      _timers;
     private readonly        Timer.TimerWindow _timerWindow;
     private readonly        string            _header;
-    private                 bool              _enabled = false;
-    private static readonly Vector2           _minSize = new(640, 480);
+    private                 bool              _enabled;
+    private static readonly Vector2           MinSize = new(640, 480);
 
 
     public ConfigWindow(TimerManager timers, Timer.TimerWindow timerWindow)
@@ -40,7 +40,7 @@ public partial class ConfigWindow : IDisposable
         if (!_enabled)
             return;
 
-        ImGui.SetNextWindowSizeConstraints(_minSize * ImGuiHelpers.GlobalScale, _minSize * 5);
+        ImGui.SetNextWindowSizeConstraints(MinSize * ImGuiHelpers.GlobalScale, MinSize * 5);
         if (!ImGui.Begin(_header, ref _enabled))
         {
             ImGui.End();

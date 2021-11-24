@@ -14,7 +14,7 @@ namespace Accountant.Gui.Timer;
 
 public partial class TimerWindow : IDisposable
 {
-    private readonly float       _widthTotal;
+    private          float       _widthTotal;
     private readonly string      _completedString;
     private readonly string      _availableString;
     private readonly IconStorage _icons        = new(64);
@@ -42,6 +42,14 @@ public partial class TimerWindow : IDisposable
         _completedString = StringId.Completed.Value();
         _availableString = StringId.Available.Value();
 
+        Dalamud.PluginInterface.UiBuilder.Draw += Draw;
+    }
+
+    private void SetWidthTotal()
+    {
+        if (_widthTotal > 0)
+            return;
+
         var maxWidth = Math.Max(ImGui.CalcTextSize(_completedString).X, ImGui.CalcTextSize(_availableString).X);
         maxWidth = Math.Max(maxWidth, ImGui.CalcTextSize("00:00:00").X);
 
@@ -49,8 +57,6 @@ public partial class TimerWindow : IDisposable
         _widthTotal = ImGui.CalcTextSize("mmmmmmmmmmmmmmmmmmmm").X / ImGuiHelpers.GlobalScale
           + widthTime
           + ImGui.GetStyle().ScrollbarSize / ImGuiHelpers.GlobalScale;
-
-        Dalamud.PluginInterface.UiBuilder.Draw += Draw;
     }
 
     public void SortCache()
@@ -74,12 +80,6 @@ public partial class TimerWindow : IDisposable
             cache.Resetter();
     }
 
-    public void ResetCache(Type type1, Type type2)
-    {
-        foreach (var cache in _cache.Where(c => c.GetType() == type1 || c.GetType() == type2))
-            cache.Resetter();
-    }
-
     private void Draw()
     {
         if (!Accountant.Config.Enabled || !Accountant.Config.WindowVisible)
@@ -93,6 +93,7 @@ public partial class TimerWindow : IDisposable
         if (Accountant.Config.ProhibitResize)
             flags |= ImGuiWindowFlags.NoResize;
 
+        SetWidthTotal();
         var minSize = new Vector2(_widthTotal * ImGuiHelpers.GlobalScale,
             ImGui.GetFrameHeightWithSpacing() * 4 + ImGui.GetStyle().ItemSpacing.Y * 3);
         var maxSize = new Vector2(minSize.X, 100000);
