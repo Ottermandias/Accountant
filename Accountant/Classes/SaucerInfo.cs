@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 
 namespace Accountant.Classes;
@@ -15,7 +14,7 @@ public struct MiniCactpot
         => NextReset(LastUpdate);
 
     public static DateTime NextReset(DateTime time)
-        => new(time.Year, time.Month, time.Hour < ResetHour ? time.Day : time.Day + 1, ResetHour, 0, 0, DateTimeKind.Utc);
+        => new DateTime(time.Year, time.Month, time.Day, ResetHour, 0, 0, DateTimeKind.Utc).AddDays(time.Hour < ResetHour ? 0 : 1);
 }
 
 public struct JumboCactpot
