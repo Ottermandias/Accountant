@@ -78,6 +78,13 @@ public struct JumboCactpot
         }
     }
 
+    public void ClearFirstTicket()
+    {
+        for (var i = 0; i < MaxTickets - 1; ++i)
+            Tickets[i] = Tickets[i + 1];
+        Tickets[MaxTickets - 1] = InvalidTicket;
+    }
+
     public DateTime NextReset(ushort worldId)
         => NextReset(LastUpdate, worldId);
 
@@ -86,7 +93,7 @@ public struct JumboCactpot
         var hour = Accountant.GameData.GetJumboCactpotResetHour(worldId);
 
         var dayOffset = DayOfWeek.Saturday - time.DayOfWeek;
-        var ret       = new DateTime(time.Year, time.Month, time.Day + dayOffset, 0, 0, 0, DateTimeKind.Utc).AddHours(hour);
+        var ret       = new DateTime(time.Year, time.Month, time.Day, 0, 0, 0, DateTimeKind.Utc).AddHours(hour + 24 * dayOffset);
         return ret < time ? ret.AddDays(7) : ret;
     }
 }

@@ -41,6 +41,13 @@ internal partial class AddonWatcherBase
         JournalResultSetup?.Invoke(unit, questName);
     }
 
+    private void LotteryWeeklyRewardListOnSetupDetour(IntPtr unit, int _, IntPtr data)
+    {
+        LotteryWeeklyRewardListSetupHook!.Original(unit, _, data);
+        PluginLog.Verbose("LotteryWeeklyRewardList 0x{LotteryWeeklyRewardListPtr:X} setup.", (ulong)unit);
+        LotteryWeeklyRewardListSetup?.Invoke(unit);
+    }
+
     private void SelectYesNoEventDetour(IntPtr atkUnit, EventType eventType, int which, IntPtr source, IntPtr data)
     {
         if (eventType == EventType.Change)

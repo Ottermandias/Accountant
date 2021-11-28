@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Dalamud.Game;
 using Dalamud.Game.Gui;
 
@@ -55,6 +56,9 @@ internal class AddonWatcher : IAddonWatcher
     public void SubscribeJournalResultSetup(JournalResultSetupDelegate del)
         => Base.SubscribeJournalResultSetup(del);
 
+    public void SubscribeLotteryWeeklyRewardListSetup(LotteryWeeklyRewardListSetupDelegate del)
+        => Base.SubscribeLotteryWeeklyRewardListSetup(del);
+
     public void SubscribeTalkUpdate(TalkUpdateDelegate del)
         => Base.SubscribeTalkUpdate(del);
 
@@ -74,6 +78,9 @@ internal class AddonWatcher : IAddonWatcher
     public void UnsubscribeJournalResultSetup(JournalResultSetupDelegate del)
         => Base.UnsubscribeJournalResultSetup(del);
 
+    public void UnsubscribeLotteryWeeklyRewardListSetup(LotteryWeeklyRewardListSetupDelegate del)
+        => Base.UnsubscribeLotteryWeeklyRewardListSetup(del);
+
     public void UnsubscribeTalkUpdate(TalkUpdateDelegate del)
         => Base.UnsubscribeTalkUpdate(del);
 
@@ -92,6 +99,9 @@ internal class AddonWatcher : IAddonWatcher
 
     public void SubscribeOnceJournalResultSetup(JournalResultSetupDelegate del)
         => Base.SubscribeOnceJournalResultSetup(del);
+
+    public void SubscribeOnceLotteryWeeklyRewardListSetup(LotteryWeeklyRewardListSetupDelegate del)
+        => Base.SubscribeOnceLotteryWeeklyRewardListSetup(del);
 
     public void SubscribeOnceTalkUpdate(TalkUpdateDelegate del)
         => Base.SubscribeOnceTalkUpdate(del);

@@ -50,6 +50,7 @@ public partial class TimerManager
 
             _goldSaucerUpdateHook?.Enable();
             _watcher.SubscribeYesnoSelected(TicketBought);
+            _watcher.SubscribeLotteryWeeklyRewardListSetup(RewardSetupDetour);
             _tasks.Reload();
             _state = true;
         }
@@ -61,6 +62,7 @@ public partial class TimerManager
 
             _goldSaucerUpdateHook?.Disable();
             _watcher.UnsubscribeYesnoSelected(TicketBought);
+            _watcher.UnsubscribeLotteryWeeklyRewardListSetup(RewardSetupDetour);
             _state = false;
         }
 
@@ -70,6 +72,13 @@ public partial class TimerManager
             _goldSaucerUpdateHook?.Dispose();
         }
 
+        private void RewardSetupDetour(IntPtr _)
+        {
+            var player = new PlayerInfo(Dalamud.ClientState.LocalPlayer!);
+            if (_tasks.ClearFirstJumbo(player))
+                _tasks.Save(player);
+        }
+
         private unsafe void UpdateGoldSaucerDetour(IntPtr _, IntPtr packet)
         {
             var jumbo = new JumboCactpot()
@@ -77,10 +86,13 @@ public partial class TimerManager
                 LastUpdate = DateTime.UtcNow,
             };
 
-            var ptr     = (ushort*)(packet + 0x22);
-            var tickets = jumbo.Tickets;
+            var statePtr = (byte*)(packet + 0x1E);
+            var ptr      = (ushort*)(packet + 0x22);
+            var tickets  = jumbo.Tickets;
             for (var i = 0; i < JumboCactpot.MaxTickets; ++i)
             {
+                if (statePtr[i] >= 3 || statePtr[i] == 0)
+                    continue;
                 var ticket = ptr[i];
                 if (ticket >= 10000)
                     ticket = 0xFFFF;
@@ -88,6 +100,8 @@ public partial class TimerManager
             }
 
             var player = new PlayerInfo(Dalamud.ClientState.LocalPlayer!);
+            if (statePtr[0] == 2)
+                jumbo.LastUpdate = jumbo.NextReset(player.ServerId).AddDays(-7);
             if (_tasks.AddOrUpdateJumboCactpot(player, jumbo))
                 _tasks.Save(player);
             _goldSaucerUpdateHook!.Original(_, packet);

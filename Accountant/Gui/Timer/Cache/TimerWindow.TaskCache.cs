@@ -170,7 +170,8 @@ public partial class TimerWindow
 
         private CacheObject JumboCactpotObject(string player, ushort worldId, JumboCactpot jumbo)
         {
-            var nextReset = jumbo.NextReset(worldId);
+            var nextReset   = jumbo.NextReset(worldId);
+            var doubleReset = nextReset.AddDays(7);
             var ret = new CacheObject
             {
                 Name            = player,
@@ -178,10 +179,15 @@ public partial class TimerWindow
                 DisplayTime     = UpdateNextChange(nextReset),
                 TooltipCallback = GenerateTooltip(jumbo),
             };
-            if (nextReset < Now || jumbo.IsEmpty())
+            if (doubleReset < Now || jumbo.IsEmpty())
             {
                 ret.DisplayString = $"0/{Classes.JumboCactpot.MaxTickets}";
                 ret.Color         = ColorId.TextObjectsHome;
+            }
+            else if (nextReset < Now && !jumbo.IsEmpty())
+            {
+                ret.DisplayString = "Redeemable";
+                ret.Color       = ColorId.TextObjectsHome;
             }
             else if (jumbo.IsFull())
             {
@@ -344,7 +350,10 @@ public partial class TimerWindow
             if (Accountant.Config.Flags.Check(ConfigFlags.MiniCactpot))
                 Headers.Add(MiniCactpot(data));
             if (Accountant.Config.Flags.Check(ConfigFlags.JumboCactpot))
+            {
+                _tasks.CheckJumboCactpotReset(Now);
                 Headers.Add(JumboCactpot(data));
+            }
 
             if (Accountant.Config.Priorities.Count > 0)
                 Headers.Sort((a, b)

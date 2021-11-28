@@ -119,6 +119,19 @@ public sealed class TaskTimers : TimersBase<PlayerInfo, TaskInfo>
         return true;
     }
 
+    public void CheckJumboCactpotReset(DateTime now)
+    {
+        foreach (var (player, task) in Data)
+        {
+            var doubleReset = task.JumboCactpot.NextReset(player.ServerId).AddDays(7);
+            if (doubleReset > now)
+                continue;
+
+            task.JumboCactpot = new JumboCactpot { LastUpdate = now };
+            Save(player, task);
+        }
+    }
+
     public bool AddOrUpdateJumboCactpot(PlayerInfo player, JumboCactpot jumbo)
     {
         if (!InternalData.TryGetValue(player, out var oldInfo))
@@ -131,7 +144,7 @@ public sealed class TaskTimers : TimersBase<PlayerInfo, TaskInfo>
             return true;
         }
 
-        if (oldInfo.JumboCactpot.EqualTickets(jumbo) && oldInfo.JumboCactpot.NextReset(player.ServerId) > jumbo.LastUpdate)
+        if (oldInfo.JumboCactpot.EqualTickets(jumbo) && oldInfo.JumboCactpot.NextReset(player.ServerId).AddDays(7) > jumbo.LastUpdate)
             return false;
 
         InternalData[player].JumboCactpot = jumbo;
@@ -195,6 +208,28 @@ public sealed class TaskTimers : TimersBase<PlayerInfo, TaskInfo>
         }
 
         oldInfo.JumboCactpot.SetFirstTicket(ticket);
+        oldInfo.JumboCactpot.LastUpdate = now;
+        Invoke();
+        return true;
+    }
+
+    public bool ClearFirstJumbo(PlayerInfo player)
+    {
+        if (!InternalData.TryGetValue(player, out var oldInfo))
+        {
+            var newInfo = new TaskInfo()
+            {
+                JumboCactpot = new JumboCactpot() { LastUpdate = DateTime.UtcNow },
+            };
+            InternalData[player] = newInfo;
+            Invoke();
+            return true;
+        }
+
+        var now = DateTime.UtcNow;
+        if (now >= oldInfo.JumboCactpot.NextReset(player.ServerId))
+            oldInfo.JumboCactpot.ClearTickets();
+        oldInfo.JumboCactpot.ClearFirstTicket();
         oldInfo.JumboCactpot.LastUpdate = now;
         Invoke();
         return true;

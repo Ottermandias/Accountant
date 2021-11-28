@@ -30,7 +30,6 @@ internal partial class AddonWatcherBase
         SubscribeYesnoSelected(NewDel);
     }
 
-
     public void SubscribeStringSelected(ReceiveSelectStringDelegate del)
     {
         StringSelected += del;
@@ -60,7 +59,7 @@ internal partial class AddonWatcherBase
     public void SubscribeSelectStringSetup(SelectStringSetupDelegate del)
     {
         SelectStringSetup += del;
-        if (SelectStringSetupHook!.IsEnabled)
+        if (!SelectStringSetupHook!.IsEnabled)
             SelectStringSetupHook.Enable();
     }
 
@@ -86,7 +85,7 @@ internal partial class AddonWatcherBase
     public void SubscribeSelectYesnoSetup(SelectYesnoSetupDelegate del)
     {
         SelectYesnoSetup += del;
-        if (SelectYesnoSetupHook!.IsEnabled)
+        if (!SelectYesnoSetupHook!.IsEnabled)
             SelectYesnoSetupHook.Enable();
     }
 
@@ -112,7 +111,7 @@ internal partial class AddonWatcherBase
     public void SubscribeJournalResultSetup(JournalResultSetupDelegate del)
     {
         JournalResultSetup += del;
-        if (JournalResultSetupHook!.IsEnabled)
+        if (!JournalResultSetupHook!.IsEnabled)
             JournalResultSetupHook.Enable();
     }
 
@@ -132,6 +131,32 @@ internal partial class AddonWatcherBase
         }
 
         SubscribeJournalResultSetup(NewDel);
+    }
+
+
+    public void SubscribeLotteryWeeklyRewardListSetup(LotteryWeeklyRewardListSetupDelegate del)
+    {
+        LotteryWeeklyRewardListSetup += del;
+        if (!LotteryWeeklyRewardListSetupHook!.IsEnabled)
+            LotteryWeeklyRewardListSetupHook.Enable();
+    }
+
+    public void UnsubscribeLotteryWeeklyRewardListSetup(LotteryWeeklyRewardListSetupDelegate del)
+    {
+        LotteryWeeklyRewardListSetup -= del;
+        if (LotteryWeeklyRewardListSetup == null)
+            LotteryWeeklyRewardListSetupHook!.Disable();
+    }
+
+    public void SubscribeOnceLotteryWeeklyRewardListSetup(LotteryWeeklyRewardListSetupDelegate del)
+    {
+        void NewDel(IntPtr unit)
+        {
+            del(unit);
+            UnsubscribeLotteryWeeklyRewardListSetup(NewDel);
+        }
+
+        SubscribeLotteryWeeklyRewardListSetup(NewDel);
     }
 
 
