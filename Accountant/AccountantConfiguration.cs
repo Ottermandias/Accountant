@@ -28,6 +28,7 @@ public enum ConfigFlags : uint
     IgnoreIndoorPlants = 0x004000,
     MiniCactpot        = 0x008000,
     JumboCactpot       = 0x010000,
+    NoHeaderStyling    = 0x020000,
 }
 
 public static class ConfigFlagExtensions
@@ -178,6 +179,12 @@ public class AccountantConfiguration : IPluginConfiguration
     {
         get => Flags.Check(ConfigFlags.JumboCactpot);
         set => Flags.Set(ConfigFlags.JumboCactpot, value);
+    }
+
+    public bool NoHeaderStyling
+    {
+        get => Flags.Check(ConfigFlags.NoHeaderStyling);
+        set => Flags.Set(ConfigFlags.NoHeaderStyling, value);
     }
 
     public int LeveWarning { get; set; } = 85;

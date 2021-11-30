@@ -102,7 +102,7 @@ public partial class TimerWindow : IDisposable
         var enabled = Accountant.Config.WindowVisible;
         using var colors = ImGuiRaii.PushColor(ImGuiCol.WindowBg, ColorId.Background.Value())
             .Push(ImGuiCol.Text, ColorId.NeutralText.Value());
-        if (!_drawData)
+        if (!_drawData && !Accountant.Config.NoHeaderStyling)
         {
             colors.Push(ImGuiCol.Border, ColorId.CollapsedBorder.Value())
                 .Push(ImGuiCol.TitleBgCollapsed, _headerColor.Value());

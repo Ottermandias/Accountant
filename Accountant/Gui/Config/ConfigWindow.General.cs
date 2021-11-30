@@ -21,11 +21,12 @@ public partial class ConfigWindow
 
         raii.Push(ImGui.EndChild);
 
-        ImGuiRaii.ConfigCheckmark("Enable Plugin",            Accountant.Config.Enabled,        EnableTimers);
-        ImGuiRaii.ConfigCheckmark("Show Timers",              Accountant.Config.WindowVisible,  b => Accountant.Config.WindowVisible  = b);
-        ImGuiRaii.ConfigCheckmark("No Timer Window Resize",   Accountant.Config.ProhibitResize, b => Accountant.Config.ProhibitResize = b);
-        ImGuiRaii.ConfigCheckmark("No Timer Window Movement", Accountant.Config.ProhibitMoving, b => Accountant.Config.ProhibitMoving = b);
-        ImGuiRaii.ConfigCheckmark("Hide Disabled Objects",    Accountant.Config.HideDisabled,   b => Accountant.Config.HideDisabled   = b);
+        ImGuiRaii.ConfigCheckmark("Enable Plugin",               Accountant.Config.Enabled,         EnableTimers);
+        ImGuiRaii.ConfigCheckmark("Show Timers",                 Accountant.Config.WindowVisible,   b => Accountant.Config.WindowVisible   = b);
+        ImGuiRaii.ConfigCheckmark("No Collapsed Header Styling", Accountant.Config.NoHeaderStyling, b => Accountant.Config.NoHeaderStyling = b);
+        ImGuiRaii.ConfigCheckmark("No Timer Window Resize",      Accountant.Config.ProhibitResize,  b => Accountant.Config.ProhibitResize  = b);
+        ImGuiRaii.ConfigCheckmark("No Timer Window Movement",    Accountant.Config.ProhibitMoving,  b => Accountant.Config.ProhibitMoving  = b);
+        ImGuiRaii.ConfigCheckmark("Hide Disabled Objects",       Accountant.Config.HideDisabled,    b => Accountant.Config.HideDisabled    = b);
         ImGuiRaii.HoverTooltip("Hide objects that are disabled or limited from the timers.");
         ImGui.NewLine();
 
@@ -35,15 +36,15 @@ public partial class ConfigWindow
         ImGuiRaii.ConfigCheckmark("Enable Submersible Timers",     Accountant.Config.EnableSubmersibles, EnableSubmersibles);
         ImGuiRaii.ConfigCheckmark("Enable Aetherial Wheel Timers", Accountant.Config.EnableWheels,       EnableWheels);
         ImGui.NewLine();
-        ImGuiRaii.ConfigCheckmark("Enable Crop Timers",       Accountant.Config.EnableCrops, EnableCrops);
-        ImGuiRaii.ConfigCheckmark("Ignore Indoor Plot Plants",  Accountant.Config.IgnoreIndoorPlants, IgnoreIndoorPlants);
-        ImGuiRaii.ConfigCheckmark("Group Crop Beds by Plant", Accountant.Config.OrderByCrop, OrderByCrop);
+        ImGuiRaii.ConfigCheckmark("Enable Crop Timers",        Accountant.Config.EnableCrops,        EnableCrops);
+        ImGuiRaii.ConfigCheckmark("Ignore Indoor Plot Plants", Accountant.Config.IgnoreIndoorPlants, IgnoreIndoorPlants);
+        ImGuiRaii.ConfigCheckmark("Group Crop Beds by Plant",  Accountant.Config.OrderByCrop,        OrderByCrop);
         ImGui.NewLine();
         ImGuiRaii.ConfigCheckmark("Enable Leve Allowance Timers", Accountant.Config.EnableLeveAllowances, EnableLeveAllowances);
         DrawLeveAllowancesWarningInput();
         ImGuiRaii.ConfigCheckmark("Enable Squadron Mission Timers", Accountant.Config.EnableSquadron,     EnableSquadron);
         ImGuiRaii.ConfigCheckmark("Enable Map Allowance Timers",    Accountant.Config.EnableMapAllowance, EnableMapAllowance);
-        ImGuiRaii.ConfigCheckmark("Enable Mini Cactpot Timers",    Accountant.Config.EnableMiniCactpot, EnableMiniCactpot);
+        ImGuiRaii.ConfigCheckmark("Enable Mini Cactpot Timers",     Accountant.Config.EnableMiniCactpot,  EnableMiniCactpot);
         ImGuiRaii.ConfigCheckmark("Enable Jumbo Cactpot Timers",    Accountant.Config.EnableJumboCactpot, EnableJumboCactpot);
         ImGui.NewLine();
     }
