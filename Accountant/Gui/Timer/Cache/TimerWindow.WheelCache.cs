@@ -21,12 +21,12 @@ public partial class TimerWindow
 
         private CacheObject GenerateWheel(WheelInfo wheel, ref ObjectCounter local)
         {
-            var (item, _) = Accountant.GameData.FindWheel(wheel.ItemId);
+            var (item, name, _) = Accountant.GameData.FindWheel(wheel.ItemId);
             var end = wheel.End();
             local.Add(end, Now, 6);
             return new CacheObject
             {
-                Name          = item.Name,
+                Name          = name,
                 DisplayTime   = UpdateNextChange(end),
                 Icon          = Window._icons[item.Icon],
                 IconOffset    = 0f,

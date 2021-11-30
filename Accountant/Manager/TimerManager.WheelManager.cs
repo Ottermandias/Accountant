@@ -107,7 +107,7 @@ public partial class TimerManager
             if (slot == 0)
                 return;
 
-            var (item, grade) = Accountant.GameData.FindWheel(ret[0]);
+            var (item, _, grade) = Accountant.GameData.FindWheel(ret[0]);
             if (grade == 0)
                 return;
 
@@ -175,7 +175,7 @@ public partial class TimerManager
                     var seString = MemoryHelper.ReadSeString(&((AtkTextNode*)button->Component->UldManager.NodeList[9])->NodeText);
                     seString.Payloads.RemoveAll(p => p is NewLinePayload);
                     var name = seString.TextValue;
-                    var (item, grade) = Accountant.GameData.FindWheel(name);
+                    var (item, _, grade) = Accountant.GameData.FindWheel(name);
                     if (grade == 0)
                         continue;
 
@@ -184,7 +184,7 @@ public partial class TimerManager
                         Accurate = false,
                         ItemId   = item.RowId,
                         Grade    = grade,
-                        Placed   = now.AddHours(-WheelInfo.HoursType(grade) * fill),
+                        Placed   = fill >= 0.9999 ? DateTime.MinValue : now.AddHours(-WheelInfo.HoursType(grade) * fill),
                     };
                     change |= _wheels.AddOrUpdateWheel(fc!.Value, info, slot);
                 }

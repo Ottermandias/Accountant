@@ -30,10 +30,10 @@ public interface IGameData : IDisposable
     // If the name does not correspond to any crop or seed, returns item 0 with times (0, 0).
     public CropData FindCrop(string name);
 
-    // Obtain the corresponding item and grade (1-3) to an aetherial wheel id or name.
-    // If the given parameter does not correspond to a aetherial wheel, Grade is 0 and Item is default constructed.
-    public (Item Item, byte Grade) FindWheel(uint itemId);
-    public (Item Item, byte Grade) FindWheel(string name);
+    // Obtain the corresponding item, full, corrected Name and grade (1-3) to an aetherial wheel id or name.
+    // If the given parameter does not correspond to a aetherial wheel, Grade is 0, Name is empty and Item is default constructed.
+    public (Item Item, string Name, byte Grade) FindWheel(uint itemId);
+    public (Item Item, string Name, byte Grade) FindWheel(string name);
 
     // Obtain the corresponding item to a treasure hunt map, if it represents one.
     public Item? FindMap(uint itemId);

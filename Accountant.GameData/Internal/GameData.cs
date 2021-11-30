@@ -40,10 +40,10 @@ internal class GameData : IGameData
     public CropData FindCrop(string name)
         => _crops?.Find(name) ?? throw NotReadyException();
 
-    public (Item Item, byte Grade) FindWheel(uint itemId)
+    public (Item Item, string Name, byte Grade) FindWheel(uint itemId)
         => _wheels?.Find(itemId) ?? throw NotReadyException();
 
-    public (Item Item, byte Grade) FindWheel(string name)
+    public (Item Item, string Name, byte Grade) FindWheel(string name)
         => _wheels?.Find(name) ?? throw NotReadyException();
 
     public Item? FindMap(uint itemId)

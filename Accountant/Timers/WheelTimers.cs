@@ -55,6 +55,9 @@ public sealed class WheelTimers : TimersBase<FreeCompanyInfo, WheelInfo[]>
         if (oldWheel.Accurate && !wheel.Accurate && Math.Abs((oldWheel.Placed - wheel.Placed).TotalHours) < 1)
             return false;
 
+        if (wheel.Placed == DateTime.MinValue && oldWheel.End() < DateTime.Now)
+            return false;
+
         wheels[slot] = wheel;
         Invoke();
         return true;
