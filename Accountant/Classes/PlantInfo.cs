@@ -80,7 +80,9 @@ public struct PlantInfo
         var wither = wilt.AddDays(1);
 
         if (wither < now)
-            return (DateTime.MaxValue, DateTime.MinValue, DateTime.MinValue, ColorId.TextCropWithered, DateTime.MinValue, true);
+            return fin < wither 
+                ? (DateTime.MinValue, DateTime.MaxValue, DateTime.MaxValue, ColorId.TextCropGrown, DateTime.MinValue, true) 
+                : (DateTime.MaxValue, DateTime.MinValue, DateTime.MinValue, ColorId.TextCropWithered, DateTime.MinValue, true);
 
         if (fin < now)
             return (DateTime.MinValue, DateTime.MaxValue, DateTime.MaxValue, ColorId.TextCropGrown, DateTime.MinValue, true);
