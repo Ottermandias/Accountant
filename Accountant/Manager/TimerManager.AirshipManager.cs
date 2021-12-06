@@ -33,8 +33,8 @@ public partial class TimerManager
             _submersibles   = submersibles;
             _companyStorage = companyStorage;
 
-            AirshipTimerOpCode  = 0x0166; // Dalamud.GameData.ServerOpCodes["AirshipTimers"]
-            AirshipStatusOpCode = 0x02FE; // Dalamud.GameData.ServerOpCodes["AirshipStatusList"]
+            AirshipTimerOpCode  = 0x00ED; // Dalamud.GameData.ServerOpCodes["AirshipTimers"]
+            AirshipStatusOpCode = 0x023F; // Dalamud.GameData.ServerOpCodes["AirshipStatusList"]
             SetState();
         }
 

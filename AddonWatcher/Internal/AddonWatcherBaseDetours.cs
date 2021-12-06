@@ -80,7 +80,7 @@ internal partial class AddonWatcherBase
     {
         if (eventType == EventType.ListIndexChange && data != IntPtr.Zero)
         {
-            var owner = ((AddonSelectString.PopupMenuDerive*)atkUnit)->Owner;
+            var owner = ((PopupMenu*)atkUnit)->Owner;
             if (SelectStringName.Equals(owner->Name))
             {
                 var ptr             = (IntPtr)owner;

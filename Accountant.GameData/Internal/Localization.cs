@@ -26,8 +26,8 @@ internal static class Localization
 
         public override void PopulateData(RowParser parser, Lumina.GameData gameData, Language language)
         {
-            RowId    = parser.Row;
-            SubRowId = parser.SubRow;
+            RowId    = parser.RowId;
+            SubRowId = parser.SubRowId;
             String   = SeString.Parse(parser.ReadColumn<Lumina.Text.SeString>(1)!.RawData);
         }
     }
@@ -39,8 +39,8 @@ internal static class Localization
 
         public override void PopulateData(RowParser parser, Lumina.GameData gameData, Language language)
         {
-            RowId    = parser.Row;
-            SubRowId = parser.SubRow;
+            RowId    = parser.RowId;
+            SubRowId = parser.SubRowId;
             String   = SeString.Parse(parser.ReadColumn<Lumina.Text.SeString>(17)!.RawData);
         }
     }

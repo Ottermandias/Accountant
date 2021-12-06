@@ -32,8 +32,8 @@ public partial class TimerManager
             _airships       = airships;
             _companyStorage = companyStorage;
 
-            SubmarineTimerOpCode  = 0x0247; // Dalamud.GameData.ServerOpCodes["SubmarineTimers"]
-            SubmarineStatusOpCode = 0x01EF; // Dalamud.GameData.ServerOpCodes["SubmarineStatusList"]
+            SubmarineTimerOpCode  = 0x00F5; // Dalamud.GameData.ServerOpCodes["SubmarineTimers"]
+            SubmarineStatusOpCode = 0x02F4; // Dalamud.GameData.ServerOpCodes["SubmarineStatusList"]
 
             SetState();
         }

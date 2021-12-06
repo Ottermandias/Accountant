@@ -16,7 +16,7 @@ public unsafe struct SelectStringInfo
         => new() { Pointer = (AddonSelectString*)ptr };
 
     public AtkComponentList* List
-        => Pointer->PopupMenu.List;
+        => Pointer->PopupMenu.PopupMenu.List;
 
     public int Count
         => List->ListLength;
