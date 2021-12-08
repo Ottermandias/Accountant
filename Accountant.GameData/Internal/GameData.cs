@@ -97,7 +97,7 @@ internal class GameData : IGameData
             return;
 
         var sheet = data.GameData.GetExcelSheet<World>()!;
-        _worldNames = sheet.Where(w => w.IsPublic > 0 && !w.Name.RawData.IsEmpty)
+        _worldNames = sheet.Where(w => w.IsPublic && !w.Name.RawData.IsEmpty)
             .ToDictionary(w => w.RowId, w => w.Name.RawString);
         _worldIds = _worldNames.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
         _worldCactpotHours = _worldNames.ToDictionary(kvp => kvp.Key, kvp =>
