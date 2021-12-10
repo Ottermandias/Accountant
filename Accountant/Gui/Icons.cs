@@ -52,5 +52,7 @@ public static class Icons
         91129,
         91130,
         91131,
+        91132,
+        91133,
     };
 }
