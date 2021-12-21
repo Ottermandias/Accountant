@@ -333,7 +333,7 @@ public partial class TimerWindow
         protected override void UpdateInternal()
         {
             if (!Accountant.Config.Flags.Check(ConfigFlags.Enabled)
-             || !Accountant.Config.Flags.Any(ConfigFlags.LeveAllowances | ConfigFlags.Squadron | ConfigFlags.MapAllowance))
+             || !Accountant.Config.Flags.Any(ConfigFlags.LeveAllowances | ConfigFlags.Squadron | ConfigFlags.MapAllowance | ConfigFlags.MiniCactpot | ConfigFlags.JumboCactpot))
                 return;
 
             var data = _tasks.Data
@@ -354,6 +354,9 @@ public partial class TimerWindow
                 _tasks.CheckJumboCactpotReset(Now);
                 Headers.Add(JumboCactpot(data));
             }
+
+            foreach (var header in Headers)
+                Color = Color.Combine(header.Color.TextToHeader());
 
             if (Accountant.Config.Priorities.Count > 0)
                 Headers.Sort((a, b)
