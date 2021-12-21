@@ -56,9 +56,9 @@ public static class ColorIdExtensions
             ColorId.TextCropGrown        => "Crop Grown Out",
             ColorId.TextCropGrowing      => "Crop Growing",
             ColorId.TextCropGuaranteed   => "Crop Self-Sufficient",
-            ColorId.HeaderCropGrown      => "Some Crops Withered (Header)",
-            ColorId.HeaderCropWithered   => "Some Crops Wilted (Header)",
-            ColorId.HeaderCropWilted     => "Some Crops Grown Out (Header)",
+            ColorId.HeaderCropWithered   => "Some Crops Withered (Header)",
+            ColorId.HeaderCropWilted     => "Some Crops Wilted (Header)",
+            ColorId.HeaderCropGrown      => "Some Crops Grown Out (Header)",
             ColorId.HeaderCropGrowing    => "All Crops Growing (Header)",
             ColorId.HeaderCropGuaranteed => "Some Crops Self-Sufficient (Header)",
             ColorId.TextLeveCap          => "Leve Allowances Capped",
@@ -94,9 +94,9 @@ public static class ColorIdExtensions
                 "Used by single crops if they are growing regularly.\nUsed by plot or player names if all of their crops are growing regularly.",
             ColorId.TextCropGuaranteed =>
                 "Used by single crops if they are growing regularly and require no tending anymore.\nUsed by plot or player names if all of their crops are growing regularly and require no tending anymore.",
-            ColorId.HeaderCropGrown    => "Used by the Crops header and the collapsed header if any crop is withered.",
-            ColorId.HeaderCropWithered => "Used by the Crops header and the collapsed header if any crop is wilted and none is withered.",
-            ColorId.HeaderCropWilted =>
+            ColorId.HeaderCropWithered => "Used by the Crops header and the collapsed header if any crop is withered.",
+            ColorId.HeaderCropWilted   => "Used by the Crops header and the collapsed header if any crop is wilted and none is withered.",
+            ColorId.HeaderCropGrown =>
                 "Used by the Crops header and the collapsed header if any crop is grown out and none is wilted or withered.",
             ColorId.HeaderCropGrowing => "Used by the Crops header and the collapsed header if all crops are growing regularly.",
             ColorId.HeaderCropGuaranteed =>
@@ -130,9 +130,9 @@ public static class ColorIdExtensions
         [ColorId.TextCropWilted]       = 0xFFD020D0,
         [ColorId.TextCropGrowing]      = 0xFF20D0D0,
         [ColorId.TextCropGuaranteed]   = 0xFFD0D020,
-        [ColorId.HeaderCropGrown]      = 0x8000A000,
         [ColorId.HeaderCropWithered]   = 0x800000A0,
         [ColorId.HeaderCropWilted]     = 0x80A000A0,
+        [ColorId.HeaderCropGrown]      = 0x8000A000,
         [ColorId.HeaderCropGrowing]    = 0x8000A0A0,
         [ColorId.HeaderCropGuaranteed] = 0x80A0A000,
         [ColorId.TextLeveCap]          = 0xFF2020D0,
