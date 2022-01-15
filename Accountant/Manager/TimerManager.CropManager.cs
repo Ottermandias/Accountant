@@ -255,6 +255,40 @@ public partial class TimerManager
             }
         }
 
+        private void HarvestCrop(SeString descriptionText)
+        {
+            SetPatch(descriptionText);
+            var id = IdentifyCropSpot();
+            switch (id.Type)
+            {
+                case CropSpotType.Apartment:
+                case CropSpotType.Chambers:
+                    _privateCrops.HarvestCrop(id);
+                    break;
+                case CropSpotType.Outdoors:
+                case CropSpotType.House:
+                    _plotCrops.HarvestCrop(id);
+                    break;
+            }
+        }
+
+        private void TendCrop(SeString descriptionText)
+        {
+            SetPatch(descriptionText);
+            var id = IdentifyCropSpot();
+            switch (id.Type)
+            {
+                case CropSpotType.Apartment:
+                case CropSpotType.Chambers:
+                    _privateCrops.TendCrop(id, _gameData.FindCrop(_lastPlant).Item.RowId, DateTime.UtcNow);
+                    break;
+                case CropSpotType.Outdoors:
+                case CropSpotType.House:
+                    _plotCrops.TendCrop(id, _gameData.FindCrop(_lastPlant).Item.RowId, DateTime.UtcNow);
+                    break;
+            }
+        }
+
         private void SelectStringEventDetour(IntPtr unit, int which, SeString buttonText, SeString descriptionText)
         {
             switch (which)
@@ -262,48 +296,19 @@ public partial class TimerManager
                 case 0:
                 {
                     if (StringId.HarvestCrop.Match(buttonText))
-                    {
+                        HarvestCrop(descriptionText);
+                    else if (StringId.PlantCrop.Match(buttonText))
                         SetPatch(descriptionText);
-                        var id = IdentifyCropSpot();
-                        switch (id.Type)
-                        {
-                            case CropSpotType.Apartment:
-                            case CropSpotType.Chambers:
-                                _privateCrops.HarvestCrop(id);
-                                break;
-                            case CropSpotType.Outdoors:
-                            case CropSpotType.House:
-                                _plotCrops.HarvestCrop(id);
-                                break;
-                        }
-                    }
-                    else if (StringId.PlantCrop.Match(buttonText)
-                          || StringId.RemoveCrop.Match(buttonText))
-                    {
+                    else if (StringId.RemoveCrop.Match(buttonText))
                         SetPatch(descriptionText);
-                    }
-
+                    else if (StringId.TendCrop.Match(buttonText))
+                        TendCrop(descriptionText);
                     return;
                 }
                 case 1:
                 {
-                    if (!StringId.TendCrop.Match(buttonText))
-                        return;
-
-                    SetPatch(descriptionText);
-                    var id = IdentifyCropSpot();
-                    switch (id.Type)
-                    {
-                        case CropSpotType.Apartment:
-                        case CropSpotType.Chambers:
-                            _privateCrops.TendCrop(id, _gameData.FindCrop(_lastPlant).Item.RowId, DateTime.UtcNow);
-                            break;
-                        case CropSpotType.Outdoors:
-                        case CropSpotType.House:
-                            _plotCrops.TendCrop(id, _gameData.FindCrop(_lastPlant).Item.RowId, DateTime.UtcNow);
-                            break;
-                    }
-
+                    if (StringId.TendCrop.Match(buttonText))
+                        TendCrop(descriptionText);
                     return;
                 }
                 case 2:
