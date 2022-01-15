@@ -95,8 +95,10 @@ public partial class TimerWindow
                     GeneratePlantChild(GetPlantChildName(playerName, idx), plant);
             }
 
-            foreach (var (_, (list, (_, name))) in _seenItems)
+            foreach (var (_, (list, (data, name))) in _seenItems)
             {
+                if (Accountant.Config.BlockedCrops.Contains(data.Item.RowId))
+                    continue;
                 Headers.Add(GeneratePlantParent(name, list));
                 UpdateParent(Headers.Last().Color.TextToHeader(), Headers.Last().DisplayTime, ref Color, ref DisplayTime);
             }

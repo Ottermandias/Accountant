@@ -51,8 +51,11 @@ public partial class TimerWindow
 
             for (ushort i = 0; i < plants.Count; ++i)
             {
-                Objects.Add(GeneratePlant(plants[i], PlantInfo.GetPrivateName(i)));
-                UpdateParent(Objects.Last().Color, Objects.Last().DisplayTime, ref owner.Color, ref owner.DisplayTime);
+                if (!Accountant.Config.BlockedCrops.Contains(plants[i].PlantId))
+                {
+                    Objects.Add(GeneratePlant(plants[i], PlantInfo.GetPrivateName(i)));
+                    UpdateParent(Objects.Last().Color, Objects.Last().DisplayTime, ref owner.Color, ref owner.DisplayTime);
+                }
             }
 
             UpdateParent(owner.Color.TextToHeader(), owner.DisplayTime, ref Color, ref DisplayTime);
@@ -74,8 +77,11 @@ public partial class TimerWindow
                 count -= plotSize.IndoorBeds();
             for (ushort i = 0; i < count; ++i)
             {
-                Objects.Add(GeneratePlant(plants[i], PlantInfo.GetPlotName(plotSize, i)));
-                UpdateParent(Objects.Last().Color, Objects.Last().DisplayTime, ref owner.Color, ref owner.DisplayTime);
+                if (!Accountant.Config.BlockedCrops.Contains(plants[i].PlantId))
+                {
+                    Objects.Add(GeneratePlant(plants[i], PlantInfo.GetPlotName(plotSize, i)));
+                    UpdateParent(Objects.Last().Color, Objects.Last().DisplayTime, ref owner.Color, ref owner.DisplayTime);
+                }
             }
 
             owner.ObjectsCount = count;

@@ -200,6 +200,7 @@ public class AccountantConfiguration : IPluginConfiguration
     public HashSet<string> BlockedCompaniesAirships     { get; } = new();
     public HashSet<string> BlockedCompaniesSubmersibles { get; } = new();
     public HashSet<string> BlockedCompaniesWheels       { get; } = new();
+    public HashSet<uint>   BlockedCrops                { get; } = new();
 
     public Dictionary<string, int> Priorities { get; } = new();
 

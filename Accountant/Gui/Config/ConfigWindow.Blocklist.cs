@@ -29,6 +29,8 @@ public partial class ConfigWindow
 
         raii.Push(ImGui.EndChild);
 
+        if (ImGui.CollapsingHeader("Blocked Crops"))
+            DrawBlockedCrops();
         if (ImGui.CollapsingHeader("Blocked Plots"))
             DrawBlockedPlots();
         if (ImGui.CollapsingHeader("Blocked Players (Crops)"))
@@ -43,6 +45,67 @@ public partial class ConfigWindow
             DrawBlockedCompanies("Submersibles", Accountant.Config.BlockedCompaniesSubmersibles, typeof(TimerWindow.MachineCache));
         if (ImGui.CollapsingHeader("Blocked Free Companies (Aetherial Wheels)"))
             DrawBlockedCompanies("Wheels", Accountant.Config.BlockedCompaniesWheels, typeof(TimerWindow.WheelCache));
+    }
+
+    private string _newBlockedCrop = string.Empty;
+
+    private void DrawBlockedCrops()
+    {
+        using var id = ImGuiRaii.PushId("BlockedPlants");
+        if (!ImGui.BeginTable(string.Empty, 2))
+            return;
+        using var raii = ImGuiRaii.DeferredEnd(ImGui.EndTable);
+        ImGui.TableSetupColumn(string.Empty, ImGuiTableColumnFlags.WidthFixed, ImGui.GetStyle().FrameBorderSize);
+        ImGui.TableSetupColumn("Plant Name");
+        ImGui.TableHeadersRow();
+
+        uint? change = null;
+        foreach (var plant in Accountant.Config.BlockedCrops)
+        {
+            var (data, name) = Accountant.GameData.FindCrop(plant);
+            if (data.GrowTime == 0)
+            {
+                change = plant;
+                continue;
+            }
+
+            ImGui.TableNextRow();
+            ImGui.TableNextColumn();
+            using var font = ImGuiRaii.PushFont(UiBuilder.IconFont);
+            if (ImGui.Button($"{FontAwesomeIcon.Trash.ToIconChar()}##{plant}"))
+                change = plant;
+            font.Pop();
+            ImGui.TableNextColumn();
+            ImGui.Text(name);
+        }
+
+        if (change != null)
+        {
+            Accountant.Config.BlockedCrops.Remove(change.Value);
+            Accountant.Config.Save();
+            _timerWindow.ResetCache(typeof(TimerWindow.CropCache));
+        }
+
+        using var _ = ImGuiRaii.PushFont(UiBuilder.IconFont);
+        ImGui.TableNextRow();
+        ImGui.TableNextColumn();
+
+        var newPlant = Accountant.GameData.FindCrop(_newBlockedCrop);
+
+        if (ImGui.Button(FontAwesomeIcon.Plus.ToIconString()) && newPlant.GrowTime > 0)
+        {
+            if (Accountant.Config.BlockedCrops.Add(newPlant.Item.RowId))
+            {
+                _newBlockedCrop = string.Empty;
+                Accountant.Config.Save();
+                _timerWindow.ResetCache(typeof(TimerWindow.CropCache));
+            }
+        }
+        _.Pop();
+
+        ImGui.TableNextColumn();
+        using var color = ImGuiRaii.PushColor(ImGuiCol.FrameBg, newPlant.GrowTime > 0 ? 0x2040FF40u : 0x204040FFu);
+        ImGui.InputTextWithHint("##AddPlant", "Plant Name...", ref _newBlockedCrop, 64);
     }
 
     private void DrawBlockedPlots()
