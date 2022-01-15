@@ -28,7 +28,7 @@ public sealed class StaticMapContainer : SeFunctionBase<Delegate>
 
         var time = Helpers.DateFromTimeStamp((uint)timestamp);
         if (time < DateTime.UtcNow.AddSeconds(10))
-            return DateTime.MinValue;
+            return DateTime.MaxValue;
 
         return time;
     }
