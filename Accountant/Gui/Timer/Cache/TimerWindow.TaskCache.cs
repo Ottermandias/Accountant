@@ -286,7 +286,7 @@ public partial class TimerWindow
                 ObjectsBegin = Objects.Count,
                 ObjectsCount = data.Count,
                 DisplayTime  = DateTime.MaxValue,
-                Color        = ColorId.TextObjectsHome,
+                Color        = data.Count > 0 ? ColorId.NeutralText : ColorId.TextObjectsHome,
             };
             foreach (var (name, _, task) in data)
             {
@@ -295,8 +295,8 @@ public partial class TimerWindow
                     ret.DisplayTime = Objects.Last().DisplayTime;
                 ret.Color = Objects.Last().Color switch
                 {
-                    ColorId.TextObjectsAway => ret.Color == ColorId.TextObjectsAway ? ColorId.TextObjectsAway : ColorId.TextObjectsMixed,
-                    ColorId.TextObjectsHome => ret.Color == ColorId.TextObjectsHome ? ColorId.TextObjectsHome : ColorId.TextObjectsMixed,
+                    ColorId.TextObjectsAway => ret.Color is ColorId.TextObjectsAway or ColorId.NeutralText ? ColorId.TextObjectsAway : ColorId.TextObjectsMixed,
+                    ColorId.TextObjectsHome => ret.Color is ColorId.TextObjectsHome or ColorId.NeutralText ? ColorId.TextObjectsHome : ColorId.TextObjectsMixed,
                     _                       => ColorId.TextObjectsMixed,
                 };
             }
@@ -312,7 +312,7 @@ public partial class TimerWindow
                 ObjectsBegin = Objects.Count,
                 ObjectsCount = data.Count,
                 DisplayTime  = DateTime.MaxValue,
-                Color        = ColorId.TextObjectsHome,
+                Color        = ColorId.TextObjectsAway,
             };
             foreach (var (name, serverId, task) in data)
             {
