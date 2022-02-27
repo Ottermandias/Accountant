@@ -32,11 +32,11 @@ public partial class TimerManager
         private readonly PlotCropTimers    _plotCrops;
         private readonly PrivateCropTimers _privateCrops;
 
-        public CropManager(PlotCropTimers plotCrops, PrivateCropTimers privateCrops)
+        public CropManager(PlotCropTimers plotCrops, PrivateCropTimers privateCrops, PositionInfoAddress positionInfo)
         {
             _plotCrops    = plotCrops;
             _privateCrops = privateCrops;
-            _positionInfo = new PositionInfoAddress(Dalamud.SigScanner);
+            _positionInfo = positionInfo;
             _watcher      = Accountant.Watcher;
             _gameData     = Accountant.GameData;
             SetState();

@@ -10,6 +10,9 @@ public struct MiniCactpot
     public       DateTime LastUpdate = DateTime.MinValue;
     public       byte     Tickets    = 0;
 
+    public MiniCactpot()
+    {}
+
     public DateTime NextReset()
         => NextReset(LastUpdate);
 

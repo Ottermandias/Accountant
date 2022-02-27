@@ -96,7 +96,7 @@ internal static class Localization
         LocalizationDict<StringId>.RegisterComparer(StringId.TendCrop,      sheet.GetRow(4)!.String.TextValue);
         LocalizationDict<StringId>.RegisterComparer(StringId.FertilizeCrop, sheet.GetRow(3)!.String.TextValue);
         LocalizationDict<StringId>.RegisterComparer(StringId.RemoveCrop,    sheet.GetRow(5)!.String.TextValue);
-        LocalizationDict<StringId>.RegisterComparer(StringId.DisposeCrop, (sheet.GetRow(11)!.String.Payloads[0] as TextPayload)!.Text,
+        LocalizationDict<StringId>.RegisterComparer(StringId.DisposeCrop, (sheet.GetRow(11)!.String.Payloads[0] as TextPayload)!.Text!,
             MatchType.StartsWith);
         LocalizationDict<StringId>.RegisterComparer(StringId.PlantCrop, sheet.GetRow(2)!.String.TextValue);
 

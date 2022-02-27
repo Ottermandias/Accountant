@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO.IsolatedStorage;
 using System.Linq;
 using Accountant.Gui.Helper;
 using Dalamud.Interface;
-using Dalamud.Logging;
 using ImGuiNET;
 
 namespace Accountant.Gui.Config;

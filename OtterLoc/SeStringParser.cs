@@ -49,7 +49,7 @@ public sealed class SeStringParser : ILocFilter
                 ? Array.Empty<string>()
                 : new[]
                 {
-                    text.Text,
+                    text.Text!,
                 };
         }
 

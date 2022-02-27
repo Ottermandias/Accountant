@@ -60,5 +60,6 @@ public partial class ConfigWindow : IDisposable
         DrawBlocklistsTab();
         DrawOrderNamesTab();
         DrawDeleteTab();
+        DrawDebugTab();
     }
 }

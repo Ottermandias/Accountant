@@ -60,10 +60,10 @@ public static class LocalizationDict<T> where T : Enum
     public static bool RegisterName(T key, ClientLanguage lang, SeString se, int payloadEn, int payloadJp, int payloadDe, int payloadFr)
         => lang switch
         {
-            ClientLanguage.Japanese => Register(key, (se.Payloads[payloadJp] as TextPayload)?.Text.Trim() ?? string.Empty),
-            ClientLanguage.German   => Register(key, (se.Payloads[payloadDe] as TextPayload)?.Text.Trim() ?? string.Empty),
-            ClientLanguage.French   => Register(key, (se.Payloads[payloadFr] as TextPayload)?.Text.Trim() ?? string.Empty),
-            _                       => Register(key, (se.Payloads[payloadEn] as TextPayload)?.Text.Trim() ?? string.Empty),
+            ClientLanguage.Japanese => Register(key, (se.Payloads[payloadJp] as TextPayload)?.Text?.Trim() ?? string.Empty),
+            ClientLanguage.German   => Register(key, (se.Payloads[payloadDe] as TextPayload)?.Text?.Trim() ?? string.Empty),
+            ClientLanguage.French   => Register(key, (se.Payloads[payloadFr] as TextPayload)?.Text?.Trim() ?? string.Empty),
+            _                       => Register(key, (se.Payloads[payloadEn] as TextPayload)?.Text?.Trim() ?? string.Empty),
         };
 
     public static bool RegisterComparer(T key, string s, MatchType type = MatchType.Equal)

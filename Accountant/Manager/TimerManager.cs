@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using Accountant.Gui.Timer;
+using Accountant.SeFunctions;
 using Accountant.Timers;
 using Accountant.Util;
 
@@ -17,14 +18,15 @@ public sealed partial class TimerManager : IDisposable
         public TimerWindow.BaseCache CreateCache(TimerWindow window);
     }
 
-    public readonly RetainerTimers     RetainerTimers    = new();
-    public readonly PlotCropTimers     PlotCropTimers    = new();
-    public readonly PrivateCropTimers  PrivateCropTimers = new();
-    public readonly SubmersibleTimers  SubmersibleTimers = new();
-    public readonly AirshipTimers      AirshipTimers     = new();
-    public readonly WheelTimers        WheelTimers       = new();
-    public readonly TaskTimers         TaskTimers        = new();
-    public readonly FreeCompanyStorage CompanyStorage    = FreeCompanyStorage.Load();
+    public readonly RetainerTimers      RetainerTimers    = new();
+    public readonly PlotCropTimers      PlotCropTimers    = new();
+    public readonly PrivateCropTimers   PrivateCropTimers = new();
+    public readonly SubmersibleTimers   SubmersibleTimers = new();
+    public readonly AirshipTimers       AirshipTimers     = new();
+    public readonly WheelTimers         WheelTimers       = new();
+    public readonly TaskTimers          TaskTimers        = new();
+    public readonly FreeCompanyStorage  CompanyStorage    = FreeCompanyStorage.Load();
+    public readonly PositionInfoAddress PositionInfo      = new(Dalamud.SigScanner);
 
     private readonly ITimerManager[] _managers;
 
@@ -33,7 +35,7 @@ public sealed partial class TimerManager : IDisposable
         _managers = new ITimerManager[]
         {
             new RetainerManager(RetainerTimers),
-            new CropManager(PlotCropTimers, PrivateCropTimers),
+            new CropManager(PlotCropTimers, PrivateCropTimers, PositionInfo),
             new SubmersibleManager(SubmersibleTimers, AirshipTimers, CompanyStorage),
             new AirshipManager(AirshipTimers, SubmersibleTimers, CompanyStorage),
             new WheelManager(WheelTimers, CompanyStorage),
