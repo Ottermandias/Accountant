@@ -106,7 +106,13 @@ public class TimersBase<TIdent, TInfo> : ITimers<TIdent, TInfo>
                 {
                     var data = File.ReadAllText(file.FullName);
                     var (ident, info)   = JsonConvert.DeserializeObject<(TIdent, TInfo)>(data);
-                    InternalData[ident] = info;
+                    if (ident.Valid())
+                        InternalData[ident] = info;
+                    else
+                    {
+                        PluginLog.Error($"{ParseError}:\nIdentifier was not valid.");
+                        file.Delete();
+                    }
                 }
                 catch (Exception e)
                 {

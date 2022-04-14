@@ -35,6 +35,9 @@ public readonly struct PlayerInfo : IEquatable<PlayerInfo>, ITimerIdentifier
     public uint IdentifierHash()
         => (uint)Helpers.CombineHashCodes(Helpers.GetStableHashCode(Name), ServerId);
 
+    public bool Valid()
+        => Name.Length > 0 && Name.Contains(' ') && Accountant.GameData.IsValidWorldId(ServerId);
+
     [JsonIgnore]
     public string CastedName
         => $"{Name}{(char)ServerId}";

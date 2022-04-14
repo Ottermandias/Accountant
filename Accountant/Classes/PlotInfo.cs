@@ -47,6 +47,14 @@ public readonly struct PlotInfo : IEquatable<PlotInfo>, ITimerIdentifier
     public uint IdentifierHash()
         => (uint)Helpers.CombineHashCodes((int)Zone, ServerId, Ward, Plot);
 
+    public bool Valid()
+        => Accountant.GameData.IsValidWorldId(ServerId)
+         && Enum.IsDefined(Zone)
+         && Plot > 0
+         && Plot <= Accountant.GameData.GetNumPlots()
+         && Ward > 0
+         && Ward <= Accountant.GameData.GetNumWards();
+
     public static PlotInfo FromValue(ulong value)
         => new((InternalHousingZone)((value >> 32) & 0xFFFF)
             , (ushort)((value >> 16) & 0xFFFF)

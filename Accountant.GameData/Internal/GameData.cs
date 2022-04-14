@@ -61,6 +61,9 @@ internal class GameData : IGameData
     public IEnumerable<(string Name, uint Id)> Worlds()
         => _worldNames!.Select(w => (w.Value, w.Key));
 
+    public bool IsValidWorldId(uint id)
+        => _worldNames!.ContainsKey(id);
+
     public string GetWorldName(uint id)
         => _worldNames!.TryGetValue(id, out var ret)
             ? ret
@@ -113,6 +116,7 @@ internal class GameData : IGameData
                 6 => 19,
                 7 => 20,
                 8 => 26,
+                9 => 10,
                 _ => 12,
             });
         });

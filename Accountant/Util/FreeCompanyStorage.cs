@@ -45,9 +45,9 @@ public class FreeCompanyStorage
         if (tag == SeString.Empty)
             return null;
 
-        var t     = tag.TextValue;
-        var l     = leader?.TextValue ?? string.Empty;
-        var n     = name?.TextValue ?? string.Empty;
+        var t = tag.TextValue;
+        var l = leader?.TextValue ?? string.Empty;
+        var n = name?.TextValue ?? string.Empty;
 
 
         if (!n.Any())
@@ -58,7 +58,7 @@ public class FreeCompanyStorage
                 : infos.Cast<FreeCompanyInfo?>().FirstOrDefault(i => i!.Value.Tag == t);
         }
 
-        var idx  = Infos.FindIndex(i => i.Name == n && i.ServerId == serverId);
+        var idx = Infos.FindIndex(i => i.Name == n && i.ServerId == serverId);
         if (idx == -1 && serverId != 0)
         {
             if (!l.Any())
@@ -72,6 +72,7 @@ public class FreeCompanyStorage
             Save();
             return Infos.Last();
         }
+
         if (Infos[idx].Tag == t && Infos[idx].Leader == l)
             return Infos[idx];
 
@@ -92,6 +93,8 @@ public class FreeCompanyStorage
             {
                 var data    = File.ReadAllText(file.FullName);
                 var storage = JsonConvert.DeserializeObject<FreeCompanyStorage>(data);
+                if (storage.Infos.RemoveAll(f => f.ServerId == 0) > 0)
+                    storage.Save();
                 return storage;
             }
             catch (Exception e)

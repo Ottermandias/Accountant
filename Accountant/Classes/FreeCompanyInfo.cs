@@ -34,6 +34,9 @@ public struct FreeCompanyInfo : IEquatable<FreeCompanyInfo>, ITimerIdentifier
     public uint IdentifierHash()
         => (uint)Helpers.CombineHashCodes(Helpers.GetStableHashCode(Name), ServerId);
 
+    public bool Valid()
+        => Tag.Length > 0 && Name.Length > 0 && Accountant.GameData.IsValidWorldId(ServerId);
+
     [JsonIgnore]
     public string CastedName
         => $"{Name}{(char)ServerId}";

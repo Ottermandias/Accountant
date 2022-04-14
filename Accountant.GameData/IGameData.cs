@@ -50,6 +50,9 @@ public interface IGameData : IDisposable
     // Obtain an enumerable list of all valid world names and their ids.
     public IEnumerable<(string Name, uint Id)> Worlds();
 
+    // Check whether a world id is a valid id for a player world.
+    public bool IsValidWorldId(uint id);
+
     // Obtain the name of a world for a given world id.
     public string GetWorldName(uint id);
 
