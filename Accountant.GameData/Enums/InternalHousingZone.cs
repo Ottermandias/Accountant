@@ -11,7 +11,7 @@ public enum InternalHousingZone : byte
     Goblet       = 85,
     LavenderBeds = 84,
     Shirogane    = 129,
-    Firmament    = 254, // currently unknown
+    Empyreum     = 211,
 }
 
 public static class InternalHousingZoneExtensions
@@ -25,8 +25,8 @@ public static class InternalHousingZoneExtensions
             InternalHousingZone.Goblet       => StringId.Goblet.Value(),
             InternalHousingZone.LavenderBeds => StringId.LavenderBeds.Value(),
             InternalHousingZone.Shirogane    => StringId.Shirogane.Value(),
-            InternalHousingZone.Firmament    => StringId.Firmament.Value(),
-            _                                => throw new ArgumentOutOfRangeException(nameof(z), z, null),
+            InternalHousingZone.Empyreum     => StringId.Empyreum.Value(),
+            _                                => "Unknown",
         };
     }
 }

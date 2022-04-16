@@ -171,35 +171,35 @@ public partial class TimerManager
                 case HousingZone.LavenderBeds:
                 case HousingZone.Goblet:
                 case HousingZone.Shirogane:
-                case HousingZone.Firmament:
+                case HousingZone.Empyreum:
                     return IdentifyCropSpotOutdoor();
                 case HousingZone.ChambersMist:
                 case HousingZone.ChambersLavenderBeds:
                 case HousingZone.ChambersGoblet:
                 case HousingZone.ChambersShirogane:
-                case HousingZone.ChambersFirmament:
+                case HousingZone.ChambersEmpyreum:
                     return IdentifyCropSpotPrivate(CropSpotType.Chambers);
                 case HousingZone.ApartmentMist:
                 case HousingZone.ApartmentLavenderBeds:
                 case HousingZone.ApartmentGoblet:
                 case HousingZone.ApartmentShirogane:
-                case HousingZone.ApartmentFirmament:
+                case HousingZone.ApartmentEmpyreum:
                     return IdentifyCropSpotPrivate(CropSpotType.Apartment);
                 case HousingZone.CottageMist:
                 case HousingZone.CottageLavenderBeds:
                 case HousingZone.CottageGoblet:
                 case HousingZone.CottageShirogane:
-                case HousingZone.CottageFirmament:
+                case HousingZone.CottageEmpyreum:
                 case HousingZone.HouseMist:
                 case HousingZone.HouseLavenderBeds:
                 case HousingZone.HouseGoblet:
                 case HousingZone.HouseShirogane:
-                case HousingZone.HouseFirmament:
+                case HousingZone.HouseEmpyreum:
                 case HousingZone.MansionMist:
                 case HousingZone.MansionLavenderBeds:
                 case HousingZone.MansionGoblet:
                 case HousingZone.MansionShirogane:
-                case HousingZone.MansionFirmament:
+                case HousingZone.MansionEmpyreum:
                     return IdentifyCropSpotHouse();
                 default:
                     PluginLog.Error($"Housing Zone {Dalamud.ClientState.TerritoryType} should not be able to have crops.");

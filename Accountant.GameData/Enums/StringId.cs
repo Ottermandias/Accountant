@@ -7,7 +7,7 @@ public enum StringId
     LavenderBeds,
     Goblet,
     Shirogane,
-    Firmament,
+    Empyreum,
     CropBed,
     CropPot,
     CropPatch,

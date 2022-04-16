@@ -167,12 +167,11 @@ internal static class Localization
         name      = names.GetRow(territory.PlaceName.Row)!;
         LocalizationDict<StringId>.Register(StringId.Shirogane, name.Name.RawString);
 
-        //territory = territories.GetRow((uint)HousingZone.Firmament)!;
-        //name      = names.GetRow(territory.PlaceName.Row)!;
-        //LocalizationDict<StringId>.Register(StringId.Firmament, name.Name.RawString);
+        territory = territories.GetRow((uint)HousingZone.Empyreum)!;
+        name      = names.GetRow(territory.PlaceName.Row)!;
+        LocalizationDict<StringId>.Register(StringId.Empyreum, name.Name.RawString);
 
-        LocalizationDict<StringId>.RegisterName(StringId.Firmament, data.Language, "Firmament", "蒼天街", "Himmelsstadt", "Azurée");
-        LocalizationDict<StringId>.RegisterName(StringId.Unknown,   data.Language, "Unknown",   "不明",  "Unbekannt",    "Inconnu");
+        LocalizationDict<StringId>.RegisterName(StringId.Unknown, data.Language, "Unknown", "不明", "Unbekannt", "Inconnu");
 
         LocalizationDict<StringId>.RegisterName(StringId.CropPatch, data.Language, "Patch",      "畑",     "Beet",       "Potager");
         LocalizationDict<StringId>.RegisterName(StringId.CropPot,   data.Language, "Flower Pot", "プランター", "Blumentopf", "Pot de Fleurs");
@@ -198,7 +197,8 @@ internal static class Localization
 
         LocalizationDict<StringId>.Register(StringId.BuyMiniCactpotTicket,
             new StringMatcherLetters(goldSaucerTalk!.GetRow(16)!.String.TextValue));
-        LocalizationDict<StringId>.Register(StringId.BuyJumboCactpotTicket, new StringMatcherLetters(SeString.Parse(addon!.GetRow(9276)!.Text.RawData).TextValue));
+        LocalizationDict<StringId>.Register(StringId.BuyJumboCactpotTicket,
+            new StringMatcherLetters(SeString.Parse(addon!.GetRow(9276)!.Text.RawData).TextValue));
         LocalizationDict<StringId>.Register(StringId.FilterJumboCactpotTicket,
             StringParser.FromRegex(data.Language, JumboTextEn, JumboTextFr, JumboTextJp, JumboTextDe, "ticket"));
         SetCropCommands(data);
