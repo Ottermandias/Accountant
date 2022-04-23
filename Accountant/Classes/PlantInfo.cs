@@ -50,6 +50,12 @@ public struct PlantInfo
             LastTending = tendTime.Value;
             if (PlantTime == DateTime.MinValue)
                 PlantTime = LastTending;
+            // if the plant is grown, and yet we tended it, assume it's a new plant
+            if (this.FinishTime() < tendTime)
+            {
+                PlantTime = LastTending;
+                AccuratePlantTime = false;
+            }
             ret = true;
         }
 
