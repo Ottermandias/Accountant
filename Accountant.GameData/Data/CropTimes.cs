@@ -80,7 +80,7 @@ public partial class Crops
         (7 * 24, 24, 08195, 08187), // Tomato King
         (7 * 24, 24, 07773, 07754), // Umbrella Fig
         (2 * 24, 72, 08160, 08177), // Valfruit
-        (1 * 13, 72, 15858, 15856), // Voidrake
+        (1 * 12, 72, 15858, 15856), // Voidrake
         (1 * 18, 72, 00007, 15870), // Waterlight
         (5 * 24, 48, 04777, 07716), // Wild Onion Set
         (1 * 18, 72, 00004, 15867), // Windlight
