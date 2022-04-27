@@ -59,7 +59,7 @@ internal static class Localization
     {
         var (bed, patch) = lang switch
         {
-            ClientLanguage.German   => (5, 15),
+            ClientLanguage.German   => (15, 5),
             ClientLanguage.French   => (23, 8),
             ClientLanguage.Japanese => (1, 4),
             _                       => (0, 9),
