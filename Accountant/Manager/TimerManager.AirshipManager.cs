@@ -1,13 +1,14 @@
 using System;
-using System.Reflection.Metadata.Ecma335;
+using System.Diagnostics.CodeAnalysis;
 using Accountant.Classes;
 using Accountant.Enums;
 using Accountant.Gui.Timer;
 using Accountant.Structs;
 using Accountant.Timers;
 using Accountant.Util;
-using Dalamud.Game.Network;
+using Dalamud.Hooking;
 using Dalamud.Logging;
+using Dalamud.Utility.Signatures;
 
 namespace Accountant.Manager;
 
@@ -20,20 +21,17 @@ public partial class TimerManager
 
         private readonly FreeCompanyStorage _companyStorage;
 
-        private bool   _state;
-        private ushort AirshipTimerOpCode  { get; }
-        private ushort AirshipStatusOpCode { get; }
+        private bool _state;
 
         private readonly AirshipTimers     _airships;
         private readonly SubmersibleTimers _submersibles;
 
         public AirshipManager(AirshipTimers airships, SubmersibleTimers submersibles, FreeCompanyStorage companyStorage)
         {
+            SignatureHelper.Initialise(this);
             _airships       = airships;
             _submersibles   = submersibles;
             _companyStorage = companyStorage;
-            AirshipTimerOpCode  = (ushort)(Dalamud.GameData.ServerOpCodes.TryGetValue("AirshipTimers", out var code) ? code : 0x0202); // 6.01
-            AirshipStatusOpCode = (ushort)(Dalamud.GameData.ServerOpCodes.TryGetValue("AirshipStatusList", out code) ? code : 0x02F6); // 6.01
             SetState();
         }
 
@@ -53,9 +51,10 @@ public partial class TimerManager
             if (_state)
                 return;
 
+            _airshipTimersHook?.Enable();
+            _airshipStatusListHook?.Enable();
             _airships.Reload();
-            Dalamud.Network.NetworkMessage += NetworkMessage;
-            _state                         =  true;
+            _state = true;
         }
 
         private void Disable()
@@ -63,62 +62,94 @@ public partial class TimerManager
             if (!_state)
                 return;
 
-            Dalamud.Network.NetworkMessage -= NetworkMessage;
-            _state                         =  false;
+            _airshipTimersHook?.Disable();
+            _airshipStatusListHook?.Disable();
+            _state = false;
         }
 
         public void Dispose()
-            => Disable();
-
-        private unsafe void NetworkMessage(IntPtr data, ushort opCode, uint sourceId, uint targetId, NetworkMessageDirection direction)
         {
-            FreeCompanyInfo? info = null;
+            Disable();
+            _airshipTimersHook?.Dispose();
+            _airshipStatusListHook?.Dispose();
+        }
 
-            bool SetCompanyInfo()
-            {
-                if (info != null)
-                    return false;
+        private delegate void PacketHandler(IntPtr manager, IntPtr data);
 
-                info = _companyStorage.GetCurrentCompanyInfo();
-                if (info != null)
-                    return false;
+        [Signature("E8 ?? ?? ?? ?? 33 D2 48 8D 4C 24 ?? 41 B8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8D 54 24 ?? 48 8B CB E8 ?? ?? ?? ?? 48 8B 3D",
+            DetourName = nameof(AirshipTimersDetour))]
+        private Hook<PacketHandler>? _airshipTimersHook = null!;
 
-                PluginLog.Error("Could not log airships, unable to obtain free company name.");
+        [Signature("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 41 54 41 55 41 56 41 57 48 83 EC ?? 48 8D 99 ?? ?? ?? ?? C6 81",
+            DetourName = nameof(AirshipStatusListDetour))]
+        private Hook<PacketHandler>? _airshipStatusListHook = null!;
+
+        private bool FreeCompanyInfo([NotNullWhen(true)] ref FreeCompanyInfo? info)
+        {
+            if (info != null)
                 return true;
-            }
 
-            var changes = false;
-            if (opCode == AirshipTimerOpCode)
+            info = _companyStorage.GetCurrentCompanyInfo();
+            if (info != null)
+                return true;
+
+            PluginLog.Error("Could not log airships, unable to obtain free company name.");
+            return false;
+        }
+
+        private unsafe void AirshipTimersDetour(IntPtr manager, IntPtr data)
+        {
+            try
             {
-                var timer = (AirshipTimer*)data;
+                FreeCompanyInfo? info    = null;
+                var              changes = false;
+                var              timer   = (AirshipTimer*)data;
                 for (byte i = 0; i < 4; ++i)
                 {
                     if (timer[i].RawName[0] == 0)
                         break;
 
-                    if (SetCompanyInfo())
+                    if (!FreeCompanyInfo(ref info))
                         return;
 
-                    changes |= _airships.AddOrUpdateAirship(info!.Value, new MachineInfo(timer[i].Name, timer[i].Date, MachineType.Airship), i);
+                    changes |= _airships.AddOrUpdateAirship(info.Value, new MachineInfo(timer[i].Name, timer[i].Date, MachineType.Airship), i);
                 }
+
+                if (changes)
+                    _airships.Save(info!.Value);
             }
-            else if (opCode == AirshipStatusOpCode)
+            finally
             {
-                var timer = (AirshipStatus*)data;
+                _airshipTimersHook!.Original(manager, data);
+            }
+        }
+
+        private unsafe void AirshipStatusListDetour(IntPtr manager, IntPtr data)
+        {
+            try
+            {
+                FreeCompanyInfo? info    = null;
+                var              changes = false;
+                var              status  = (AirshipStatus*)data;
                 for (byte i = 0; i < 4; ++i)
                 {
-                    if (timer[i].RawName[0] == 0)
+                    if (status[i].RawName[0] == 0)
                         break;
 
-                    if (SetCompanyInfo())
+                    if (!FreeCompanyInfo(ref info))
                         return;
 
-                    changes |= _airships.AddOrUpdateAirship(info!.Value, new MachineInfo(timer[i].Name, timer[i].Date, MachineType.Airship), i);
+                    changes |= _airships.AddOrUpdateAirship(info.Value, new MachineInfo(status[i].Name, status[i].Date, MachineType.Airship),
+                        i);
                 }
-            }
 
-            if (changes)
-                _airships.Save(info!.Value);
+                if (changes)
+                    _airships.Save(info!.Value);
+            }
+            finally
+            {
+                _airshipStatusListHook!.Original(manager, data);
+            }
         }
     }
 }
