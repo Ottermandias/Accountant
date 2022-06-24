@@ -29,6 +29,7 @@ public enum ConfigFlags : uint
     MiniCactpot        = 0x008000,
     JumboCactpot       = 0x010000,
     NoHeaderStyling    = 0x020000,
+    ShowCharacterWorlds = 0x040000,
 }
 
 public static class ConfigFlagExtensions
@@ -185,6 +186,12 @@ public class AccountantConfiguration : IPluginConfiguration
     {
         get => Flags.Check(ConfigFlags.NoHeaderStyling);
         set => Flags.Set(ConfigFlags.NoHeaderStyling, value);
+    }
+
+    public bool ShowCharacterWorlds
+    {
+        get => Flags.Check(ConfigFlags.ShowCharacterWorlds);
+        set => Flags.Set(ConfigFlags.ShowCharacterWorlds, value);
     }
 
     public int LeveWarning { get; set; } = 85;
