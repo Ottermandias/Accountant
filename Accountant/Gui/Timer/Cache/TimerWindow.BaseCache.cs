@@ -41,7 +41,7 @@ public partial class TimerWindow
 
         protected string GetName(string name, uint serverId)
         {
-            if (_seenNames.Add(name))
+            if (_seenNames.Add(name) && !Accountant.Config.ShowCharacterWorlds)
                 return name;
 
             var server = Accountant.GameData.GetWorldName(serverId);

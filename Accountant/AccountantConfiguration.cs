@@ -10,25 +10,26 @@ namespace Accountant;
 [Flags]
 public enum ConfigFlags : uint
 {
-    None               = 0x000000,
-    Enabled            = 0x000001,
-    WindowVisible      = 0x000002,
-    Retainers          = 0x000004,
-    Airships           = 0x000008,
-    Submersibles       = 0x000010,
-    AetherialWheels    = 0x000020,
-    Crops              = 0x000040,
-    OrderByCrop        = 0x000080,
-    LeveAllowances     = 0x000100,
-    HideDisabled       = 0x000200,
-    Squadron           = 0x000400,
-    MapAllowance       = 0x000800,
-    ProhibitResize     = 0x001000,
-    ProhibitMoving     = 0x002000,
-    IgnoreIndoorPlants = 0x004000,
-    MiniCactpot        = 0x008000,
-    JumboCactpot       = 0x010000,
-    NoHeaderStyling    = 0x020000,
+    None                = 0x000000,
+    Enabled             = 0x000001,
+    WindowVisible       = 0x000002,
+    Retainers           = 0x000004,
+    Airships            = 0x000008,
+    Submersibles        = 0x000010,
+    AetherialWheels     = 0x000020,
+    Crops               = 0x000040,
+    OrderByCrop         = 0x000080,
+    LeveAllowances      = 0x000100,
+    HideDisabled        = 0x000200,
+    Squadron            = 0x000400,
+    MapAllowance        = 0x000800,
+    ProhibitResize      = 0x001000,
+    ProhibitMoving      = 0x002000,
+    IgnoreIndoorPlants  = 0x004000,
+    MiniCactpot         = 0x008000,
+    JumboCactpot        = 0x010000,
+    NoHeaderStyling     = 0x020000,
+    ShowCharacterWorlds = 0x040000,
 }
 
 public static class ConfigFlagExtensions
@@ -185,6 +186,12 @@ public class AccountantConfiguration : IPluginConfiguration
     {
         get => Flags.Check(ConfigFlags.NoHeaderStyling);
         set => Flags.Set(ConfigFlags.NoHeaderStyling, value);
+    }
+
+    public bool ShowCharacterWorlds
+    {
+        get => Flags.Check(ConfigFlags.ShowCharacterWorlds);
+        set => Flags.Set(ConfigFlags.ShowCharacterWorlds, value);
     }
 
     public int LeveWarning { get; set; } = 85;

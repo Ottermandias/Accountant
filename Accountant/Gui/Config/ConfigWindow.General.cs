@@ -21,13 +21,14 @@ public partial class ConfigWindow
 
         raii.Push(ImGui.EndChild);
 
-        ImGuiRaii.ConfigCheckmark("Enable Plugin",               Accountant.Config.Enabled,         EnableTimers);
-        ImGuiRaii.ConfigCheckmark("Show Timers",                 Accountant.Config.WindowVisible,   b => Accountant.Config.WindowVisible   = b);
-        ImGuiRaii.ConfigCheckmark("No Collapsed Header Styling", Accountant.Config.NoHeaderStyling, b => Accountant.Config.NoHeaderStyling = b);
-        ImGuiRaii.ConfigCheckmark("No Timer Window Resize",      Accountant.Config.ProhibitResize,  b => Accountant.Config.ProhibitResize  = b);
-        ImGuiRaii.ConfigCheckmark("No Timer Window Movement",    Accountant.Config.ProhibitMoving,  b => Accountant.Config.ProhibitMoving  = b);
-        ImGuiRaii.ConfigCheckmark("Hide Disabled Objects",       Accountant.Config.HideDisabled,    b => Accountant.Config.HideDisabled    = b);
+        ImGuiRaii.ConfigCheckmark("Enable Plugin",                  Accountant.Config.Enabled,              EnableTimers);
+        ImGuiRaii.ConfigCheckmark("Show Timers",                    Accountant.Config.WindowVisible,        b => Accountant.Config.WindowVisible        = b);
+        ImGuiRaii.ConfigCheckmark("No Collapsed Header Styling",    Accountant.Config.NoHeaderStyling,      b => Accountant.Config.NoHeaderStyling      = b);
+        ImGuiRaii.ConfigCheckmark("No Timer Window Resize",         Accountant.Config.ProhibitResize,       b => Accountant.Config.ProhibitResize       = b);
+        ImGuiRaii.ConfigCheckmark("No Timer Window Movement",       Accountant.Config.ProhibitMoving,       b => Accountant.Config.ProhibitMoving       = b);
+        ImGuiRaii.ConfigCheckmark("Hide Disabled Objects",          Accountant.Config.HideDisabled,         b => Accountant.Config.HideDisabled         = b);
         ImGuiRaii.HoverTooltip("Hide objects that are disabled or limited from the timers.");
+        ImGuiRaii.ConfigCheckmark("Always Show Characters' Worlds", Accountant.Config.ShowCharacterWorlds,  ShowCharacterWorlds);
         ImGui.NewLine();
 
         ImGuiRaii.ConfigCheckmark("Enable Retainer Timers", Accountant.Config.EnableRetainers, EnableRetainers);
@@ -104,6 +105,12 @@ public partial class ConfigWindow
         Accountant.Config.Flags.Set(flag, toggle);
         _timers.CheckSettings();
         _timerWindow.ResetCache(type);
+    }
+
+    private void ShowCharacterWorlds(bool toggle){
+        Accountant.Config.ShowCharacterWorlds = toggle;
+        _timerWindow.ResetCache(typeof(TimerWindow.RetainerCache));
+        _timerWindow.ResetCache(typeof(TimerWindow.TaskCache));
     }
 
     private void EnableRetainers(bool toggle)
