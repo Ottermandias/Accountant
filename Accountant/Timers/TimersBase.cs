@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using Dalamud.Logging;
 using Newtonsoft.Json;
-using SDL2;
 
 namespace Accountant.Timers;
 
