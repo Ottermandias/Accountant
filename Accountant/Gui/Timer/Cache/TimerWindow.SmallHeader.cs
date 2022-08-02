@@ -33,7 +33,7 @@ public partial class TimerWindow
                     var s     = TimeSpanString(DisplayTime - now);
                     var width = ImGui.CalcTextSize(s).X;
                     var pos   = ImGui.GetCursorPos();
-                    ImGui.SetCursorPos(new Vector2(ImGui.GetWindowContentRegionWidth() - width, posY));
+                    ImGui.SetCursorPos(new Vector2(ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X - width, posY));
                     ImGui.Text(s);
                     ImGui.SetCursorPos(pos);
                 }

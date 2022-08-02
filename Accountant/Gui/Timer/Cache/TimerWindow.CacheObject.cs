@@ -50,14 +50,14 @@ public struct CacheObject
         if (DisplayString != null)
         {
             var width   = ImGui.CalcTextSize(DisplayString).X;
-            ImGui.SameLine(ImGui.GetWindowContentRegionWidth() - width);
+            ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X - width);
             ImGui.Text(DisplayString);
         }
         else if (DisplayTime > now)
         {
             var display = TimerWindow.TimeSpanString(DisplayTime - now);
             var width   = ImGui.CalcTextSize(display).X;
-            ImGui.SameLine(ImGui.GetWindowContentRegionWidth() - width);
+            ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X - width);
             ImGui.Text(display);
         }
         color.Pop();
