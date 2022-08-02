@@ -18,7 +18,6 @@
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     <MSBuildWarningsAsMessages>$(MSBuildWarningsAsMessages);MSB3277</MSBuildWarningsAsMessages>
   </PropertyGroup>
 
@@ -39,21 +38,25 @@
     <ProjectReference Include="..\OtterLoc\OtterLoc.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <DalamudLibPath>$(AppData)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="Dalamud">
-      <HintPath>$(AppData)\XIVLauncher\addon\Hooks\dev\Dalamud.dll</HintPath>
+      <HintPath>$(DalamudLibPath)Dalamud.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="ImGuiScene">
-      <HintPath>$(AppData)\XIVLauncher\addon\Hooks\dev\ImGuiScene.dll</HintPath>
+      <HintPath>$(DalamudLibPath)ImGuiScene.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Lumina">
-      <HintPath>$(AppData)\XIVLauncher\addon\Hooks\dev\Lumina.dll</HintPath>
+      <HintPath>$(DalamudLibPath)Lumina.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="Lumina.Excel">
-      <HintPath>$(AppData)\XIVLauncher\addon\Hooks\dev\Lumina.Excel.dll</HintPath>
+      <HintPath>$(DalamudLibPath)Lumina.Excel.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
