@@ -16,9 +16,9 @@
     "IsTestingExclusive": "True",
     "DownloadCount": 1,
     "LastUpdate": 1618608329,
-    "DownloadLinkTesting": "https://github.com/Ottermandias/Accountant/raw/main/Accountant.zip",
-    "DownloadLinkUpdate": "https://github.com/Ottermandias/Accountant/raw/main/Accountant.zip",
-    "DownloadLinkInstall": "https://github.com/Ottermandias/Accountant/raw/main/Accountant.zip",
+    "DownloadLinkTesting": "https://github.com/Ottermandias/Accountant/raw/net5/Accountant.zip",
+    "DownloadLinkUpdate": "https://github.com/Ottermandias/Accountant/raw/net5/Accountant.zip",
+    "DownloadLinkInstall": "https://github.com/Ottermandias/Accountant/raw/net5/Accountant.zip",
     "IconUrl": "https://raw.githubusercontent.com/Ottermandias/Accountant/main/images/icon.png"
   }
 ]
