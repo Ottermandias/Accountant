@@ -2,6 +2,7 @@ using System;
 using Accountant.Enums;
 using Accountant.Timers;
 using Accountant.Util;
+using Newtonsoft.Json;
 
 namespace Accountant.Classes;
 
@@ -26,9 +27,11 @@ public readonly struct PlotInfo : IEquatable<PlotInfo>, ITimerIdentifier
     public override string ToString()
         => $"{Plot:D2}{Ward:D2}{(ushort)Zone:X4}{ServerId:X4}";
 
+    [JsonIgnore]
     public ulong Value
         => Plot | ((ulong)Ward << 16) | ((ulong)Zone << 32) | ((ulong)ServerId << 48);
 
+    [JsonIgnore]
     public string Name
         => Accountant.Config.PlotNames.TryGetValue(Value, out var ret) ? ret : ToName();
 

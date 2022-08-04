@@ -9,7 +9,7 @@ public struct CropSpotIdentification
     public Vector3             Position;
     public CropSpotType        Type;
     public InternalHousingZone Zone;
-    public byte                ServerId;
+    public ushort              ServerId;
     public byte                Ward;
     public byte                Plot;
     public byte                Patch;
