@@ -92,7 +92,7 @@ public class FreeCompanyStorage
             try
             {
                 var data    = File.ReadAllText(file.FullName);
-                var storage = JsonConvert.DeserializeObject<FreeCompanyStorage>(data);
+                var storage = JsonConvert.DeserializeObject<FreeCompanyStorage>(data)!;
                 if (storage.Infos.RemoveAll(f => f.ServerId == 0) > 0)
                     storage.Save();
                 return storage;
