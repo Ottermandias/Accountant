@@ -76,12 +76,10 @@ public partial class TimerManager
 
         private delegate void PacketHandler(IntPtr manager, IntPtr data);
 
-        [Signature("E8 ?? ?? ?? ?? 33 D2 48 8D 4C 24 ?? 41 B8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 8D 54 24 ?? 48 8B CB E8 ?? ?? ?? ?? 48 8B 3D",
-            DetourName = nameof(AirshipTimersDetour))]
+        [Signature(Signatures.AirshipTimers, DetourName = nameof(AirshipTimersDetour))]
         private Hook<PacketHandler>? _airshipTimersHook = null!;
 
-        [Signature("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 41 54 41 55 41 56 41 57 48 83 EC ?? 48 8D 99 ?? ?? ?? ?? C6 81",
-            DetourName = nameof(AirshipStatusListDetour))]
+        [Signature(Signatures.AirshipStatus, DetourName = nameof(AirshipStatusListDetour))]
         private Hook<PacketHandler>? _airshipStatusListHook = null!;
 
         private bool FreeCompanyInfo([NotNullWhen(true)] ref FreeCompanyInfo? info)

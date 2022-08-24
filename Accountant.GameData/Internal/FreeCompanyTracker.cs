@@ -75,11 +75,11 @@ internal class FreeCompanyTracker
     private static unsafe IntPtr GetDataPointer(GameGui gui)
     {
         var uiModule = gui.GetUIModule();
-        var vf33     = (IntPtr*)(*(ulong*)uiModule + 0x108);
-        PluginLog.Verbose($"Obtained free company data module getter (VFunc 33 of uiModule) at 0x{(ulong)vf33:X16}.");
-        var module = ((delegate*<IntPtr, IntPtr>)*vf33)(uiModule);
+        var vf34     = (IntPtr*)(*(ulong*)uiModule + 8 * Offsets.FreeCompany.FreeCompanyModuleVfunc);
+        PluginLog.Verbose($"Obtained free company data module getter (VFunc 34 of uiModule) at 0x{(ulong)vf34:X16}.");
+        var module = ((delegate*<IntPtr, IntPtr>)*vf34)(uiModule);
         PluginLog.Verbose($"Obtained free company data module at 0x{module:X16}.");
-        var data = *(IntPtr*)(module + 0x1978 + 0x8 * 0xB);
+        var data = *(IntPtr*)(module + Offsets.FreeCompany.DataOffset);
         if (data == IntPtr.Zero)
             PluginLog.Error("Could not obtain free company data.");
         return data;

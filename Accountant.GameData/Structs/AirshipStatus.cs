@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Threading;
 using Accountant.Internal;
 using Dalamud.Memory;
 
 namespace Accountant.Structs;
 
-[StructLayout(LayoutKind.Explicit, Size = 0x24)]
+[StructLayout(LayoutKind.Explicit, Size = Offsets.Airship.StatusSize)]
 public unsafe struct AirshipStatus
 {
-    [FieldOffset(0x08)]
+    [FieldOffset(Offsets.Airship.StatusTimeStamp)]
     public uint TimeStamp;
 
-    [FieldOffset(0x10)]
-    public fixed byte RawName[0x10];
+    [FieldOffset(Offsets.Airship.StatusRawName)]
+    public fixed byte RawName[Offsets.Airship.StatusRawNameSize];
 
     public string Name
     {

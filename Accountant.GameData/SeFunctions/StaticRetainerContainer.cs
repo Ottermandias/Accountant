@@ -5,6 +5,6 @@ namespace Accountant.SeFunctions;
 public sealed class StaticRetainerContainer : SeAddressBase
 {
     public StaticRetainerContainer(SigScanner sigScanner)
-        : base(sigScanner, "48 8B E9 48 8D 0D ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 85 C0 74 4E")
+        : base(sigScanner, Signatures.RetainerContainer)
     { }
 }

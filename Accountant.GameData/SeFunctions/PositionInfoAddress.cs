@@ -25,7 +25,7 @@ public sealed class PositionInfoAddress : SeAddressBase
         => Info.HousingFloor;
 
     public PositionInfoAddress(SigScanner sigScanner)
-        : base(sigScanner, "40 ?? 48 83 ?? ?? 33 DB 48 39 ?? ?? ?? ?? ?? 75 ?? 45")
+        : base(sigScanner, Signatures.PositionInfo)
     { }
 
     private readonly unsafe struct PositionInfo

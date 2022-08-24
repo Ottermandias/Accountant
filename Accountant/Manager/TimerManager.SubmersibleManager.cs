@@ -77,12 +77,10 @@ public partial class TimerManager
 
         private delegate void PacketHandler(IntPtr manager, IntPtr data);
 
-        [Signature("E8 ?? ?? ?? ?? 48 8B 3D ?? ?? ?? ?? 48 85 FF 74 ?? 48 8B CF E8 ?? ?? ?? ?? 84 C0 75 ?? 83 BF",
-            DetourName = nameof(SubmersibleTimersDetour))]
+        [Signature(Signatures.SubmersibleTimers, DetourName = nameof(SubmersibleTimersDetour))]
         private Hook<PacketHandler>? _submersibleTimersHook = null!;
 
-        [Signature("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 83 EC ?? 0F 10 02 4C 8D 81",
-            DetourName = nameof(SubmersibleStatusListDetour))]
+        [Signature(Signatures.SubmersibleStatus, DetourName = nameof(SubmersibleStatusListDetour))]
         private Hook<PacketHandler>? _submersibleStatusListHook = null!;
 
         private bool FreeCompanyInfo([NotNullWhen(true)] ref FreeCompanyInfo? info)

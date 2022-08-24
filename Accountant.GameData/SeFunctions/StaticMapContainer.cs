@@ -10,7 +10,7 @@ public sealed class StaticMapContainer : SeFunctionBase<Delegate>
     public int MapUiStateOffset;
 
     public unsafe StaticMapContainer(SigScanner sigScanner)
-        : base(sigScanner, "48 83 ?? ?? ?? C7 ?? ?? ?? ?? ?? ?? ?? ?? ?? 45")
+        : base(sigScanner, Signatures.MapContainer)
     {
         MapUiStateOffset = Address == IntPtr.Zero ? 0 : *(int*)(Address + 7);
         PluginLog.Information($"Next Map Allowance UiState-Offset at +0x{MapUiStateOffset:X}");

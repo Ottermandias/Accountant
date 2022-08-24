@@ -5,14 +5,14 @@ using Dalamud.Memory;
 
 namespace Accountant.Structs;
 
-[StructLayout(LayoutKind.Explicit, Size = 0x24)]
+[StructLayout(LayoutKind.Explicit, Size = Offsets.Airship.TimerSize)]
 public unsafe struct AirshipTimer
 {
-    [FieldOffset(0x00)]
+    [FieldOffset(Offsets.Airship.TimerTimeStamp)]
     public uint TimeStamp;
 
-    [FieldOffset(0x06)]
-    public fixed byte RawName[0x10];
+    [FieldOffset(Offsets.Airship.TimerRawName)]
+    public fixed byte RawName[Offsets.Airship.TimerRawNameSize];
 
     public string Name
     {

@@ -5,14 +5,14 @@ using Dalamud.Memory;
 
 namespace Accountant.Structs;
 
-[StructLayout(LayoutKind.Explicit, Size = 0x24)]
+[StructLayout(LayoutKind.Explicit, Size = Offsets.Submersible.TimerSize)]
 public unsafe struct SubmersibleTimer
 {
-    [FieldOffset(0x00)]
+    [FieldOffset(Offsets.Submersible.TimerTimeStamp)]
     public uint TimeStamp;
 
-    [FieldOffset(0x08)]
-    public fixed byte RawName[0x10];
+    [FieldOffset(Offsets.Submersible.TimerRawName)]
+    public fixed byte RawName[Offsets.Submersible.TimerRawNameSize];
 
     public string Name
     {

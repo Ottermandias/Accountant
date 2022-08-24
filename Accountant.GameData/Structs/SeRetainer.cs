@@ -6,27 +6,25 @@ using Dalamud.Memory;
 
 namespace Accountant.Structs;
 
-[StructLayout(LayoutKind.Explicit, Size = Size)]
+[StructLayout(LayoutKind.Explicit, Size = Offsets.Retainer.Size)]
 public unsafe struct SeRetainer
 {
-    public const int Size = 0x48;
-
-    [FieldOffset(0x00)]
+    [FieldOffset(Offsets.Retainer.RetainerId)]
     public ulong RetainerID;
 
-    [FieldOffset(0x08)]
-    private fixed byte _name[0x20];
+    [FieldOffset(Offsets.Retainer.Name)]
+    private fixed byte _name[Offsets.Retainer.NameSize];
 
-    [FieldOffset(0x29)]
+    [FieldOffset(Offsets.Retainer.ClassJob)]
     public byte ClassJob;
 
-    [FieldOffset(0x2C)]
+    [FieldOffset(Offsets.Retainer.Gil)]
     public uint Gil;
 
-    [FieldOffset(0x38)]
+    [FieldOffset(Offsets.Retainer.VentureId)]
     public uint VentureID;
 
-    [FieldOffset(0x3C)]
+    [FieldOffset(Offsets.Retainer.VentureTimestamp)]
     public uint VentureCompleteTimeStamp;
 
     public bool Available

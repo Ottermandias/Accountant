@@ -6,7 +6,7 @@ namespace Accountant.SeFunctions;
 public sealed class StaticLeveAllowances : SeAddressBase
 {
     public StaticLeveAllowances(SigScanner sigScanner)
-        : base(sigScanner, "88 05 ?? ?? ?? ?? 0F B7 41 06")
+        : base(sigScanner, Signatures.LeveAllowances)
     { }
 
     public unsafe int Leves()

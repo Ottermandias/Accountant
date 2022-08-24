@@ -7,21 +7,21 @@ namespace Accountant.SeFunctions;
 public sealed class StaticSquadronContainer : SeAddressBase
 {
     public StaticSquadronContainer(SigScanner sigScanner)
-        : base(sigScanner, "8B 3D ?? ?? ?? ?? 8B D8 3B F8")
+        : base(sigScanner, Signatures.SquadronContainer)
     { }
 
     public unsafe DateTime MissionEnd
-        => Address == IntPtr.Zero ? DateTime.MaxValue : Helpers.DateFromTimeStamp(*(uint*)Address);
+        => Address == IntPtr.Zero ? DateTime.MaxValue : Helpers.DateFromTimeStamp(*(uint*)(Address + Offsets.Squadrons.MissionEnd));
 
     public unsafe DateTime TrainingEnd
-        => Address == IntPtr.Zero ? DateTime.MaxValue : Helpers.DateFromTimeStamp(*(uint*) (Address + 4));
+        => Address == IntPtr.Zero ? DateTime.MaxValue : Helpers.DateFromTimeStamp(*(uint*) (Address + Offsets.Squadrons.TrainingEnd));
 
     public unsafe ushort MissionId
-        => Address == IntPtr.Zero ? ushort.MaxValue : *(ushort*) (Address + 8);
+        => Address == IntPtr.Zero ? ushort.MaxValue : *(ushort*) (Address + Offsets.Squadrons.MissionId);
 
     public unsafe ushort TrainingId
-        => Address == IntPtr.Zero ? ushort.MaxValue : *(ushort*)(Address + 10);
+        => Address == IntPtr.Zero ? ushort.MaxValue : *(ushort*)(Address + Offsets.Squadrons.TrainingId);
 
     public unsafe bool NewRecruits
-        => Address != IntPtr.Zero && *(byte*)(Address + 12) != 0;
+        => Address != IntPtr.Zero && *(byte*)(Address + Offsets.Squadrons.NewRecruits) != 0;
 }
