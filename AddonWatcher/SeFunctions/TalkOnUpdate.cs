@@ -9,6 +9,6 @@ public delegate void OnAddonUpdateDelegate(IntPtr a, IntPtr b);
 public sealed class TalkOnUpdate : SeFunctionBase<OnAddonUpdateDelegate>
 {
     public TalkOnUpdate(SigScanner sigScanner)
-        : base(sigScanner, "40 ?? 57 48 83 ?? 58 48 ?? ?? 08 01 ?? ?? 48 8B ??")
+        : base(sigScanner, "40 ?? 57 48 83 ?? 58 48 ?? ?? 18 01 ?? ?? 48 8B ??")
     { }
 }
