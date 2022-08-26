@@ -5,10 +5,10 @@ using Accountant.Data;
 using Accountant.Enums;
 using Accountant.Structs;
 using Dalamud.Data;
+using Dalamud.Game;
 using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.Gui;
-using Dalamud.Game.Text.SeStringHandling;
 using Lumina.Excel.GeneratedSheets;
 
 namespace Accountant.Internal;
@@ -82,12 +82,12 @@ internal class GameData : IGameData
             ? ret
             : throw new ArgumentOutOfRangeException($"{worldId} is not a valid world id.");
 
-    public GameData(GameGui gui, ClientState state, DataManager data)
+    public GameData(GameGui gui, ClientState state, Framework framework, DataManager data)
     {
+        _fcTracker ??= new FreeCompanyTracker(gui, state, framework);
         _crops     ??= new Crops(data);
         _wheels    ??= new Wheels(data);
         _maps      ??= new Maps(data);
-        _fcTracker ??= new FreeCompanyTracker(gui, state);
         _plots     ??= new Plots(data);
         SetupWorlds(data);
         ++_subscribers;
@@ -122,7 +122,7 @@ internal class GameData : IGameData
         });
     }
 
-    public (SeString Tag, SeString? Name, SeString? Leader) FreeCompanyInfo()
+    public (string Tag, string? Name, string? Leader) FreeCompanyInfo()
         => Valid ? _fcTracker!.FreeCompanyInfo : throw new InvalidOperationException("Trying to use disposed GameData.");
 
     public void Dispose()

@@ -30,7 +30,7 @@ public class Accountant : IDalamudPlugin
         Config  = AccountantConfiguration.Load();
 
         Watcher  = AddonWatcherFactory.Create(Dalamud.GameGui, Dalamud.SigScanner);
-        GameData = GameDataFactory.Create(Dalamud.GameGui, Dalamud.ClientState, Dalamud.GameData);
+        GameData = GameDataFactory.Create(Dalamud.GameGui, Dalamud.ClientState, Dalamud.Framework, Dalamud.GameData);
 
         Timers       = new TimerManager();
         TimerWindow  = new TimerWindow(Timers);

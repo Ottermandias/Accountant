@@ -4,18 +4,18 @@ using Accountant.Enums;
 using Accountant.Internal;
 using Accountant.Structs;
 using Dalamud.Data;
+using Dalamud.Game;
 using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.Gui;
-using Dalamud.Game.Text.SeStringHandling;
 using Lumina.Excel.GeneratedSheets;
 
 namespace Accountant;
 
 public static class GameDataFactory
 {
-    public static IGameData Create(GameGui gui, ClientState state, DataManager data)
-        => new GameData(gui, state, data);
+    public static IGameData Create(GameGui gui, ClientState state, Framework framework, DataManager data)
+        => new GameData(gui, state, framework, data);
 }
 
 public interface IGameData : IDisposable
@@ -70,5 +70,5 @@ public interface IGameData : IDisposable
 
     // Returns tag, name and the name of the leader of your current FC.
     // Throws InvalidOperationException if not Valid;
-    public (SeString Tag, SeString? Name, SeString? Leader) FreeCompanyInfo();
+    public (string Tag, string? Name, string? Leader) FreeCompanyInfo();
 }

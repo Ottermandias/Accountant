@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Accountant.Classes;
-using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Logging;
 using Newtonsoft.Json;
 
@@ -13,7 +12,7 @@ public class FreeCompanyStorage
 {
     public const string FileName = "free_company_data.json";
 
-    public List<FreeCompanyInfo> Infos = new();
+    public readonly List<FreeCompanyInfo> Infos = new();
 
     public FreeCompanyInfo? GetCurrentCompanyInfo()
     {
@@ -40,46 +39,45 @@ public class FreeCompanyStorage
     public FreeCompanyInfo? FindByName(string name, uint serverId)
         => Infos.FirstOrDefault(f => f.Name == name && f.ServerId == serverId);
 
-    public FreeCompanyInfo? FindByAndUpdateInfo(SeString tag, SeString? name, SeString? leader, ushort serverId)
+    public FreeCompanyInfo? FindByAndUpdateInfo(string tag, string? name, string? leader, ushort serverId)
     {
-        if (tag == SeString.Empty)
+        if (tag.Length == 0)
             return null;
 
-        var t = tag.TextValue;
-        var l = leader?.TextValue ?? string.Empty;
-        var n = name?.TextValue ?? string.Empty;
+        var l = leader ?? string.Empty;
+        var n = name ?? string.Empty;
 
 
-        if (!n.Any())
+        if (n.Length == 0)
         {
             var infos = Infos.Where(i => i.ServerId == serverId);
-            return l.Any()
-                ? infos.Cast<FreeCompanyInfo?>().FirstOrDefault(i => i!.Value.Tag == t && i!.Value.Leader == l)
-                : infos.Cast<FreeCompanyInfo?>().FirstOrDefault(i => i!.Value.Tag == t);
+            return l.Length > 0
+                ? infos.Cast<FreeCompanyInfo?>().FirstOrDefault(i => i!.Value.Tag == tag && i.Value.Leader == l)
+                : infos.Cast<FreeCompanyInfo?>().FirstOrDefault(i => i!.Value.Tag == tag);
         }
 
         var idx = Infos.FindIndex(i => i.Name == n && i.ServerId == serverId);
         if (idx == -1 && serverId != 0)
         {
-            if (!l.Any())
+            if (l.Length == 0)
                 return null;
 
             Infos.Add(new FreeCompanyInfo(n, serverId)
             {
                 Leader = l,
-                Tag    = t,
+                Tag    = tag,
             });
             Save();
             return Infos.Last();
         }
 
-        if (Infos[idx].Tag == t && Infos[idx].Leader == l)
+        if (Infos[idx].Tag == tag && Infos[idx].Leader == l)
             return Infos[idx];
 
         Infos[idx] = new FreeCompanyInfo(n, serverId)
         {
             Leader = l,
-            Tag    = t,
+            Tag    = tag,
         };
         Save();
         return Infos[idx];

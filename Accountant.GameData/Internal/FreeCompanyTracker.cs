@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using Dalamud.Game;
 using Dalamud.Game.ClientState;
 using Dalamud.Game.Gui;
 using Dalamud.Game.Text.SeStringHandling;
@@ -10,13 +12,14 @@ namespace Accountant.Internal;
 internal class FreeCompanyTracker
 {
     private readonly ClientState _state;
+    private readonly Framework   _framework;
     private readonly IntPtr      _fcStatePtr  = IntPtr.Zero;
     private readonly IntPtr      _fcNamePtr   = IntPtr.Zero;
     private readonly IntPtr      _fcLeaderPtr = IntPtr.Zero;
-    private          SeString?   _freeCompanyName;
-    private          SeString?   _freeCompanyLeader;
-    private          SeString    _characterName  = SeString.Empty;
-    private          SeString    _freeCompanyTag = SeString.Empty;
+    private          string?     _freeCompanyName;
+    private          string?     _freeCompanyLeader;
+    private          string      _characterName  = string.Empty;
+    private          string      _freeCompanyTag = string.Empty;
     private          uint        _serverId;
 
     private unsafe SeString? GetFcInfo(IntPtr ptr)
@@ -42,8 +45,8 @@ internal class FreeCompanyTracker
     {
         if (_state.IsLoggedIn && _state.LocalPlayer != null)
         {
-            var newName   = _state.LocalPlayer.Name;
-            var newTag    = _state.LocalPlayer.CompanyTag;
+            var newName   = _state.LocalPlayer.Name.TextValue;
+            var newTag    = _state.LocalPlayer.CompanyTag.TextValue;
             var newServer = _state.LocalPlayer.HomeWorld.Id;
             if (_characterName != newName || _freeCompanyTag != newTag || newServer != _serverId)
             {
@@ -55,17 +58,18 @@ internal class FreeCompanyTracker
             _freeCompanyTag = newTag;
             _serverId       = newServer;
 
-            var newCompany = GetFcName();
-            var newLeader  = GetFcLeader();
-            if (newCompany != null && (_freeCompanyName == null || newCompany != SeString.Empty))
+            var newCompany = GetFcName()?.TextValue;
+            var newLeader  = GetFcLeader()?.TextValue;
+            if (newCompany != null && (_freeCompanyName == null || newCompany.Length > 0))
                 _freeCompanyName = newCompany;
-            if (newLeader != null && (_freeCompanyLeader == null || newLeader != SeString.Empty))
+
+            if (newLeader != null && (_freeCompanyLeader == null || newLeader.Length > 0))
                 _freeCompanyLeader = newLeader;
         }
         else
         {
-            _characterName     = SeString.Empty;
-            _freeCompanyTag    = SeString.Empty;
+            _characterName     = string.Empty;
+            _freeCompanyTag    = string.Empty;
             _serverId          = 0;
             _freeCompanyLeader = null;
             _freeCompanyName   = null;
@@ -85,9 +89,10 @@ internal class FreeCompanyTracker
         return data;
     }
 
-    public FreeCompanyTracker(GameGui gui, ClientState state)
+    public FreeCompanyTracker(GameGui gui, ClientState state, Framework framework)
     {
-        _state = state;
+        _state     = state;
+        _framework = framework;
         var fcData = GetDataPointer(gui);
         if (fcData != IntPtr.Zero)
         {
@@ -96,20 +101,35 @@ internal class FreeCompanyTracker
             _fcLeaderPtr = fcData + 0x93;
         }
 
-        _state.Login  += UpdateHandler;
-        _state.Logout += UpdateHandler;
+        _state.Login  += LoginHandler;
+        _state.Logout += LogoutHandler;
     }
 
-    private void UpdateHandler(object? _, EventArgs _2)
-        => Update();
+    private void LoginHandler(object? _, EventArgs _2)
+        => _framework.Update += UpdateAndRemove;
+
+    private void LogoutHandler(object? _, EventArgs _2)
+    {
+        Update();
+    }
+
+    private void UpdateAndRemove(Framework _)
+    {
+        if (_state.LocalPlayer == null)
+            return;
+
+        Update();
+        _framework.Update -= UpdateAndRemove;
+    }
 
     public void Dispose()
     {
-        _state.Login  -= UpdateHandler;
-        _state.Logout -= UpdateHandler;
+        _state.Login      -= LoginHandler;
+        _state.Logout     -= LogoutHandler;
+        _framework.Update -= UpdateAndRemove;
     }
 
-    public (SeString Tag, SeString? Name, SeString? Leader) FreeCompanyInfo
+    public (string Tag, string? Name, string? Leader) FreeCompanyInfo
     {
         get
         {
