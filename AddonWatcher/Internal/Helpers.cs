@@ -7,5 +7,7 @@ namespace AddonWatcher.Internal;
 public static class Helpers
 {
     public static unsafe SeString TextNodeToString(AtkTextNode* node)
-        => MemoryHelper.ReadSeString(&node->NodeText);
+        => node->AtkResNode.Type == NodeType.Text 
+            ? MemoryHelper.ReadSeString(&node->NodeText) 
+            : SeString.Empty;
 }

@@ -8,10 +8,10 @@ namespace AddonWatcher.Structs;
 
 public unsafe struct SelectYesNoInfo
 {
-    public const int YesButtonId        = 0;
-    public const int NoButtonId         = 1;
-    public const int CheckMarkId        = 3;
-    public const int DescriptionNodeIdx = 15;
+    public const int YesButtonId       = 0;
+    public const int NoButtonId        = 1;
+    public const int CheckMarkId       = 3;
+    public const int DescriptionNodeId = 2;
 
     public AddonSelectYesno* Pointer;
 
@@ -28,10 +28,9 @@ public unsafe struct SelectYesNoInfo
     {
         get
         {
-            var description = Pointer->AtkUnitBase.UldManager.NodeListCount > DescriptionNodeIdx
-                ? (AtkTextNode*)Pointer->AtkUnitBase.UldManager.NodeList[DescriptionNodeIdx]
-                : null;
-            return description == null ? SeString.Empty : Helpers.TextNodeToString(description);
+            // TODO: use clientstructs Prompt member when its merged
+            var node = *(AtkTextNode**)((byte*)Pointer + 0x220);
+            return node == null ? SeString.Empty : Helpers.TextNodeToString(node);
         }
     }
 }
