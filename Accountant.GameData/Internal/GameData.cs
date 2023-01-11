@@ -67,7 +67,7 @@ internal class GameData : IGameData
     public string GetWorldName(uint id)
         => _worldNames!.TryGetValue(id, out var ret)
             ? ret
-            : throw new ArgumentOutOfRangeException($"{id} is not a valid world id.");
+            : $"Unknown World {id}";
 
     public string GetWorldName(PlayerCharacter player)
         => GetWorldName(player.HomeWorld.Id);
