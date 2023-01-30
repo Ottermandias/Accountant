@@ -29,6 +29,8 @@ public enum ConfigFlags : uint
     MiniCactpot        = 0x008000,
     JumboCactpot       = 0x010000,
     NoHeaderStyling    = 0x020000,
+    CustomDelivery     = 0x040000,
+    Tribes             = 0x080000,
 }
 
 public static class ConfigFlagExtensions
@@ -72,7 +74,9 @@ public class AccountantConfiguration : IPluginConfiguration
       | ConfigFlags.MapAllowance
       | ConfigFlags.MiniCactpot
       | ConfigFlags.JumboCactpot
-      | ConfigFlags.LeveAllowances;
+      | ConfigFlags.LeveAllowances
+      | ConfigFlags.CustomDelivery
+      | ConfigFlags.Tribes;
 
     public int Version { get; set; } = 4;
 
@@ -187,7 +191,22 @@ public class AccountantConfiguration : IPluginConfiguration
         set => Flags.Set(ConfigFlags.NoHeaderStyling, value);
     }
 
-    public int LeveWarning { get; set; } = 85;
+    public bool EnableDeliveries
+    {
+        get => Flags.Check(ConfigFlags.CustomDelivery);
+        set => Flags.Set(ConfigFlags.CustomDelivery, value);
+    }
+
+    public bool EnableTribes
+    {
+        get => Flags.Check(ConfigFlags.Tribes);
+        set => Flags.Set(ConfigFlags.Tribes, value);
+    }
+
+    public int LeveWarning    { get; set; } = 85;
+    public int TribesFinished { get; set; } = 0;
+
+    public bool ShowCropTooltip = true;
 
     public Dictionary<ColorId, uint> Colors { get; set; } = Enum.GetValues<ColorId>().ToDictionary(c => c, c => c.Default());
 
@@ -200,7 +219,7 @@ public class AccountantConfiguration : IPluginConfiguration
     public HashSet<string> BlockedCompaniesAirships     { get; } = new();
     public HashSet<string> BlockedCompaniesSubmersibles { get; } = new();
     public HashSet<string> BlockedCompaniesWheels       { get; } = new();
-    public HashSet<uint>   BlockedCrops                { get; } = new();
+    public HashSet<uint>   BlockedCrops                 { get; } = new();
 
     public Dictionary<string, int> Priorities { get; } = new();
 

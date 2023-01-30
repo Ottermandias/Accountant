@@ -36,16 +36,20 @@ public partial class ConfigWindow
         ImGuiRaii.ConfigCheckmark("Enable Submersible Timers",     Accountant.Config.EnableSubmersibles, EnableSubmersibles);
         ImGuiRaii.ConfigCheckmark("Enable Aetherial Wheel Timers", Accountant.Config.EnableWheels,       EnableWheels);
         ImGui.NewLine();
-        ImGuiRaii.ConfigCheckmark("Enable Crop Timers",        Accountant.Config.EnableCrops,        EnableCrops);
+        ImGuiRaii.ConfigCheckmark("Enable Crop Timers",        Accountant.Config.EnableCrops, EnableCrops);
         ImGuiRaii.ConfigCheckmark("Ignore Indoor Plot Plants", Accountant.Config.IgnoreIndoorPlants, IgnoreIndoorPlants);
-        ImGuiRaii.ConfigCheckmark("Group Crop Beds by Plant",  Accountant.Config.OrderByCrop,        OrderByCrop);
+        ImGuiRaii.ConfigCheckmark("Group Crop Beds by Plant",  Accountant.Config.OrderByCrop, OrderByCrop);
+        ImGuiRaii.ConfigCheckmark("Show Ward-Update Tooltip",  Accountant.Config.ShowCropTooltip, v => Accountant.Config.ShowCropTooltip = v);
         ImGui.NewLine();
         ImGuiRaii.ConfigCheckmark("Enable Leve Allowance Timers", Accountant.Config.EnableLeveAllowances, EnableLeveAllowances);
         DrawLeveAllowancesWarningInput();
-        ImGuiRaii.ConfigCheckmark("Enable Squadron Mission Timers", Accountant.Config.EnableSquadron,     EnableSquadron);
-        ImGuiRaii.ConfigCheckmark("Enable Map Allowance Timers",    Accountant.Config.EnableMapAllowance, EnableMapAllowance);
-        ImGuiRaii.ConfigCheckmark("Enable Mini Cactpot Timers",     Accountant.Config.EnableMiniCactpot,  EnableMiniCactpot);
-        ImGuiRaii.ConfigCheckmark("Enable Jumbo Cactpot Timers",    Accountant.Config.EnableJumboCactpot, EnableJumboCactpot);
+        ImGuiRaii.ConfigCheckmark("Enable Squadron Mission Timers",          Accountant.Config.EnableSquadron,     EnableSquadron);
+        ImGuiRaii.ConfigCheckmark("Enable Map Allowance Timers",             Accountant.Config.EnableMapAllowance, EnableMapAllowance);
+        ImGuiRaii.ConfigCheckmark("Enable Mini Cactpot Timers",              Accountant.Config.EnableMiniCactpot,  EnableMiniCactpot);
+        ImGuiRaii.ConfigCheckmark("Enable Jumbo Cactpot Timers",             Accountant.Config.EnableJumboCactpot, EnableJumboCactpot);
+        ImGuiRaii.ConfigCheckmark("Enable Custom Delivery Allowance Timers", Accountant.Config.EnableDeliveries,   EnableDeliveries);
+        ImGuiRaii.ConfigCheckmark("Enable Tribe Allowance Timers",           Accountant.Config.EnableTribes,       EnableTribes);
+        DrawTribeAllowancesFinishedInput();
         ImGui.NewLine();
     }
 
@@ -83,6 +87,25 @@ public partial class ConfigWindow
             return;
 
         Accountant.Config.LeveWarning = leveAllowances;
+        Accountant.Config.Save();
+        _timerWindow.ResetCache(typeof(TimerWindow.TaskCache));
+    }
+
+    private void DrawTribeAllowancesFinishedInput()
+    {
+        var tribeAllowances = Accountant.Config.TribesFinished;
+        ImGui.SetNextItemWidth(150 * ImGuiHelpers.GlobalScale);
+        if (!ImGui.DragInt("Tribe Quests Finished", ref tribeAllowances, 1, 0, Tribe.AllowanceCap))
+            return;
+
+        if (tribeAllowances < 0)
+            tribeAllowances = 0;
+        if (tribeAllowances > Tribe.AllowanceCap)
+            tribeAllowances = Tribe.AllowanceCap;
+        if (tribeAllowances == Accountant.Config.TribesFinished)
+            return;
+
+        Accountant.Config.LeveWarning = tribeAllowances;
         Accountant.Config.Save();
         _timerWindow.ResetCache(typeof(TimerWindow.TaskCache));
     }
@@ -135,6 +158,12 @@ public partial class ConfigWindow
 
     private void EnableJumboCactpot(bool toggle)
         => EnableCache(toggle, ConfigFlags.JumboCactpot, typeof(TimerWindow.TaskCache));
+
+    private void EnableDeliveries(bool toggle)
+        => EnableCache(toggle, ConfigFlags.CustomDelivery, typeof(TimerWindow.TaskCache));
+
+    private void EnableTribes(bool toggle)
+        => EnableCache(toggle, ConfigFlags.Tribes, typeof(TimerWindow.TaskCache));
 
     private void EnableTimers(bool toggle)
         => EnableCache(toggle, ConfigFlags.Enabled, typeof(TimerWindow.BaseCache));

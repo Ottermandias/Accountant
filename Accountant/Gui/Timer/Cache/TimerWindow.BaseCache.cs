@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Accountant.Gui.Helper;
-using Accountant.Timers;
 using ImGuiNET;
 
 namespace Accountant.Gui.Timer;
@@ -66,6 +65,9 @@ public partial class TimerWindow
         protected virtual void UpdateInternal()
         { }
 
+        protected virtual void DrawTooltip()
+        { }
+
         public void Resetter()
             => _nextChange = DateTime.UtcNow;
 
@@ -78,10 +80,11 @@ public partial class TimerWindow
             if (Headers.Count == 0)
                 return;
 
-            using var id     = ImGuiRaii.PushId(Name);
-            using var c      = ImGuiRaii.PushColor(ImGuiCol.Header, Color.Value());
-            var       posY   = ImGui.GetCursorPosY();
-            var       header = ImGui.CollapsingHeader(Name);
+            using var id      = ImGuiRaii.PushId(Name);
+            using var c       = ImGuiRaii.PushColor(ImGuiCol.Header, Color.Value());
+            var       posY    = ImGui.GetCursorPosY();
+            var       header  = ImGui.CollapsingHeader(Name);
+            var       hovered = ImGui.IsItemHovered();
             c.Pop();
             if (DisplayTime > now && DisplayTime != DateTime.MaxValue)
             {
@@ -93,6 +96,9 @@ public partial class TimerWindow
                 ImGui.Text(s);
                 ImGui.SetCursorPos(pos);
             }
+
+            if (hovered)
+                DrawTooltip();
 
             if (!header)
                 return;

@@ -2,14 +2,16 @@
 
 public static class Icons
 {
-    public const int AirshipIcon      = 60352;
-    public const int SubmarineIcon    = 60339;
-    public const int PottingSoilIcon  = 22628;
-    public const int LeveQuestIcon    = 71041;
-    public const int SquadronIcon     = 62939; //61438;
-    public const int MapIcon          = 62938;
-    public const int JumboCactpotIcon = 60848;
-    public const int MiniCactpotIcon  = 65025;
+    public const int AirshipIcon        = 60352;
+    public const int SubmarineIcon      = 60339;
+    public const int PottingSoilIcon    = 22628;
+    public const int LeveQuestIcon      = 71041;
+    public const int SquadronIcon       = 62939; //61438;
+    public const int MapIcon            = 62938;
+    public const int JumboCactpotIcon   = 60848;
+    public const int MiniCactpotIcon    = 65025;
+    public const int CustomDeliveryIcon = 60927;
+    public const int TribeIcon          = 61917;
 
     public static readonly int[] JobIcons =
     {

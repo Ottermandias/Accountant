@@ -25,6 +25,21 @@ public partial class TimerWindow
             _privateCrops.Changed += Resetter;
         }
 
+        protected override void DrawTooltip()
+        {
+            if (Accountant.Config.ShowCropTooltip)
+            {
+                ImGui.BeginTooltip();
+                ImGui.TextUnformatted("Outdoor crops only refresh every 63 minutes on a ward-specific update timer.\n"
+                  + "Any timer may be delayed by up to 63 minutes.\n"
+                  + "Fertilizing a plant during these delays will automatically trigger updates.\n"
+                  + "They will still grow out/wilt/wither in order, and grown-out plants do not wither anymore.\n"
+                  + "Indoors, clearing the house and re-entering should automatically trigger updates.\n"
+                  + "You can disable this tooltip in the configuration.");
+                ImGui.EndTooltip();
+            }
+        }
+
         private static string TimeSpanString2(DateTime target, DateTime now)
         {
             if (target == DateTime.MinValue)
