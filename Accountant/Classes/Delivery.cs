@@ -16,7 +16,7 @@ public struct Delivery
 
     public static DateTime NextReset(DateTime time)
     {
-        var reset = new DateTime(time.Year, time.Month, time.Day + DayOfWeek.Tuesday - time.DayOfWeek, 8, 0, 0, DateTimeKind.Utc);
+        var reset = new DateTime(time.Year, time.Month, time.Day, 8, 0, 0, DateTimeKind.Utc).AddDays(DayOfWeek.Tuesday - time.DayOfWeek);
         return reset < time ? reset.AddDays(7) : reset;
     }
 }
