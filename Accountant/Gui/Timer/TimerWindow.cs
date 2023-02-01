@@ -8,6 +8,7 @@ using Accountant.Manager;
 using Dalamud.Interface;
 using ImGuiNET;
 using OtterLoc.Structs;
+using Dalamud.Game.ClientState.Conditions;
 using DateTime = System.DateTime;
 
 namespace Accountant.Gui.Timer;
@@ -84,6 +85,26 @@ public partial class TimerWindow : IDisposable
     {
         if (!Accountant.Config.Enabled || !Accountant.Config.WindowVisible)
             return;
+
+
+        if (Accountant.Config.NoTimerWindowInCombat && Dalamud.Conditions[ConditionFlag.InCombat])
+            return;
+
+        if (Accountant.Config.NoTimerWindowInInstance)
+        {
+            if (Dalamud.Conditions[ConditionFlag.BoundByDuty] || 
+                Dalamud.Conditions[ConditionFlag.BoundByDuty56] || 
+                Dalamud.Conditions[ConditionFlag.BoundByDuty95])
+                return;
+        }
+
+        if (Accountant.Config.NoTimerWindowDuringCutscene)
+        {
+            if (Dalamud.Conditions[ConditionFlag.WatchingCutscene] ||
+                Dalamud.Conditions[ConditionFlag.WatchingCutscene78] ||
+                Dalamud.Conditions[ConditionFlag.OccupiedInCutSceneEvent])
+                return;
+        }
 
         _now = DateTime.UtcNow;
 
