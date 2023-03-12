@@ -14,6 +14,9 @@ public class FreeCompanyStorage
 
     public readonly List<FreeCompanyInfo> Infos = new();
 
+    [JsonIgnore]
+    public DateTime LastChangeTime { get; set; } = DateTime.UtcNow.AddMilliseconds(500);
+
     public FreeCompanyInfo? GetCurrentCompanyInfo()
     {
         if (!Accountant.GameData.Valid)
@@ -29,6 +32,9 @@ public class FreeCompanyStorage
 
     private static FileInfo FileInfo
         => new(Path.Combine(Dalamud.PluginInterface.GetPluginConfigDirectory(), FileName));
+
+    public static DateTime GetWriteTime()
+        => FileInfo.LastWriteTimeUtc;
 
     public FreeCompanyInfo? FindByLeader(string leader, uint serverId)
         => Infos.FirstOrDefault(f => f.Leader == leader && f.ServerId == serverId);
@@ -83,6 +89,13 @@ public class FreeCompanyStorage
         return Infos[idx];
     }
 
+    public void Reload()
+    {
+        var info = Load();
+        Infos.Clear();
+        Infos.AddRange(info.Infos);
+    }
+
     public static FreeCompanyStorage Load()
     {
         var file = FileInfo;
@@ -112,6 +125,7 @@ public class FreeCompanyStorage
             var file = FileInfo;
             var data = JsonConvert.SerializeObject(this, Formatting.Indented);
             File.WriteAllText(file.FullName, data);
+            LastChangeTime = DateTime.UtcNow.AddMilliseconds(500);
         }
         catch (Exception e)
         {

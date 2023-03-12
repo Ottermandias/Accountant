@@ -4,6 +4,7 @@ using Accountant.Gui.Timer;
 using Accountant.Timers;
 using Dalamud.Game;
 using Dalamud.Utility.Signatures;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 
 namespace Accountant.Manager;
@@ -60,12 +61,12 @@ public partial class TimerManager
         public void Dispose()
             => Disable();
 
-        private void UpdateTribes()
+        private unsafe void UpdateTribes()
         {
             if (Dalamud.ClientState.LocalPlayer == null)
                 return;
 
-            var allowances = (int) PlayerState.GetBeastTribeAllowance();
+            var allowances = (int) QuestManager.Instance()->GetBeastTribeAllowance();
             if (allowances is < 0 or > Tribe.AllowanceCap)
                 return;
 

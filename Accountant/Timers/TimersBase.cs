@@ -17,12 +17,16 @@ public class TimersBase<TIdent, TInfo> : ITimers<TIdent, TInfo>
         => InternalData;
 
     public event TimerChange? Changed;
+    public DateTime           FileChangeTime { get; private set; } = DateTime.UtcNow.AddMilliseconds(500);
 
     internal void Invoke()
     {
-        PluginLog.Verbose("Change triggered in {TIdent}, {TInfo}.", typeof(TIdent), typeof(TInfo));
+        PluginLog.Verbose("Change triggered in {TInfo:l}.", typeof(TInfo).Name);
         Changed?.Invoke();
     }
+
+    public DirectoryInfo CreateFolder()
+        => CreateFolder(FolderName);
 
     private static DirectoryInfo CreateFolder(string folderName)
     {
@@ -46,10 +50,11 @@ public class TimersBase<TIdent, TInfo> : ITimers<TIdent, TInfo>
     {
         try
         {
-            var dir      = CreateFolder(FolderName);
+            var dir      = CreateFolder();
             var fileName = Path.Combine(dir.FullName, $"{ident.IdentifierHash():X8}.json");
             var data     = JsonConvert.SerializeObject((ident, info), Formatting.Indented);
             File.WriteAllText(fileName, data);
+            FileChangeTime = DateTime.UtcNow.AddMilliseconds(500);
         }
         catch (Exception e)
         {
@@ -70,7 +75,10 @@ public class TimersBase<TIdent, TInfo> : ITimers<TIdent, TInfo>
             var dir      = CreateFolder(FolderName);
             var fileName = Path.Combine(dir.FullName, $"{ident.IdentifierHash():X8}.json");
             if (File.Exists(fileName))
+            {
                 File.Delete(fileName);
+                FileChangeTime = DateTime.UtcNow.AddMilliseconds(500);
+            }
         }
         catch (Exception e)
         {
@@ -93,7 +101,9 @@ public class TimersBase<TIdent, TInfo> : ITimers<TIdent, TInfo>
     public void Reload(bool condition = true)
     {
         if (!condition)
+        {
             return;
+        }
 
         InternalData.Clear();
         try
@@ -124,5 +134,6 @@ public class TimersBase<TIdent, TInfo> : ITimers<TIdent, TInfo>
             PluginLog.Error($"{LoadError}:\n{e}");
         }
         Invoke();
+        FileChangeTime = DateTime.UtcNow.AddMilliseconds(500);
     }
 }

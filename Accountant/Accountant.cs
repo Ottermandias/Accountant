@@ -16,12 +16,13 @@ public class Accountant : IDalamudPlugin
 
     public static string Version = "";
 
-    public static   AccountantConfiguration Config   = null!;
-    public static   IGameData               GameData = null!;
-    public static   IAddonWatcher           Watcher  = null!;
-    public readonly TimerManager            Timers;
-    public readonly TimerWindow             TimerWindow;
-    public readonly ConfigWindow            ConfigWindow;
+    public static    AccountantConfiguration Config   = null!;
+    public static    IGameData               GameData = null!;
+    public static    IAddonWatcher           Watcher  = null!;
+    public readonly  TimerManager            Timers;
+    public readonly  TimerWindow             TimerWindow;
+    public readonly  ConfigWindow            ConfigWindow;
+    private readonly ConfigSync              _configSync;
 
     public Accountant(DalamudPluginInterface pluginInterface)
     {
@@ -47,6 +48,7 @@ public class Accountant : IDalamudPlugin
             HelpMessage = "Toggle the timer window.",
             ShowInHelp  = true,
         });
+        _configSync = new ConfigSync(Timers, TimerWindow);
     }
 
     private void OnAccountant(string command, string arguments)
@@ -69,6 +71,7 @@ public class Accountant : IDalamudPlugin
 
     public void Dispose()
     {
+        _configSync.Dispose();
         Timers.Dispose();
         ConfigWindow.Dispose();
         TimerWindow.Dispose();

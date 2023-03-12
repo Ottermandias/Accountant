@@ -226,6 +226,9 @@ public class AccountantConfiguration : IPluginConfiguration
     public int GetPriority(string name)
         => Priorities.TryGetValue(name, out var ret) ? ret : int.MinValue;
 
+    [JsonIgnore]
+    public DateTime LastChangeTime { get; private set; } = DateTime.UtcNow.AddMilliseconds(500);
+
     public static AccountantConfiguration Load()
     {
         var save = false;
@@ -247,7 +250,10 @@ public class AccountantConfiguration : IPluginConfiguration
     }
 
     public void Save()
-        => Dalamud.PluginInterface.SavePluginConfig(this);
+    {
+        Dalamud.PluginInterface.SavePluginConfig(this);
+        LastChangeTime = DateTime.UtcNow.AddMilliseconds(500);
+    }
 
 
     // Backwards-Compatibility
