@@ -105,7 +105,7 @@ public partial class ConfigWindow
         if (tribeAllowances == Accountant.Config.TribesFinished)
             return;
 
-        Accountant.Config.LeveWarning = tribeAllowances;
+        Accountant.Config.TribesFinished = tribeAllowances;
         Accountant.Config.Save();
         _timerWindow.ResetCache(typeof(TimerWindow.TaskCache));
     }
