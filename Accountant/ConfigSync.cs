@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Linq;
 using Accountant.Gui.Timer;
 using Accountant.Manager;
 using Accountant.Timers;
@@ -24,7 +25,7 @@ public class ConfigSync : IDisposable
 
     private void OnFramework(Framework _)
     {
-        switch (_frameCounter++ % 9)
+        switch (_frameCounter++ % 128)
         {
             case 0:
                 if (File.GetLastWriteTimeUtc(Dalamud.PluginInterface.ConfigFile.FullName) > Accountant.Config.LastChangeTime)
@@ -36,28 +37,28 @@ public class ConfigSync : IDisposable
                 }
 
                 break;
-            case 1:
+            case 10:
                 CheckTimersFolder(_manager.AirshipTimers);
                 break;
-            case 2:
+            case 20:
                 CheckTimersFolder(_manager.PlotCropTimers);
                 break;
-            case 3:
+            case 30:
                 CheckTimersFolder(_manager.PrivateCropTimers);
                 break;
-            case 4:
+            case 40:
                 CheckTimersFolder(_manager.RetainerTimers);
                 break;
-            case 5:
+            case 50:
                 CheckTimersFolder(_manager.SubmersibleTimers);
                 break;
-            case 6:
+            case 60:
                 CheckTimersFolder(_manager.TaskTimers);
                 break;
-            case 7:
+            case 70:
                 CheckTimersFolder(_manager.WheelTimers);
                 break;
-            case 8:
+            case 80:
                 if (FreeCompanyStorage.GetWriteTime() > _manager.CompanyStorage.LastChangeTime)
                 {
                     _manager.CompanyStorage.Reload();
@@ -70,21 +71,10 @@ public class ConfigSync : IDisposable
     private static void CheckTimersFolder<T1, T2>(TimersBase<T1, T2> timer) where T1 : struct, ITimerIdentifier
     {
         var dir     = timer.CreateFolder();
-        var doStuff = dir.LastWriteTimeUtc > timer.FileChangeTime;
-        if (!doStuff)
-        {
-            foreach (var file in dir.EnumerateFiles("*.json"))
-            {
-                if (file.LastWriteTimeUtc > timer.FileChangeTime)
-                {
-                    doStuff = true;
-                    break;
-                }
-            }
-        }
-
-        if (!doStuff)
+        if (dir.LastWriteTimeUtc <= timer.FileChangeTime
+         && !dir.EnumerateFiles("*.json").Any(file => file.LastWriteTimeUtc > timer.FileChangeTime))
             return;
+
         timer.Reload();
         PluginLog.Verbose("Reloaded {Timer:l} due to external changes.", typeof(T2).Name);
     }
