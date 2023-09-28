@@ -2,10 +2,8 @@ using System;
 using Accountant.Classes;
 using Accountant.Gui.Timer;
 using Accountant.Timers;
-using Dalamud.Game;
-using Dalamud.Utility.Signatures;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.Game.UI;
 
 namespace Accountant.Manager;
 
@@ -23,7 +21,7 @@ public partial class TimerManager
 
         public TribeManager(TaskTimers tasks)
         {
-            SignatureHelper.Initialise(this);
+            Dalamud.Interop.InitializeFromAttributes(this);
             _tasks = tasks;
             SetState();
         }
@@ -76,7 +74,7 @@ public partial class TimerManager
                 _tasks.Save(player);
         }
 
-        private void OnFrameworkTribe(Framework _)
+        private void OnFrameworkTribe(IFramework _)
         {
             var now = DateTime.UtcNow;
             if (_nextTribeCheck > now)

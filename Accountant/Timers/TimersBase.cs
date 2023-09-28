@@ -21,7 +21,7 @@ public class TimersBase<TIdent, TInfo> : ITimers<TIdent, TInfo>
 
     internal void Invoke()
     {
-        PluginLog.Verbose("Change triggered in {TInfo:l}.", typeof(TInfo).Name);
+        Dalamud.Log.Verbose("Change triggered in {TInfo:l}.", typeof(TInfo).Name);
         Changed?.Invoke();
     }
 
@@ -58,7 +58,7 @@ public class TimersBase<TIdent, TInfo> : ITimers<TIdent, TInfo>
         }
         catch (Exception e)
         {
-            PluginLog.Error($"{SaveError}:\n{e}");
+            Dalamud.Log.Error($"{SaveError}:\n{e}");
         }
     }
 
@@ -82,7 +82,7 @@ public class TimersBase<TIdent, TInfo> : ITimers<TIdent, TInfo>
         }
         catch (Exception e)
         {
-            PluginLog.Error($"Could not delete file:\n{e}");
+            Dalamud.Log.Error($"Could not delete file:\n{e}");
         }
     }
 
@@ -119,19 +119,19 @@ public class TimersBase<TIdent, TInfo> : ITimers<TIdent, TInfo>
                         InternalData[ident] = info;
                     else
                     {
-                        PluginLog.Error($"{ParseError}:\nIdentifier was not valid.");
+                        Dalamud.Log.Error($"{ParseError}:\nIdentifier was not valid.");
                         file.Delete();
                     }
                 }
                 catch (Exception e)
                 {
-                    PluginLog.Error($"{ParseError}:\n{e}");
+                    Dalamud.Log.Error($"{ParseError}:\n{e}");
                 }
             }
         }
         catch (Exception e)
         {
-            PluginLog.Error($"{LoadError}:\n{e}");
+            Dalamud.Log.Error($"{LoadError}:\n{e}");
         }
         Invoke();
         FileChangeTime = DateTime.UtcNow.AddMilliseconds(500);

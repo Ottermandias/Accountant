@@ -28,7 +28,7 @@ public partial class TimerManager
 
         public SubmersibleManager(SubmersibleTimers submersibles, AirshipTimers airships, FreeCompanyStorage companyStorage)
         {
-            SignatureHelper.Initialise(this);
+            Dalamud.Interop.InitializeFromAttributes(this);
             _submersibles   = submersibles;
             _airships       = airships;
             _companyStorage = companyStorage;
@@ -92,7 +92,7 @@ public partial class TimerManager
             if (info != null)
                 return true;
 
-            PluginLog.Error("Could not log submersibles, unable to obtain free company name.");
+            Dalamud.Log.Error("Could not log submersibles, unable to obtain free company name.");
             return false;
         }
 

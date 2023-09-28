@@ -5,7 +5,7 @@ description: |-
   as well as several miscallaneous tasks of multiple characters.
 punchline: Character task timers.
 repo_url: https://github.com/Ottermandias/Accountant
-dalamud_api_level: 8
+dalamud_api_level: 9
 tags:
   - Airship
   - Gardening

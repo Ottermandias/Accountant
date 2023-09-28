@@ -4,12 +4,11 @@ using Accountant.Classes;
 using Accountant.Gui.Timer;
 using Accountant.SeFunctions;
 using Accountant.Timers;
-using Dalamud.Game;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
 
 namespace Accountant.Manager;
@@ -31,7 +30,7 @@ public partial class TimerManager
         public MapManager(TaskTimers tasks)
         {
             _tasks        = tasks;
-            _mapContainer = new StaticMapContainer(Dalamud.SigScanner);
+            _mapContainer = new StaticMapContainer(Dalamud.Log, Dalamud.SigScanner);
             _gameData     = Accountant.GameData;
             SetState();
         }
@@ -105,7 +104,7 @@ public partial class TimerManager
                 _tasks.Save(player);
         }
 
-        private void OnFrameworkMap(Framework _)
+        private void OnFrameworkMap(IFramework _)
         {
             var now = DateTime.UtcNow;
             if (_nextMapCheck > now)

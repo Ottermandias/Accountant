@@ -1,7 +1,7 @@
 ﻿using System;
 using Accountant.Internal;
 using Dalamud.Game;
-using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 
 namespace Accountant.SeFunctions;
 
@@ -9,11 +9,11 @@ public sealed class StaticMapContainer : SeFunctionBase<Delegate>
 {
     public int MapUiStateOffset;
 
-    public unsafe StaticMapContainer(SigScanner sigScanner)
-        : base(sigScanner, Signatures.MapContainer)
+    public unsafe StaticMapContainer(IPluginLog log, ISigScanner sigScanner)
+        : base(log, sigScanner, Signatures.MapContainer)
     {
         MapUiStateOffset = Address == IntPtr.Zero ? 0 : *(int*)(Address + 7);
-        PluginLog.Information($"Next Map Allowance UiState-Offset at +0x{MapUiStateOffset:X}");
+        log.Information($"Next Map Allowance UiState-Offset at +0x{MapUiStateOffset:X}");
     }
 
     public unsafe DateTime GetMapDateTime(IntPtr uiState)

@@ -1,6 +1,7 @@
 ﻿using System;
 using Accountant.Enums;
 using Dalamud.Game;
+using Dalamud.Plugin.Services;
 
 namespace Accountant.SeFunctions;
 
@@ -24,8 +25,8 @@ public sealed class PositionInfoAddress : SeAddressBase
     public HousingFloor HousingFloor
         => Info.HousingFloor;
 
-    public PositionInfoAddress(SigScanner sigScanner)
-        : base(sigScanner, Signatures.PositionInfo)
+    public PositionInfoAddress(IPluginLog log, ISigScanner sigScanner)
+        : base(log, sigScanner, Signatures.PositionInfo)
     { }
 
     private readonly unsafe struct PositionInfo

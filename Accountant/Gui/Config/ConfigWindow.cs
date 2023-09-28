@@ -2,7 +2,7 @@
 using System.Numerics;
 using Accountant.Gui.Helper;
 using Accountant.Manager;
-using Dalamud.Interface;
+using Dalamud.Interface.Utility;
 using ImGuiNET;
 
 namespace Accountant.Gui.Config;

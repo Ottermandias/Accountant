@@ -226,7 +226,7 @@ public sealed class TaskTimers : TimersBase<PlayerInfo, TaskInfo>
             oldInfo.MiniCactpot.Tickets = 0;
         if (oldInfo.MiniCactpot.Tickets == MiniCactpot.MaxTickets)
         {
-            PluginLog.Error($"Increasing Mini Cactpot Tickets to more than {MiniCactpot.MaxTickets} is not possible.");
+            Dalamud.Log.Error($"Increasing Mini Cactpot Tickets to more than {MiniCactpot.MaxTickets} is not possible.");
             return false;
         }
 
@@ -255,7 +255,7 @@ public sealed class TaskTimers : TimersBase<PlayerInfo, TaskInfo>
             oldInfo.JumboCactpot.ClearTickets();
         if (oldInfo.JumboCactpot.IsFull())
         {
-            PluginLog.Error($"Buying more than {JumboCactpot.MaxTickets} jumbo cactpot tickets per week is not possible.");
+            Dalamud.Log.Error($"Buying more than {JumboCactpot.MaxTickets} jumbo cactpot tickets per week is not possible.");
             return false;
         }
 

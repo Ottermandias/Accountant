@@ -4,9 +4,9 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Accountant.Enums;
 using Dalamud;
-using Dalamud.Data;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
+using Dalamud.Plugin.Services;
 using Lumina.Data;
 using Lumina.Excel;
 using Lumina.Excel.GeneratedSheets;
@@ -80,7 +80,7 @@ internal static class Localization
         return new StringParser(Func);
     }
 
-    private static void SetCropCommands(DataManager data)
+    private static void SetCropCommands(IDataManager data)
     {
         var sheet = data.Excel.GetType().GetMethod("GetSheet", BindingFlags.Instance | BindingFlags.NonPublic)!
             .MakeGenericMethod(typeof(StringSheet)).Invoke(data.Excel, new object?[]
@@ -134,7 +134,7 @@ internal static class Localization
 
     private static readonly Regex JumboTextJp = new(@"(?<ticket>\d{4})番を", RegexOptions.Compiled | RegexOptions.ExplicitCapture);
 
-    public static void Initialize(DataManager data)
+    public static void Initialize(IDataManager data)
     {
         if (_initialized)
             return;

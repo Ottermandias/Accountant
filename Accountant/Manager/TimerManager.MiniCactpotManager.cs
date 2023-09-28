@@ -28,7 +28,7 @@ public partial class TimerManager
         {
             _tasks                = tasks;
             _watcher              = Accountant.Watcher;
-            _goldSaucerUpdateHook = goldSaucerUpdate.CreateHook(UpdateGoldSaucerDetour, false);
+            _goldSaucerUpdateHook = goldSaucerUpdate.CreateHook(Dalamud.Interop, UpdateGoldSaucerDetour, false);
             SetState();
         }
 

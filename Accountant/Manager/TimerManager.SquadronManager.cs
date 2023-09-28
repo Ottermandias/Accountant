@@ -4,6 +4,7 @@ using Accountant.Gui.Timer;
 using Accountant.SeFunctions;
 using Accountant.Timers;
 using Dalamud.Game;
+using Dalamud.Plugin.Services;
 
 namespace Accountant.Manager;
 
@@ -23,7 +24,7 @@ public partial class TimerManager
         public SquadronManager(TaskTimers tasks)
         {
             _tasks    = tasks;
-            _squadron = new StaticSquadronContainer(Dalamud.SigScanner);
+            _squadron = new StaticSquadronContainer(Dalamud.Log, Dalamud.SigScanner);
             SetState();
         }
 
@@ -84,7 +85,7 @@ public partial class TimerManager
                 _tasks.Save(player);
         }
 
-        private void OnFrameworkSquadron(Framework _)
+        private void OnFrameworkSquadron(IFramework _)
         {
             var now = DateTime.UtcNow;
             if (_nextSquadronCheck > now)

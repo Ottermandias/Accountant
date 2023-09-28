@@ -2,28 +2,31 @@
 using System.Runtime.InteropServices;
 using Dalamud.Game;
 using Dalamud.Hooking;
-using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 
 namespace AddonWatcher.SeFunctions;
 
 public class SeFunctionBase<T> where T : Delegate
 {
-    public    IntPtr Address;
-    protected T?     FuncDelegate;
+    private readonly IPluginLog _log;
+    public           IntPtr     Address;
+    protected        T?         FuncDelegate;
 
-    public SeFunctionBase(SigScanner sigScanner, int offset)
+    public SeFunctionBase(IPluginLog log, ISigScanner sigScanner, int offset)
     {
+        _log    = log;
         Address = sigScanner.Module.BaseAddress + offset;
-        PluginLog.Debug($"{GetType().Name} address 0x{Address.ToInt64():X16}, baseOffset 0x{offset:X16}.");
+        _log.Debug($"{GetType().Name} address 0x{Address.ToInt64():X16}, baseOffset 0x{offset:X16}.");
     }
 
-    public SeFunctionBase(SigScanner sigScanner, string signature, int offset = 0)
+    public SeFunctionBase(IPluginLog log, ISigScanner sigScanner, string signature, int offset = 0)
     {
+        _log    = log;
         Address = sigScanner.ScanText(signature);
         if (Address != IntPtr.Zero)
             Address += offset;
         var baseOffset = (ulong)Address.ToInt64() - (ulong)sigScanner.Module.BaseAddress.ToInt64();
-        PluginLog.Debug($"{GetType().Name} address 0x{Address.ToInt64():X16}, baseOffset 0x{baseOffset:X16}.");
+        _log.Debug($"{GetType().Name} address 0x{Address.ToInt64():X16}, baseOffset 0x{baseOffset:X16}.");
     }
 
     public T? Delegate()
@@ -37,7 +40,7 @@ public class SeFunctionBase<T> where T : Delegate
             return FuncDelegate;
         }
 
-        PluginLog.Error($"Trying to generate delegate for {GetType().Name}, but no pointer available.");
+        _log.Error($"Trying to generate delegate for {GetType().Name}, but no pointer available.");
         return null;
     }
 
@@ -52,22 +55,22 @@ public class SeFunctionBase<T> where T : Delegate
             return FuncDelegate!.DynamicInvoke(parameters);
         }
 
-        PluginLog.Error($"Trying to call {GetType().Name}, but no pointer available.");
+        _log.Error($"Trying to call {GetType().Name}, but no pointer available.");
         return null;
     }
 
-    public Hook<T>? CreateHook(T detour, bool enable = true)
+    public Hook<T>? CreateHook(IGameInteropProvider provider, T detour, bool enable = true)
     {
         if (Address != IntPtr.Zero)
         {
-            var hook = Hook<T>.FromAddress(Address, detour);
+            var hook = provider.HookFromAddress(Address, detour);
             if (enable)
                 hook.Enable();
-            PluginLog.Debug($"Hooked onto {GetType().Name} at address 0x{Address.ToInt64():X16}.");
+            _log.Debug($"Hooked onto {GetType().Name} at address 0x{Address.ToInt64():X16}.");
             return hook;
         }
 
-        PluginLog.Error($"Trying to create Hook for {GetType().Name}, but no pointer available.");
+        _log.Error($"Trying to create Hook for {GetType().Name}, but no pointer available.");
         return null;
     }
 }

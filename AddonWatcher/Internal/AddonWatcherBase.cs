@@ -1,14 +1,15 @@
 ﻿using System;
 using AddonWatcher.SeFunctions;
 using Dalamud.Game;
-using Dalamud.Game.Gui;
 using Dalamud.Hooking;
+using Dalamud.Plugin.Services;
 
 namespace AddonWatcher.Internal;
 
 internal partial class AddonWatcherBase : IDisposable
 {
-    private readonly GameGui _gui;
+    private readonly IGameGui   _gui;
+    private readonly IPluginLog _log;
 
     internal SelectStringReceiveEvent       SelectStringReceiveEvent;
     internal SelectYesnoReceiveEvent        SelectYesnoReceiveEvent;
@@ -34,25 +35,26 @@ internal partial class AddonWatcherBase : IDisposable
     private event LotteryWeeklyRewardListSetupDelegate? LotteryWeeklyRewardListSetup;
     private event TalkUpdateDelegate?                   TalkUpdated;
 
-    public AddonWatcherBase(GameGui gui, SigScanner sigScanner)
+    public AddonWatcherBase(IPluginLog log, IGameGui gui, ISigScanner sigScanner, IGameInteropProvider provider)
     {
+        _log = log;
         _gui = gui;
 
-        SelectStringReceiveEvent       = new SelectStringReceiveEvent(sigScanner);
-        SelectYesnoReceiveEvent        = new SelectYesnoReceiveEvent(sigScanner);
-        SelectStringOnSetup            = new SelectStringOnSetup(sigScanner);
-        SelectYesnoOnSetup             = new SelectYesnoOnSetup(sigScanner);
-        JournalResultOnSetup           = new JournalResultOnSetup(sigScanner);
-        LotteryWeeklyRewardListOnSetup = new LotteryWeeklyRewardListOnSetup(sigScanner);
-        TalkOnUpdate                   = new TalkOnUpdate(sigScanner);
+        SelectStringReceiveEvent       = new SelectStringReceiveEvent(_log, sigScanner);
+        SelectYesnoReceiveEvent        = new SelectYesnoReceiveEvent(_log, sigScanner);
+        SelectStringOnSetup            = new SelectStringOnSetup(_log, sigScanner);
+        SelectYesnoOnSetup             = new SelectYesnoOnSetup(_log, sigScanner);
+        JournalResultOnSetup           = new JournalResultOnSetup(_log, sigScanner);
+        LotteryWeeklyRewardListOnSetup = new LotteryWeeklyRewardListOnSetup(_log, sigScanner);
+        TalkOnUpdate                   = new TalkOnUpdate(_log, sigScanner);
 
-        SelectYesNoHook                  = SelectYesnoReceiveEvent.CreateHook(SelectYesNoEventDetour, false);
-        SelectStringHook                 = SelectStringReceiveEvent.CreateHook(SelectStringEventDetour, false);
-        SelectYesnoSetupHook             = SelectYesnoOnSetup.CreateHook(SelectYesnoOnSetupDetour, false);
-        SelectStringSetupHook            = SelectStringOnSetup.CreateHook(SelectStringOnSetupDetour, false);
-        JournalResultSetupHook           = JournalResultOnSetup.CreateHook(JournalResultOnSetupDetour, false);
-        LotteryWeeklyRewardListSetupHook = LotteryWeeklyRewardListOnSetup.CreateHook(LotteryWeeklyRewardListOnSetupDetour, false);
-        TalkUpdateHook                   = TalkOnUpdate.CreateHook(TalkUpdateDetour, false);
+        SelectYesNoHook                  = SelectYesnoReceiveEvent.CreateHook(provider, SelectYesNoEventDetour, false);
+        SelectStringHook                 = SelectStringReceiveEvent.CreateHook(provider, SelectStringEventDetour, false);
+        SelectYesnoSetupHook             = SelectYesnoOnSetup.CreateHook(provider, SelectYesnoOnSetupDetour, false);
+        SelectStringSetupHook            = SelectStringOnSetup.CreateHook(provider, SelectStringOnSetupDetour, false);
+        JournalResultSetupHook           = JournalResultOnSetup.CreateHook(provider, JournalResultOnSetupDetour, false);
+        LotteryWeeklyRewardListSetupHook = LotteryWeeklyRewardListOnSetup.CreateHook(provider, LotteryWeeklyRewardListOnSetupDetour, false);
+        TalkUpdateHook                   = TalkOnUpdate.CreateHook(provider, TalkUpdateDetour, false);
     }
 
     public void Dispose()

@@ -6,11 +6,11 @@ using Accountant.Gui.Timer;
 using Accountant.Timers;
 using Accountant.Util;
 using AddonWatcher;
-using Dalamud.Game;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Logging;
 using Dalamud.Memory;
+using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using OtterLoc.Structs;
 
@@ -122,7 +122,7 @@ public partial class TimerManager
             var fc = _companyStorage.GetCurrentCompanyInfo();
             if (fc == null)
             {
-                PluginLog.Error("Could not log wheel, unable to obtain free company name.");
+                Dalamud.Log.Error("Could not log wheel, unable to obtain free company name.");
                 return;
             }
 
@@ -130,7 +130,7 @@ public partial class TimerManager
                 _wheels.Save(fc.Value);
         }
 
-        private unsafe void OnFrameworkWheel(Framework _)
+        private unsafe void OnFrameworkWheel(IFramework _)
         {
             var wheel = (AtkUnitBase*)Dalamud.GameGui.GetAddonByName("AetherialWheel", 1);
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
@@ -148,7 +148,7 @@ public partial class TimerManager
                 if (fc != null)
                     return false;
 
-                PluginLog.Error("Could not log machines, unable to obtain free company name.");
+                Dalamud.Log.Error("Could not log machines, unable to obtain free company name.");
                 return true;
             }
 

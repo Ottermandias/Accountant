@@ -3,7 +3,7 @@ using System.Linq;
 using Accountant.Classes;
 using Accountant.Enums;
 using Accountant.Gui.Helper;
-using Dalamud.Interface;
+using Dalamud.Interface.Utility;
 using ImGuiNET;
 
 namespace Accountant.Gui.Config;

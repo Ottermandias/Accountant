@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
 using Accountant.Enums;
 using Accountant.Gui.Helper;
 using Accountant.Manager;
-using Dalamud.Interface;
+using Dalamud.Interface.Utility;
 using ImGuiNET;
 using OtterLoc.Structs;
 using DateTime = System.DateTime;
@@ -17,7 +16,7 @@ public partial class TimerWindow : IDisposable
     private          float       _widthTotal;
     private readonly string      _completedString;
     private readonly string      _availableString;
-    private readonly IconStorage _icons        = new(64);
+    private readonly IconStorage _icons;
     private          string      _headerString = "Timers###Accountant.Timers";
     private          ColorId     _headerColor  = ColorId.NeutralHeader;
     private          bool        _drawData     = true;
@@ -33,6 +32,7 @@ public partial class TimerWindow : IDisposable
 
     public TimerWindow(TimerManager manager)
     {
+        _icons = new IconStorage(Dalamud.Textures, 64);
         _cache = manager.CreateCaches(this);
         SortCache();
         _cropCache       = (CropCache)_cache.First(c => c is CropCache);

@@ -202,7 +202,7 @@ public partial class TimerManager
                 case HousingZone.MansionEmpyreum:
                     return IdentifyCropSpotHouse();
                 default:
-                    PluginLog.Error($"Housing Zone {Dalamud.ClientState.TerritoryType} should not be able to have crops.");
+                    Dalamud.Log.Error($"Housing Zone {Dalamud.ClientState.TerritoryType} should not be able to have crops.");
                     return CropSpotIdentification.Invalid;
             }
         }

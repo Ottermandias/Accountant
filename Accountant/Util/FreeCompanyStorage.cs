@@ -110,7 +110,7 @@ public class FreeCompanyStorage
             }
             catch (Exception e)
             {
-                PluginLog.Error($"Could not read free company storage data:\n{e}");
+                Dalamud.Log.Error($"Could not read free company storage data:\n{e}");
             }
 
         var newStorage = new FreeCompanyStorage();
@@ -129,7 +129,7 @@ public class FreeCompanyStorage
         }
         catch (Exception e)
         {
-            PluginLog.Error($"Could not save free company storage data:\n{e}");
+            Dalamud.Log.Error($"Could not save free company storage data:\n{e}");
         }
     }
 }

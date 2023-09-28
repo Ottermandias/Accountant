@@ -7,7 +7,6 @@ using Accountant.Structs;
 using Accountant.Timers;
 using Accountant.Util;
 using Dalamud.Hooking;
-using Dalamud.Logging;
 using Dalamud.Utility.Signatures;
 
 namespace Accountant.Manager;
@@ -28,7 +27,7 @@ public partial class TimerManager
 
         public AirshipManager(AirshipTimers airships, SubmersibleTimers submersibles, FreeCompanyStorage companyStorage)
         {
-            SignatureHelper.Initialise(this);
+            Dalamud.Interop.InitializeFromAttributes(this);
             _airships       = airships;
             _submersibles   = submersibles;
             _companyStorage = companyStorage;
@@ -91,7 +90,7 @@ public partial class TimerManager
             if (info != null)
                 return true;
 
-            PluginLog.Error("Could not log airships, unable to obtain free company name.");
+            Dalamud.Log.Error("Could not log airships, unable to obtain free company name.");
             return false;
         }
 

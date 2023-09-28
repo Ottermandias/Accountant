@@ -16,7 +16,7 @@ internal partial class AddonWatcherBase
         var description = Dalamud.Memory.MemoryHelper.ReadSeStringNullTerminated(data + 0x08);
         var yes         = Dalamud.Memory.MemoryHelper.ReadSeStringNullTerminated(data + 0x18);
         var no          = Dalamud.Memory.MemoryHelper.ReadSeStringNullTerminated(data + 0x28);
-        PluginLog.Verbose("SelectYesno 0x{SelectYesnoPtr:X} setup with description {Description} and options {YesOption}/{NoOption}.",
+        _log.Verbose("SelectYesno 0x{SelectYesnoPtr:X} setup with description {Description} and options {YesOption}/{NoOption}.",
             (ulong)unit, description, yes, no);
         SelectYesnoSetup?.Invoke(unit, description, yes, no);
     }
@@ -27,7 +27,7 @@ internal partial class AddonWatcherBase
         var ptr         = (SelectStringInfo)unit;
         var description = ptr.Description;
         var options     = Enumerable.Range(0, ptr.Count).Select(i => ptr.ItemText(i)).ToArray();
-        PluginLog.Verbose("SelectString 0x{SelectStringPtr:X} setup with description {Description} and {OptionCount} options.", (ulong)unit,
+        _log.Verbose("SelectString 0x{SelectStringPtr:X} setup with description {Description} and {OptionCount} options.", (ulong)unit,
             description, options.Length);
         SelectStringSetup?.Invoke(unit, description, options);
     }
@@ -37,14 +37,14 @@ internal partial class AddonWatcherBase
         JournalResultSetupHook!.Original(unit, _, data);
         var ptr       = (JournalResultInfo)unit;
         var questName = ptr.QuestName;
-        PluginLog.Verbose("JournalResult 0x{JournalResultPtr:X} setup for quest {QuestName}.", (ulong)unit, questName);
+        _log.Verbose("JournalResult 0x{JournalResultPtr:X} setup for quest {QuestName}.", (ulong)unit, questName);
         JournalResultSetup?.Invoke(unit, questName);
     }
 
     private void LotteryWeeklyRewardListOnSetupDetour(IntPtr unit, int _, IntPtr data)
     {
         LotteryWeeklyRewardListSetupHook!.Original(unit, _, data);
-        PluginLog.Verbose("LotteryWeeklyRewardList 0x{LotteryWeeklyRewardListPtr:X} setup.", (ulong)unit);
+        _log.Verbose("LotteryWeeklyRewardList 0x{LotteryWeeklyRewardListPtr:X} setup.", (ulong)unit);
         LotteryWeeklyRewardListSetup?.Invoke(unit);
     }
 
@@ -58,13 +58,13 @@ internal partial class AddonWatcherBase
             {
                 case SelectYesNoInfo.YesButtonId:
                     var yesText = ptr.YesText;
-                    PluginLog.Verbose("Yes-Button {ButtonText} selected on 0x{SelectYesnoPtr:X} with description {Description}.", yesText,
+                    _log.Verbose("Yes-Button {ButtonText} selected on 0x{SelectYesnoPtr:X} with description {Description}.", yesText,
                         (ulong)atkUnit, descriptionText);
                     YesnoSelected!.Invoke(atkUnit, true, yesText, descriptionText);
                     break;
                 case SelectYesNoInfo.NoButtonId:
                     var noText = ptr.NoText;
-                    PluginLog.Verbose("No-Button {ButtonText} selected on 0x{SelectYesnoPtr:X} with description {Description}.", noText,
+                    _log.Verbose("No-Button {ButtonText} selected on 0x{SelectYesnoPtr:X} with description {Description}.", noText,
                         (ulong)atkUnit, descriptionText);
                     YesnoSelected!.Invoke(atkUnit, false, noText, descriptionText);
                     break;
@@ -88,7 +88,7 @@ internal partial class AddonWatcherBase
                 var renderer        = *(AtkComponentListItemRenderer**)data;
                 var descriptionText = ((SelectStringInfo)ptr).Description;
                 var itemText        = Helpers.TextNodeToString(renderer->AtkComponentButton.ButtonTextNode);
-                PluginLog.Verbose("String {ButtonText} ({Which}) selected on 0x{SelectStringPtr:X} with description {Description}.", itemText,
+                _log.Verbose("String {ButtonText} ({Which}) selected on 0x{SelectStringPtr:X} with description {Description}.", itemText,
                     which, (ulong)ptr, descriptionText);
                 StringSelected!.Invoke(ptr, idx, itemText, descriptionText);
             }
@@ -104,7 +104,7 @@ internal partial class AddonWatcherBase
         var ptr     = (TalkInfo)unit;
         var speaker = ptr.Speaker;
         var text    = ptr.Text;
-        PluginLog.Verbose("Talk at 0x{Unit:X} updated - Speaker: {Speaker}\n{Text}", (ulong)unit, speaker, text);
+        _log.Verbose("Talk at 0x{Unit:X} updated - Speaker: {Speaker}\n{Text}", (ulong)unit, speaker, text);
         TalkUpdated?.Invoke(unit, text, speaker);
     }
 }

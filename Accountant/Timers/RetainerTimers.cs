@@ -22,7 +22,7 @@ public sealed class RetainerTimers : TimersBase<PlayerInfo, RetainerInfo[]>
     {
         if (slot >= RetainerInfo.MaxSlots)
         {
-            PluginLog.Error($"Only {RetainerInfo.MaxSlots} retainers supported.");
+            Dalamud.Log.Error($"Only {RetainerInfo.MaxSlots} retainers supported.");
             return false;
         }
 
@@ -55,7 +55,7 @@ public sealed class RetainerTimers : TimersBase<PlayerInfo, RetainerInfo[]>
     {
         if (slot >= RetainerInfo.MaxSlots)
         {
-            PluginLog.Error($"Only {RetainerInfo.MaxSlots} retainers supported.");
+            Dalamud.Log.Error($"Only {RetainerInfo.MaxSlots} retainers supported.");
             return false;
         }
 

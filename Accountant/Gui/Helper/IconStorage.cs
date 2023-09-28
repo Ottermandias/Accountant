@@ -1,39 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
-using Dalamud.Utility;
-using ImGuiScene;
-using Lumina.Data.Files;
+using Dalamud.Interface.Internal;
+using Dalamud.Plugin.Services;
 
 namespace Accountant.Gui.Helper;
 
 internal class IconStorage : IDisposable
 {
-    private readonly SortedList<uint, TextureWrap> _icons;
+    private readonly ITextureProvider                      _provider;
+    private readonly Dictionary<uint, IDalamudTextureWrap> _icons;
 
-    public IconStorage(int size = 0)
-        => _icons = new SortedList<uint, TextureWrap>(size);
-
-    public TextureWrap this[uint id]
-        => LoadIcon(id);
-
-    public TextureWrap this[int id]
-        => LoadIcon((uint)id);
-
-    private static TexFile? GetHdIcon(uint id)
+    public IconStorage(ITextureProvider provider, int size = 0)
     {
-        var path = $"ui/icon/{id / 1000 * 1000:000000}/{id:000000}_hr1.tex";
-        return Dalamud.GameData.GetFile<TexFile>(path);
+        _provider = provider;
+        _icons    = new Dictionary<uint, IDalamudTextureWrap>(size);
     }
 
-    public TextureWrap LoadIcon(uint id)
+    public IDalamudTextureWrap this[uint id]
+        => LoadIcon(id);
+
+    public IDalamudTextureWrap this[int id]
+        => LoadIcon((uint)id);
+
+    public IDalamudTextureWrap LoadIcon(uint id)
     {
         if (_icons.TryGetValue(id, out var ret))
             return ret;
 
-        var icon     = GetHdIcon(id) ?? Dalamud.GameData.GetIcon(id)!;
-        var iconData = icon.GetRgbaImageData();
-
-        ret        = Dalamud.PluginInterface.UiBuilder.LoadImageRaw(iconData, icon.Header.Width, icon.Header.Height, 4);
+        ret        = _provider.GetIcon(id)!;
         _icons[id] = ret;
         return ret;
     }

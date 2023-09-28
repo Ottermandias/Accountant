@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Accountant.Structs;
-using Dalamud.Data;
-using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 using Lumina.Excel.GeneratedSheets;
 
 namespace Accountant.Data;
@@ -17,7 +16,7 @@ public partial class Crops
     internal CropData Find(string name)
         => _nameToData.TryGetValue(name.ToLowerInvariant(), out var crop) ? crop : _idToData[0u].Item1;
 
-    internal Crops(DataManager gameData)
+    internal Crops(IPluginLog log, IDataManager gameData)
     {
         if (_nameToData != null && _idToData != null)
             return;
@@ -31,13 +30,13 @@ public partial class Crops
             var seed = sheet.GetRow((uint)seedId);
             if (item == null)
             {
-                PluginLog.Error($"Could not obtain item with id {itemId}");
+                log.Error($"Could not obtain item with id {itemId}");
                 continue;
             }
 
             if (seed == null)
             {
-                PluginLog.Error($"Could not obtain item with id {seedId}");
+                log.Error($"Could not obtain item with id {seedId}");
                 continue;
             }
 

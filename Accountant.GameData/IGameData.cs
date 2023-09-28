@@ -3,19 +3,16 @@ using System.Collections.Generic;
 using Accountant.Enums;
 using Accountant.Internal;
 using Accountant.Structs;
-using Dalamud.Data;
-using Dalamud.Game;
-using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Objects.SubKinds;
-using Dalamud.Game.Gui;
+using Dalamud.Plugin.Services;
 using Lumina.Excel.GeneratedSheets;
 
 namespace Accountant;
 
 public static class GameDataFactory
 {
-    public static IGameData Create(GameGui gui, ClientState state, Framework framework, DataManager data)
-        => new GameData(gui, state, framework, data);
+    public static IGameData Create(IPluginLog log, IGameGui gui, IClientState state, IFramework framework, IDataManager data)
+        => new GameData(log, gui, state, framework, data);
 }
 
 public interface IGameData : IDisposable

@@ -3,6 +3,7 @@ using Accountant.Classes;
 using Accountant.Gui.Timer;
 using Accountant.Timers;
 using Dalamud.Game;
+using Dalamud.Plugin.Services;
 using Dalamud.Utility.Signatures;
 
 namespace Accountant.Manager;
@@ -27,7 +28,7 @@ public partial class TimerManager
 
         public DeliveryManager(TaskTimers tasks)
         {
-            SignatureHelper.Initialise(this);
+            Dalamud.Interop.InitializeFromAttributes(this);
             _tasks = tasks;
             SetState();
         }
@@ -80,7 +81,7 @@ public partial class TimerManager
                 _tasks.Save(player);
         }
 
-        private void OnFrameworkDelivery(Framework _)
+        private void OnFrameworkDelivery(IFramework _)
         {
             var now = DateTime.UtcNow;
             if (_nextDeliveryCheck > now)

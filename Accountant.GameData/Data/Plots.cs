@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Accountant.Enums;
-using Dalamud.Data;
+using Dalamud.Plugin.Services;
 using Lumina.Excel.GeneratedSheets;
 
 namespace Accountant.Data;
@@ -43,7 +43,7 @@ public class Plots
         return data.Length;
     }
 
-    internal Plots(DataManager data)
+    internal Plots(IDataManager data)
     {
         var sheet = data.GetExcelSheet<HousingLandSet>()!;
         _mistData         = sheet.GetRow(0)!.PlotSize.Select(b => (PlotSize)b).ToArray();

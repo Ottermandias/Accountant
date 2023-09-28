@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using Dalamud.Game;
-using Dalamud.Game.Gui;
+using Dalamud.Plugin.Services;
 
 namespace AddonWatcher.Internal;
 
@@ -17,9 +16,9 @@ internal class AddonWatcher : IAddonWatcher
 
     public bool Valid { get; private set; } = true;
 
-    public AddonWatcher(GameGui gui, SigScanner sigScanner)
+    public AddonWatcher(IPluginLog log, IGameGui gui, ISigScanner sigScanner, IGameInteropProvider interop)
     {
-        _base ??= new AddonWatcherBase(gui, sigScanner);
+        _base ??= new AddonWatcherBase(log, gui, sigScanner, interop);
         ++_subscribers;
     }
 

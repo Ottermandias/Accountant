@@ -26,12 +26,13 @@ public sealed partial class TimerManager : IDisposable
     public readonly WheelTimers         WheelTimers       = new();
     public readonly TaskTimers          TaskTimers        = new();
     public readonly FreeCompanyStorage  CompanyStorage    = FreeCompanyStorage.Load();
-    public readonly PositionInfoAddress PositionInfo      = new(Dalamud.SigScanner);
+    public readonly PositionInfoAddress PositionInfo;
 
     private readonly ITimerManager[] _managers;
 
     public TimerManager()
     {
+        PositionInfo = new PositionInfoAddress(Dalamud.Log, Dalamud.SigScanner);
         _managers = new ITimerManager[]
         {
             new RetainerManager(RetainerTimers),

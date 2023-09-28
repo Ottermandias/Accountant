@@ -1,13 +1,14 @@
 ﻿using System;
 using Accountant.Internal;
 using Dalamud.Game;
+using Dalamud.Plugin.Services;
 
 namespace Accountant.SeFunctions;
 
 public sealed class StaticSquadronContainer : SeAddressBase
 {
-    public StaticSquadronContainer(SigScanner sigScanner)
-        : base(sigScanner, Signatures.SquadronContainer)
+    public StaticSquadronContainer(IPluginLog log, ISigScanner sigScanner)
+        : base(log, sigScanner, Signatures.SquadronContainer)
     { }
 
     public unsafe DateTime MissionEnd

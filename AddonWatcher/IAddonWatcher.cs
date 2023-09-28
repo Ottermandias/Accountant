@@ -2,6 +2,7 @@
 using Dalamud.Game;
 using Dalamud.Game.Gui;
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Plugin.Services;
 
 namespace AddonWatcher;
 
@@ -15,8 +16,8 @@ public delegate void TalkUpdateDelegate(IntPtr unit, SeString text, SeString spe
 
 public static class AddonWatcherFactory
 {
-    public static IAddonWatcher Create(GameGui gui, SigScanner sigScanner)
-        => new Internal.AddonWatcher(gui, sigScanner);
+    public static IAddonWatcher Create(IPluginLog log, IGameGui gui, ISigScanner sigScanner, IGameInteropProvider provider)
+        => new Internal.AddonWatcher(log, gui, sigScanner, provider);
 }
 
 public interface IAddonWatcher : IDisposable

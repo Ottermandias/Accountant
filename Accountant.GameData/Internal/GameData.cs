@@ -4,11 +4,8 @@ using System.Linq;
 using Accountant.Data;
 using Accountant.Enums;
 using Accountant.Structs;
-using Dalamud.Data;
-using Dalamud.Game;
-using Dalamud.Game.ClientState;
 using Dalamud.Game.ClientState.Objects.SubKinds;
-using Dalamud.Game.Gui;
+using Dalamud.Plugin.Services;
 using Lumina.Excel.GeneratedSheets;
 
 namespace Accountant.Internal;
@@ -26,7 +23,7 @@ internal class GameData : IGameData
     private static FreeCompanyTracker?       _fcTracker;
     private static int                       _subscribers;
 
-    public         bool                      Valid { get; private set; } = true;
+    public bool Valid { get; private set; } = true;
 
     public int Version
         => CurrentVersion;
@@ -82,10 +79,10 @@ internal class GameData : IGameData
             ? ret
             : throw new ArgumentOutOfRangeException($"{worldId} is not a valid world id.");
 
-    public GameData(GameGui gui, ClientState state, Framework framework, DataManager data)
+    public GameData(IPluginLog log, IGameGui gui, IClientState state, IFramework framework, IDataManager data)
     {
-        _fcTracker ??= new FreeCompanyTracker(gui, state, framework);
-        _crops     ??= new Crops(data);
+        _fcTracker ??= new FreeCompanyTracker(log, gui, state, framework);
+        _crops     ??= new Crops(log, data);
         _wheels    ??= new Wheels(data);
         _maps      ??= new Maps(data);
         _plots     ??= new Plots(data);
@@ -94,7 +91,7 @@ internal class GameData : IGameData
         Localization.Initialize(data);
     }
 
-    private static void SetupWorlds(DataManager data)
+    private static void SetupWorlds(IDataManager data)
     {
         if (_worldNames != null)
             return;

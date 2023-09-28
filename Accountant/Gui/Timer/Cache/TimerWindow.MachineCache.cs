@@ -3,7 +3,7 @@ using System.Linq;
 using Accountant.Classes;
 using Accountant.Enums;
 using Accountant.Timers;
-using ImGuiScene;
+using Dalamud.Interface.Internal;
 
 namespace Accountant.Gui.Timer;
 
@@ -16,8 +16,8 @@ public partial class TimerWindow
         private readonly MachineType       _type;
         public           string            Header = string.Empty;
 
-        private readonly TextureWrap   _icon;
-        public           ObjectCounter GlobalCounter;
+        private readonly IDalamudTextureWrap _icon;
+        public           ObjectCounter       GlobalCounter;
 
         public MachineCache(TimerWindow window, ConfigFlags requiredFlags, string name, MachineType type, AirshipTimers airships,
             SubmersibleTimers submersibles)

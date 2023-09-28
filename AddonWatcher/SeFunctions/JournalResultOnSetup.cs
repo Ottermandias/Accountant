@@ -1,11 +1,12 @@
 ﻿using Dalamud.Game;
+using Dalamud.Plugin.Services;
 
 namespace AddonWatcher.SeFunctions;
 
 public sealed class JournalResultOnSetup : SeFunctionBase<OnAddonSetupDelegate>
 {
-    public JournalResultOnSetup(SigScanner sigScanner)
-        : base(sigScanner,
+    public JournalResultOnSetup(IPluginLog log, ISigScanner sigScanner)
+        : base(log, sigScanner,
             "?? 89 ?? ?? ?? ?? 89 ?? ?? ?? ?? 89 ?? ?? ?? 57 48 83 ?? ?? 8B EA 49 8B ?? BA 02 ?? ?? ?? 48 8B ?? E8 ?? ?? ?? ?? BA")
     { }
 }

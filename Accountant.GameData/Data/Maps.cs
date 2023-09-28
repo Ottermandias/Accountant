@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Dalamud.Data;
+using Dalamud.Plugin.Services;
 using Lumina.Excel.GeneratedSheets;
 
 namespace Accountant.Data;
@@ -11,7 +11,7 @@ public class Maps
     internal Item? Find(uint itemId)
         => _idToItem.TryGetValue(itemId, out var map) ? map : null;
 
-    internal Maps(DataManager gameData)
+    internal Maps(IDataManager gameData)
     {
         var items = gameData.GetExcelSheet<Item>()!;
         _idToItem = new Dictionary<uint, Item>()

@@ -24,7 +24,7 @@ public sealed class SubmersibleTimers : TimersBase<FreeCompanyInfo, MachineInfo[
     {
         if (slot >= MachineInfo.MaxSlots)
         {
-            PluginLog.Error($"Only {MachineInfo.MaxSlots} submersibles supported.");
+            Dalamud.Log.Error($"Only {MachineInfo.MaxSlots} submersibles supported.");
             return false;
         }
 
@@ -53,7 +53,7 @@ public sealed class SubmersibleTimers : TimersBase<FreeCompanyInfo, MachineInfo[
     {
         if (slot >= MachineInfo.MaxSlots)
         {
-            PluginLog.Error($"Only {MachineInfo.MaxSlots} submersibles supported.");
+            Dalamud.Log.Error($"Only {MachineInfo.MaxSlots} submersibles supported.");
             return false;
         }
         if (!InternalData.TryGetValue(company, out var submersibles))

@@ -5,6 +5,7 @@ using Accountant.SeFunctions;
 using Accountant.Structs;
 using Accountant.Timers;
 using Dalamud.Game;
+using Dalamud.Plugin.Services;
 
 namespace Accountant.Manager;
 
@@ -27,7 +28,7 @@ public partial class TimerManager
         public RetainerManager(RetainerTimers retainers)
         {
             _retainers         = retainers;
-            _retainerContainer = new StaticRetainerContainer(Dalamud.SigScanner).Address;
+            _retainerContainer = new StaticRetainerContainer(Dalamud.Log, Dalamud.SigScanner).Address;
 
             SetState();
         }
@@ -88,7 +89,7 @@ public partial class TimerManager
                 _retainers.Save(info);
         }
 
-        private void OnFrameworkRetainer(Framework _)
+        private void OnFrameworkRetainer(IFramework _)
         {
             var now = DateTime.UtcNow;
             if (_nextRetainerCheck > now)

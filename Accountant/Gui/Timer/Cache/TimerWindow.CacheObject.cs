@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Numerics;
 using Accountant.Gui.Helper;
+using Dalamud.Interface.Internal;
 using ImGuiNET;
-using ImGuiScene;
 
 namespace Accountant.Gui.Timer;
 
 public struct CacheObject
 {
-    public string      Name;
-    public DateTime    DisplayTime;
-    public string?     DisplayString;
-    public TextureWrap Icon;
-    public float       IconOffset;
-    public ColorId     Color;
-    public Action?     TooltipCallback;
+    public string              Name;
+    public DateTime            DisplayTime;
+    public string?             DisplayString;
+    public IDalamudTextureWrap Icon;
+    public float               IconOffset;
+    public ColorId             Color;
+    public Action?             TooltipCallback;
 
     private void DrawIcon()
     {
@@ -49,7 +49,7 @@ public struct CacheObject
 
         if (DisplayString != null)
         {
-            var width   = ImGui.CalcTextSize(DisplayString).X;
+            var width = ImGui.CalcTextSize(DisplayString).X;
             ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X - width);
             ImGui.Text(DisplayString);
         }
@@ -60,6 +60,7 @@ public struct CacheObject
             ImGui.SameLine(ImGui.GetWindowContentRegionMax().X - ImGui.GetWindowContentRegionMin().X - width);
             ImGui.Text(display);
         }
+
         color.Pop();
         if (tooltip)
             TooltipCallback?.Invoke();

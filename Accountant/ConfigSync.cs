@@ -5,8 +5,8 @@ using Accountant.Gui.Timer;
 using Accountant.Manager;
 using Accountant.Timers;
 using Accountant.Util;
-using Dalamud.Game;
 using Dalamud.Logging;
+using Dalamud.Plugin.Services;
 
 namespace Accountant;
 
@@ -23,7 +23,7 @@ public class ConfigSync : IDisposable
         Dalamud.Framework.Update += OnFramework;
     }
 
-    private void OnFramework(Framework _)
+    private void OnFramework(IFramework _)
     {
         switch (_frameCounter++ % 128)
         {
@@ -33,7 +33,7 @@ public class ConfigSync : IDisposable
                     Accountant.Config = AccountantConfiguration.Load();
                     _manager.CheckSettings();
                     _window.ResetCache();
-                    PluginLog.Verbose("Reloaded Config due to external changes.");
+                    Dalamud.Log.Verbose("Reloaded Config due to external changes.");
                 }
 
                 break;
@@ -76,7 +76,7 @@ public class ConfigSync : IDisposable
             return;
 
         timer.Reload();
-        PluginLog.Verbose("Reloaded {Timer:l} due to external changes.", typeof(T2).Name);
+        Dalamud.Log.Verbose("Reloaded {Timer:l} due to external changes.", typeof(T2).Name);
     }
 
     public void Dispose()

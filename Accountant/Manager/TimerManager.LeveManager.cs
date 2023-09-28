@@ -3,7 +3,7 @@ using Accountant.Classes;
 using Accountant.Gui.Timer;
 using Accountant.SeFunctions;
 using Accountant.Timers;
-using Dalamud.Game;
+using Dalamud.Plugin.Services;
 
 namespace Accountant.Manager;
 
@@ -23,7 +23,7 @@ public partial class TimerManager
         public LeveManager(TaskTimers tasks)
         {
             _tasks       = tasks;
-            _leveAddress = new StaticLeveAllowances(Dalamud.SigScanner);
+            _leveAddress = new StaticLeveAllowances(Dalamud.Log, Dalamud.SigScanner);
             SetState();
         }
 
@@ -75,7 +75,7 @@ public partial class TimerManager
                 _tasks.Save(player);
         }
 
-        private void OnFrameworkLeve(Framework _)
+        private void OnFrameworkLeve(IFramework _)
         {
             var now = DateTime.UtcNow;
             if (_nextLeveCheck > now)

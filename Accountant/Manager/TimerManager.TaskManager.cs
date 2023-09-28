@@ -16,11 +16,12 @@ public partial class TimerManager
 
         private readonly ITimerManager[] _subTasks;
 
-        private readonly UpdateGoldSaucerData _goldSaucerUpdate = new(Dalamud.SigScanner);
+        private readonly UpdateGoldSaucerData _goldSaucerUpdate;
 
         public TaskManager(TaskTimers tasks)
         {
-            _tasks = tasks;
+            _tasks            = tasks;
+            _goldSaucerUpdate = new UpdateGoldSaucerData(Dalamud.Log, Dalamud.SigScanner);
             _subTasks = new ITimerManager[]
             {
                 new LeveManager(tasks),

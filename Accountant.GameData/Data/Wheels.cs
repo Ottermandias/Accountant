@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using Dalamud;
-using Dalamud.Data;
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Plugin.Services;
 using Lumina.Excel.GeneratedSheets;
 
 namespace Accountant.Data;
@@ -24,7 +23,7 @@ public class Wheels
     private static readonly Regex WheelRegex = new(@"^grade (?<grade>\d) wheel of", RegexOptions.Compiled);
     private static readonly Regex PrimedWheelRegex = new(@"^primed grade (?<grade>\d) wheel of", RegexOptions.Compiled);
 
-    internal Wheels(DataManager gameData)
+    internal Wheels(IDataManager gameData)
     {
         var items        = gameData.GetExcelSheet<Item>(ClientLanguage.English)!;
         var itemsLang    = gameData.GetExcelSheet<Item>()!;

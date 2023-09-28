@@ -25,7 +25,7 @@ public sealed class WheelTimers : TimersBase<FreeCompanyInfo, WheelInfo[]>
         --slot;
         if (slot >= WheelInfo.MaxSlots)
         {
-            PluginLog.Error($"Only {WheelInfo.MaxSlots} aetherial wheels supported.");
+            Dalamud.Log.Error($"Only {WheelInfo.MaxSlots} aetherial wheels supported.");
             return false;
         }
 
@@ -68,7 +68,7 @@ public sealed class WheelTimers : TimersBase<FreeCompanyInfo, WheelInfo[]>
         --slot;
         if (slot >= WheelInfo.MaxSlots)
         {
-            PluginLog.Error($"Only {WheelInfo.MaxSlots} aetherial wheels supported.");
+            Dalamud.Log.Error($"Only {WheelInfo.MaxSlots} aetherial wheels supported.");
             return false;
         }
 
