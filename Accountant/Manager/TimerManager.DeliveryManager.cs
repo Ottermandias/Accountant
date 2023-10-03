@@ -2,9 +2,8 @@ using System;
 using Accountant.Classes;
 using Accountant.Gui.Timer;
 using Accountant.Timers;
-using Dalamud.Game;
 using Dalamud.Plugin.Services;
-using Dalamud.Utility.Signatures;
+using FFXIVClientStructs.FFXIV.Client.Game;
 
 namespace Accountant.Manager;
 
@@ -15,12 +14,6 @@ public partial class TimerManager
         public ConfigFlags RequiredFlags
             => ConfigFlags.Enabled | ConfigFlags.CustomDelivery;
 
-        [Signature(Signatures.CustomDeliveryData, ScanType = ScanType.StaticAddress)]
-        private readonly IntPtr _customDeliveryData = IntPtr.Zero;
-
-        [Signature(Signatures.CustomDeliveryAllowances)]
-        private readonly delegate* unmanaged<IntPtr, int> _getAllowances = null!;
-
         private bool     _state;
         private DateTime _nextDeliveryCheck = DateTime.MinValue;
 
@@ -28,7 +21,6 @@ public partial class TimerManager
 
         public DeliveryManager(TaskTimers tasks)
         {
-            Dalamud.Interop.InitializeFromAttributes(this);
             _tasks = tasks;
             SetState();
         }
@@ -71,7 +63,7 @@ public partial class TimerManager
             if (Dalamud.ClientState.LocalPlayer == null)
                 return;
 
-            var allowances = Delivery.AllowanceCap - _getAllowances(_customDeliveryData);
+            var allowances = Delivery.AllowanceCap - SatisfactionSupplyManager.Instance()->GetUsedAllowances();
             if (allowances is < 0 or > Delivery.AllowanceCap)
                 return;
 
