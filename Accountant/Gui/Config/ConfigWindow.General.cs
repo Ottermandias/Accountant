@@ -27,6 +27,9 @@ public partial class ConfigWindow
         ImGuiRaii.ConfigCheckmark("No Timer Window Resize",      Accountant.Config.ProhibitResize,  b => Accountant.Config.ProhibitResize  = b);
         ImGuiRaii.ConfigCheckmark("No Timer Window Movement",    Accountant.Config.ProhibitMoving,  b => Accountant.Config.ProhibitMoving  = b);
         ImGuiRaii.ConfigCheckmark("Hide Disabled Objects",       Accountant.Config.HideDisabled,    b => Accountant.Config.HideDisabled    = b);
+        ImGuiRaii.ConfigCheckmark("Hide Timers During Combat",   Accountant.Config.NoTimerWindowInCombat,       b => Accountant.Config.NoTimerWindowInCombat = b);
+        ImGuiRaii.ConfigCheckmark("Hide Timers In Instance",     Accountant.Config.NoTimerWindowInInstance,     b => Accountant.Config.NoTimerWindowInInstance = b);
+        ImGuiRaii.ConfigCheckmark("Hide Timers During Cutscene", Accountant.Config.NoTimerWindowDuringCutscene, b => Accountant.Config.NoTimerWindowDuringCutscene = b);
         ImGuiRaii.HoverTooltip("Hide objects that are disabled or limited from the timers.");
         ImGui.NewLine();
 
