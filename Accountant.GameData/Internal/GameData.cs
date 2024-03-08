@@ -105,16 +105,18 @@ internal class GameData : IGameData
             var world = sheet.GetRow(kvp.Key)!;
             return (byte)(world.DataCenter.Row switch
             {
-                1 => 12,
-                2 => 12,
-                3 => 12,
-                4 => 26,
-                5 => 26,
-                6 => 19,
-                7 => 20,
-                8 => 26,
-                9 => 10,
-                _ => 12,
+                1  => 12,
+                2  => 12,
+                3  => 12,
+                4  => 26,
+                5  => 26,
+                6  => 19,
+                7  => 19,
+                8  => 26,
+                9  => 9,
+                10 => 12,
+                11 => 26,
+                _  => 12,
             });
         });
     }
