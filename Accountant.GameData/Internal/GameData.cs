@@ -97,7 +97,7 @@ internal class GameData : IGameData
             return;
 
         var sheet = data.GameData.GetExcelSheet<World>()!;
-        _worldNames = sheet.Where(w => w.IsPublic && !w.Name.RawData.IsEmpty)
+        _worldNames = sheet.Where(IsValid)
             .ToDictionary(w => w.RowId, w => w.Name.RawString);
         _worldIds = _worldNames.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
         _worldCactpotHours = _worldNames.ToDictionary(kvp => kvp.Key, kvp =>
@@ -123,6 +123,20 @@ internal class GameData : IGameData
 
     public (string Tag, string? Name, string? Leader) FreeCompanyInfo()
         => Valid ? _fcTracker!.FreeCompanyInfo : throw new InvalidOperationException("Trying to use disposed GameData.");
+
+    private static bool IsValid(World world)
+    {
+        if (world.Name.RawData.IsEmpty)
+            return false;
+
+        if (world.DataCenter.Row is 0)
+            return false;
+
+        if (world.IsPublic)
+            return true;
+
+        return char.IsUpper((char)world.Name.RawData[0]);
+    }
 
     public void Dispose()
     {
