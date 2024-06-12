@@ -99,11 +99,11 @@ public partial class TimerWindow
             if (tmp != oldColor)
             {
                 oldColor       = newColor;
-                oldDisplayTime = displayTime;
             }
-            else if (newColor == oldColor && oldDisplayTime > displayTime)
+            if (displayTime != DateTime.MinValue)
             {
-                oldDisplayTime = displayTime;
+                if (oldDisplayTime == DateTime.MinValue || oldDisplayTime > displayTime)
+                    oldDisplayTime = displayTime;
             }
         }
 
