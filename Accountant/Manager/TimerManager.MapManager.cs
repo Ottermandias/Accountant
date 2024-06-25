@@ -2,7 +2,6 @@ using System;
 using System.Linq;
 using Accountant.Classes;
 using Accountant.Gui.Timer;
-using Accountant.SeFunctions;
 using Accountant.Timers;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text;
@@ -22,16 +21,14 @@ public partial class TimerManager
 
         private bool _state;
 
-        private readonly StaticMapContainer _mapContainer;
-        private readonly IGameData          _gameData;
-        private readonly TaskTimers         _tasks;
-        private          DateTime           _nextMapCheck = DateTime.MinValue;
+        private readonly IGameData  _gameData;
+        private readonly TaskTimers _tasks;
+        private          DateTime   _nextMapCheck = DateTime.MinValue;
 
         public MapManager(TaskTimers tasks)
         {
-            _tasks        = tasks;
-            _mapContainer = new StaticMapContainer(Dalamud.Log, Dalamud.SigScanner);
-            _gameData     = Accountant.GameData;
+            _tasks    = tasks;
+            _gameData = Accountant.GameData;
             SetState();
         }
 
@@ -71,12 +68,12 @@ public partial class TimerManager
             => Disable();
 
 
-        private void OnChatMap(XivChatType type, uint senderId, ref SeString sender, ref SeString message, ref bool isHandled)
+        private void OnChatMap(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled)
         {
             if ((int)type != 2115 || !Dalamud.Conditions[ConditionFlag.Gathering])
                 return;
 
-            var item = (ItemPayload?) message.Payloads.FirstOrDefault(p => p is ItemPayload);
+            var item = (ItemPayload?)message.Payloads.FirstOrDefault(p => p is ItemPayload);
             if (item == null)
                 return;
 
@@ -94,8 +91,12 @@ public partial class TimerManager
             if (Dalamud.ClientState.LocalPlayer == null)
                 return;
 
-            var time = _mapContainer.GetMapDateTime((IntPtr)UIState.Instance());
-            if (time == DateTime.MaxValue)
+            var uiState = UIState.Instance();
+            if (uiState == null)
+                return;
+
+            var time = uiState->GetNextMapAllowanceDateTime();
+            if (time == DateTime.MaxValue || time == DateTime.MinValue)
                 return;
 
             var player = new PlayerInfo(Dalamud.ClientState.LocalPlayer);
