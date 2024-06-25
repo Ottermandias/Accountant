@@ -1,10 +1,7 @@
 using System;
 using Accountant.Classes;
 using Accountant.Gui.Timer;
-using Accountant.SeFunctions;
-using Accountant.Structs;
 using Accountant.Timers;
-using Dalamud.Game;
 using Dalamud.Plugin.Services;
 
 namespace Accountant.Manager;
@@ -16,20 +13,14 @@ public partial class TimerManager
         public ConfigFlags RequiredFlags
             => ConfigFlags.Enabled | ConfigFlags.Retainers;
 
-        private readonly IntPtr   _retainerContainer;
-        private          DateTime _nextRetainerCheck = DateTime.MinValue;
-        private          bool     _state;
-
-        private unsafe RetainerContainer* RetainerContainer
-            => (RetainerContainer*)_retainerContainer;
+        private DateTime _nextRetainerCheck = DateTime.MinValue;
+        private bool     _state;
 
         private readonly RetainerTimers _retainers;
 
         public RetainerManager(RetainerTimers retainers)
         {
-            _retainers         = retainers;
-            _retainerContainer = new StaticRetainerContainer(Dalamud.Log, Dalamud.SigScanner).Address;
-
+            _retainers = retainers;
             SetState();
         }
 
@@ -68,14 +59,17 @@ public partial class TimerManager
 
         private unsafe void UpdateRetainers()
         {
-            if (Dalamud.ClientState.LocalPlayer == null || _retainerContainer == IntPtr.Zero || RetainerContainer->Ready != 1)
+            if (Dalamud.ClientState.LocalPlayer == null)
                 return;
 
-            var retainerList = (SeRetainer*)RetainerContainer->Retainers;
+            var manager = FFXIVClientStructs.FFXIV.Client.Game.RetainerManager.Instance();
+            if (manager == null || manager->Ready != 1)
+                return;
 
-            var info    = new PlayerInfo(Dalamud.ClientState.LocalPlayer!);
-            var count   = RetainerContainer->RetainerCount;
-            var changes = false;
+            var retainerList = manager->Retainers;
+            var info         = new PlayerInfo(Dalamud.ClientState.LocalPlayer!);
+            var count        = manager->GetRetainerCount();
+            var changes      = false;
             for (byte i = 0; i < count; ++i)
             {
                 var data = new RetainerInfo(retainerList[i]);
