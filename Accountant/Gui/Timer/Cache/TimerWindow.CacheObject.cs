@@ -1,35 +1,35 @@
 ﻿using System;
 using System.Numerics;
 using Accountant.Gui.Helper;
-using Dalamud.Interface.Internal;
+using Dalamud.Interface.Textures;
 using ImGuiNET;
 
-namespace Accountant.Gui.Timer;
+namespace Accountant.Gui.Timer.Cache;
 
 public struct CacheObject
 {
-    public string              Name;
-    public DateTime            DisplayTime;
-    public string?             DisplayString;
-    public IDalamudTextureWrap Icon;
-    public float               IconOffset;
-    public ColorId             Color;
-    public Action?             TooltipCallback;
+    public string   Name;
+    public DateTime DisplayTime;
+    public string?  DisplayString;
+    public uint     Icon;
+    public float    IconOffset;
+    public ColorId  Color;
+    public Action?  TooltipCallback;
 
     private void DrawIcon()
     {
-        if (Icon == null || Icon.Height == 0)
+        if (!Dalamud.GetIcon(Icon, out var icon))
             return;
 
         if (IconOffset == 0)
         {
-            ImGui.Image(Icon.ImGuiHandle, Vector2.One * ImGui.GetTextLineHeight());
+            ImGui.Image(icon.ImGuiHandle, Vector2.One * ImGui.GetTextLineHeight());
         }
         else
         {
             var offset = Vector2.One * IconOffset;
             var size   = Vector2.One - offset;
-            ImGui.Image(Icon.ImGuiHandle, Vector2.One * ImGui.GetTextLineHeight(), offset, size);
+            ImGui.Image(icon.ImGuiHandle, Vector2.One * ImGui.GetTextLineHeight(), offset, size);
         }
 
         ImGui.SameLine();

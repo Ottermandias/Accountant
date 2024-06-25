@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Accountant.Classes;
 using Accountant.Enums;
+using Accountant.Gui.Timer.Cache;
 using Accountant.Timers;
 using ImGuiNET;
 using OtterLoc.Structs;
@@ -31,7 +32,7 @@ public partial class TimerWindow
                     allowances > Accountant.Config.LeveWarning ? ColorId.TextLeveWarning : ColorId.NeutralText,
                 DisplayString = allowances.ToString(),
                 Name          = player,
-                Icon          = Window._icons[Icons.LeveQuestIcon],
+                Icon          = Icons.LeveQuestIcon,
                 IconOffset    = 0.125f,
             };
 
@@ -92,7 +93,7 @@ public partial class TimerWindow
             {
                 Name        = player,
                 IconOffset  = 0,
-                Icon        = Window._icons[Icons.SquadronIcon],
+                Icon        = Icons.SquadronIcon,
                 DisplayTime = UpdateNextChange(info.MissionEnd),
             };
 
@@ -123,7 +124,7 @@ public partial class TimerWindow
             var ret = new CacheObject
             {
                 Name        = player,
-                Icon        = Window._icons[Icons.MapIcon],
+                Icon        = Icons.MapIcon,
                 DisplayTime = UpdateNextChange(map),
             };
             if (map == DateTime.MinValue || map < Now)
@@ -146,7 +147,7 @@ public partial class TimerWindow
             var ret = new CacheObject
             {
                 Name        = player,
-                Icon        = Window._icons[Icons.MiniCactpotIcon],
+                Icon        = Icons.MiniCactpotIcon,
                 DisplayTime = UpdateNextChange(nextReset),
             };
             if (nextReset < Now || mini.Tickets == 0)
@@ -175,7 +176,7 @@ public partial class TimerWindow
             var ret = new CacheObject
             {
                 Name            = player,
-                Icon            = Window._icons[Icons.JumboCactpotIcon],
+                Icon            = Icons.JumboCactpotIcon,
                 DisplayTime     = UpdateNextChange(nextReset),
                 TooltipCallback = GenerateTooltip(jumbo),
             };
@@ -209,7 +210,7 @@ public partial class TimerWindow
             var ret = new CacheObject
             {
                 Name        = player,
-                Icon        = Window._icons[Icons.CustomDeliveryIcon],
+                Icon        = Icons.CustomDeliveryIcon,
                 DisplayTime = UpdateNextChange(nextReset),
             };
             var allowances = delivery.CurrentAllowances(DateTime.UtcNow);
@@ -228,7 +229,7 @@ public partial class TimerWindow
             var ret = new CacheObject
             {
                 Name        = player,
-                Icon        = Window._icons[Icons.TribeIcon],
+                Icon        = Icons.TribeIcon,
                 DisplayTime = UpdateNextChange(nextReset),
             };
             var allowances = tribe.CurrentAllowances(DateTime.UtcNow);

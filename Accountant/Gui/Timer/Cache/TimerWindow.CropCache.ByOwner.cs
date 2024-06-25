@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Accountant.Classes;
 using Accountant.Enums;
+using Accountant.Gui.Timer.Cache;
 using OtterLoc.Structs;
 
 namespace Accountant.Gui.Timer;
@@ -25,7 +26,7 @@ public partial class TimerWindow
                 var (fin, wilt, wither, color, time, _) = plant.GetCropTimes(Now);
                 ret.DisplayTime                         = UpdateNextChange(time);
                 ret.DisplayString                       = time < Now ? string.Empty : null;
-                ret.Icon                                = Window._icons[data.Item.Icon];
+                ret.Icon                                = data.Item.Icon;
                 ret.Color                               = color;
                 ret.TooltipCallback                     = GenerateTooltip(plant, ret, plantName, fin, wilt, wither);
             }
@@ -33,7 +34,7 @@ public partial class TimerWindow
             {
                 ret.Color         = ColorId.NeutralText;
                 ret.DisplayString = StringId.Available.Value();
-                ret.Icon          = Window._icons[Icons.PottingSoilIcon];
+                ret.Icon          = Icons.PottingSoilIcon;
             }
 
             return ret;

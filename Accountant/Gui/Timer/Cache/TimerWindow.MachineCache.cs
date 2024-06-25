@@ -2,6 +2,7 @@
 using System.Linq;
 using Accountant.Classes;
 using Accountant.Enums;
+using Accountant.Gui.Timer.Cache;
 using Accountant.Timers;
 using Dalamud.Interface.Internal;
 
@@ -16,8 +17,8 @@ public partial class TimerWindow
         private readonly MachineType       _type;
         public           string            Header = string.Empty;
 
-        private readonly IDalamudTextureWrap _icon;
-        public           ObjectCounter       GlobalCounter;
+        private readonly uint          _icon;
+        public           ObjectCounter GlobalCounter;
 
         public MachineCache(TimerWindow window, ConfigFlags requiredFlags, string name, MachineType type, AirshipTimers airships,
             SubmersibleTimers submersibles)
@@ -28,7 +29,7 @@ public partial class TimerWindow
             _airships.Changed     += Resetter;
             _submersibles.Changed += Resetter;
             _type                 =  type;
-            _icon                 =  Window._icons[_type == MachineType.Airship ? Icons.AirshipIcon : Icons.SubmarineIcon];
+            _icon                 =  _type == MachineType.Airship ? Icons.AirshipIcon : Icons.SubmarineIcon;
         }
 
         private CacheObject GenerateMachine(MachineInfo machine, ref ObjectCounter counter)

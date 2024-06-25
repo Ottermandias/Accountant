@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Numerics;
 using Accountant.Gui.Helper;
+using Accountant.Gui.Timer.Cache;
 using ImGuiNET;
 
 namespace Accountant.Gui.Timer;

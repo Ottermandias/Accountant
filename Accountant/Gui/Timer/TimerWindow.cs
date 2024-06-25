@@ -5,6 +5,7 @@ using Accountant.Enums;
 using Accountant.Gui.Helper;
 using Accountant.Manager;
 using Dalamud.Interface.Utility;
+using Dalamud.Plugin.Services;
 using ImGuiNET;
 using OtterLoc.Structs;
 using DateTime = System.DateTime;
@@ -13,13 +14,13 @@ namespace Accountant.Gui.Timer;
 
 public partial class TimerWindow : IDisposable
 {
-    private          float       _widthTotal;
-    private readonly string      _completedString;
-    private readonly string      _availableString;
-    private readonly IconStorage _icons;
-    private          string      _headerString = "Timers###Accountant.Timers";
-    private          ColorId     _headerColor  = ColorId.NeutralHeader;
-    private          bool        _drawData     = true;
+    private          float            _widthTotal;
+    private readonly string           _completedString;
+    private readonly string           _availableString;
+    private readonly ITextureProvider _icons;
+    private          string           _headerString = "Timers###Accountant.Timers";
+    private          ColorId          _headerColor  = ColorId.NeutralHeader;
+    private          bool             _drawData     = true;
 
     private readonly BaseCache[] _cache;
 
@@ -30,9 +31,9 @@ public partial class TimerWindow : IDisposable
     private readonly MachineCache  _machineCache1;
     private readonly MachineCache  _machineCache2;
 
-    public TimerWindow(TimerManager manager)
+    public TimerWindow(TimerManager manager, ITextureProvider icons)
     {
-        _icons = new IconStorage(Dalamud.Textures, 64);
+        _icons = icons;
         _cache = manager.CreateCaches(this);
         SortCache();
         _cropCache       = (CropCache)_cache.First(c => c is CropCache);
@@ -63,10 +64,7 @@ public partial class TimerWindow : IDisposable
         => Array.Sort(_cache, (l, r) => Accountant.Config.GetPriority(r.Name).CompareTo(Accountant.Config.GetPriority(l.Name)));
 
     public void Dispose()
-    {
-        Dalamud.PluginInterface.UiBuilder.Draw -= Draw;
-        _icons.Dispose();
-    }
+        => Dalamud.PluginInterface.UiBuilder.Draw -= Draw;
 
     public void ResetCache()
     {

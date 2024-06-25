@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Numerics;
 using Accountant.Classes;
 using Accountant.Gui.Helper;
-using Accountant.Manager;
+using Accountant.Gui.Timer.Cache;
 using Accountant.Timers;
 using ImGuiNET;
 
@@ -59,9 +59,19 @@ public partial class TimerWindow
             {
                 ImGui.BeginTooltip();
                 using var _ = ImGuiRaii.PushColor(ImGuiCol.Button, ret.Color.TextToHeader().Value());
-                ImGui.Image(ret.Icon.ImGuiHandle, Vector2.One * ret.Icon.Height / 2);
-                ImGui.SameLine();
-                ImGui.Button(plantName, Vector2.UnitY * ret.Icon.Height / 2 - Vector2.UnitX);
+                if (Dalamud.GetIcon(ret.Icon, out var icon))
+                {
+                    ImGui.Image(icon.ImGuiHandle, Vector2.One * icon.Height / 2);
+                    ImGui.SameLine();
+                    ImGui.Button(plantName, Vector2.UnitY * icon.Height / 2 - Vector2.UnitX);
+                }
+                else
+                {
+                    ImGui.Dummy(new Vector2(ImGui.GetFrameHeightWithSpacing()));
+                    ImGui.SameLine();
+                    ImGui.Button(plantName, Vector2.UnitY * ImGui.GetFrameHeightWithSpacing() / 2 - Vector2.UnitX);
+                }
+
                 ImGui.BeginGroup();
                 ImGui.Text("Planted:");
                 ImGui.Text("Tended:");

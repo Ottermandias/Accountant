@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Accountant.Classes;
 using Accountant.Enums;
+using Accountant.Gui.Timer.Cache;
 using Accountant.Structs;
 
 namespace Accountant.Gui.Timer;
@@ -29,7 +30,7 @@ public partial class TimerWindow
                 DisplayTime   = UpdateNextChange(time),
                 Color         = color,
                 DisplayString = time < Now ? string.Empty : null,
-                Icon          = Window._icons[data.Item.Icon],
+                Icon          = data.Item.Icon,
             };
             cache.TooltipCallback = GenerateTooltip(plant, cache, name, fin, wilt, wither);
             list.Item1.Add(cache);

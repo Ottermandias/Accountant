@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Accountant.Classes;
 using Accountant.Enums;
+using Accountant.Gui.Timer.Cache;
 using Accountant.Timers;
 using OtterLoc.Structs;
 
@@ -29,7 +30,7 @@ public partial class TimerWindow
             {
                 Name          = retainer.Name,
                 DisplayTime   = UpdateNextChange(retainer.Venture),
-                Icon          = Window._icons[Icons.JobIcons[retainer.JobId]],
+                Icon          = Icons.JobIcons[retainer.JobId],
                 IconOffset    = 0.25f,
                 DisplayString = Window.StatusString(type),
                 Color         = retainer.Available ? ColorId.NeutralText : ColorId.DisabledText,

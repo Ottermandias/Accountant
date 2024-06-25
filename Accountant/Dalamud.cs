@@ -1,5 +1,9 @@
-﻿using Dalamud.Game;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices.ComTypes;
+using Dalamud.Game;
 using Dalamud.Game.ClientState.Objects;
+using Dalamud.Interface.Internal;
+using Dalamud.Interface.Textures;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
@@ -14,18 +18,30 @@ public class Dalamud
         => pluginInterface.Create<Dalamud>();
 
         // @formatter:off
-        [PluginService][RequiredVersion("1.0")] public static DalamudPluginInterface PluginInterface { get; private set; } = null!;
-        [PluginService][RequiredVersion("1.0")] public static ICommandManager        Commands        { get; private set; } = null!;
-        [PluginService][RequiredVersion("1.0")] public static ISigScanner            SigScanner      { get; private set; } = null!;
-        [PluginService][RequiredVersion("1.0")] public static IDataManager           GameData        { get; private set; } = null!;
-        [PluginService][RequiredVersion("1.0")] public static IClientState           ClientState     { get; private set; } = null!;
-        [PluginService][RequiredVersion("1.0")] public static IChatGui               Chat            { get; private set; } = null!;
-        [PluginService][RequiredVersion("1.0")] public static IFramework             Framework       { get; private set; } = null!;
-        [PluginService][RequiredVersion("1.0")] public static ICondition             Conditions      { get; private set; } = null!;
-        [PluginService][RequiredVersion("1.0")] public static IGameGui               GameGui         { get; private set; } = null!;
-        [PluginService][RequiredVersion("1.0")] public static ITargetManager         Targets         { get; private set; } = null!;
-        [PluginService][RequiredVersion("1.0")] public static ITextureProvider       Textures        { get; private set; } = null!;
-        [PluginService][RequiredVersion("1.0")] public static IGameInteropProvider   Interop         { get; private set; } = null!;
-        [PluginService][RequiredVersion("1.0")] public static IPluginLog             Log             { get; private set; } = null!;
+        [PluginService] public static DalamudPluginInterface PluginInterface { get; private set; } = null!;
+        [PluginService] public static ICommandManager        Commands        { get; private set; } = null!;
+        [PluginService] public static ISigScanner            SigScanner      { get; private set; } = null!;
+        [PluginService] public static IDataManager           GameData        { get; private set; } = null!;
+        [PluginService] public static IClientState           ClientState     { get; private set; } = null!;
+        [PluginService] public static IChatGui               Chat            { get; private set; } = null!;
+        [PluginService] public static IFramework             Framework       { get; private set; } = null!;
+        [PluginService] public static ICondition             Conditions      { get; private set; } = null!;
+        [PluginService] public static IGameGui               GameGui         { get; private set; } = null!;
+        [PluginService] public static ITargetManager         Targets         { get; private set; } = null!;
+        [PluginService] public static ITextureProvider       Textures        { get; private set; } = null!;
+        [PluginService] public static IGameInteropProvider   Interop         { get; private set; } = null!;
+        [PluginService] public static IPluginLog             Log             { get; private set; } = null!;
     // @formatter:on
+
+    public static bool GetIcon(uint iconId, [NotNullWhen(true)] out IDalamudTextureWrap? icon)
+    {
+        if (iconId == 0)
+        {
+            icon = null;
+            return false;
+        }
+
+        var tex = Textures.GetFromGameIcon(new GameIconLookup(iconId));
+        return tex.TryGetWrap(out icon, out _);
+    }
 }

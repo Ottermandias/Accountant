@@ -2,7 +2,6 @@
 using System.Linq;
 using AddonWatcher.Enums;
 using AddonWatcher.Structs;
-using Dalamud.Logging;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 

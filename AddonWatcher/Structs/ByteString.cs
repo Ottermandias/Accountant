@@ -53,8 +53,8 @@ public readonly struct ByteString
         return true;
     }
 
-    public bool Equals(byte[] data)
-        => _data.SequenceEqual(data);
+    public bool Equals(ReadOnlySpan<byte> data)
+        => data.SequenceEqual(_data);
 
     public unsafe bool Equals(IntPtr ptr)
         => Equals((byte*)ptr);

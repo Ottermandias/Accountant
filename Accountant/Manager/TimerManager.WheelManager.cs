@@ -39,7 +39,7 @@ public partial class TimerManager
         }
 
         public TimerWindow.BaseCache CreateCache(TimerWindow window)
-            => new TimerWindow.WheelCache(window,RequiredFlags,  _wheels);
+            => new TimerWindow.WheelCache(window, RequiredFlags, _wheels);
 
         public void SetState()
         {
@@ -86,7 +86,7 @@ public partial class TimerManager
                 if (button == null || button->Component->UldManager.NodeListCount < 3)
                     continue;
 
-                if (button->Component->UldManager.NodeList[2]->IsVisible)
+                if (button->Component->UldManager.NodeList[2]->IsVisible())
                     return (byte)(14 - i);
             }
 
@@ -165,7 +165,7 @@ public partial class TimerManager
                 var text = button->Component->UldManager.NodeList[5];
                 var now  = DateTime.UtcNow;
                 var slot = (byte)(14 - i);
-                if (!text->IsVisible)
+                if (!text->IsVisible())
                 {
                     change |= _wheels.RemoveWheel(fc!.Value, slot);
                 }

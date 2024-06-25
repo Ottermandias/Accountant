@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Accountant.Classes;
+using Accountant.Gui.Timer.Cache;
 using Accountant.Timers;
 
 namespace Accountant.Gui.Timer;
@@ -28,7 +29,7 @@ public partial class TimerWindow
             {
                 Name          = name,
                 DisplayTime   = UpdateNextChange(end),
-                Icon          = Window._icons[item.Icon],
+                Icon          = item.Icon,
                 IconOffset    = 0f,
                 Color         = end < Now ? ColorId.TextObjectsHome : ColorId.NeutralText,
                 DisplayString = end < Now ? "Primed" : null,
