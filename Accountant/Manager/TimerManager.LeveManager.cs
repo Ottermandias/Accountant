@@ -1,9 +1,9 @@
 using System;
 using Accountant.Classes;
 using Accountant.Gui.Timer;
-using Accountant.SeFunctions;
 using Accountant.Timers;
 using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.Game;
 
 namespace Accountant.Manager;
 
@@ -14,16 +14,14 @@ public partial class TimerManager
         public ConfigFlags RequiredFlags
             => ConfigFlags.Enabled | ConfigFlags.LeveAllowances;
 
-        private readonly StaticLeveAllowances _leveAddress;
-        private          bool                 _state;
-        private          DateTime             _nextLeveCheck = DateTime.MinValue;
+        private bool     _state;
+        private DateTime _nextLeveCheck = DateTime.MinValue;
 
         private readonly TaskTimers _tasks;
 
         public LeveManager(TaskTimers tasks)
         {
-            _tasks       = tasks;
-            _leveAddress = new StaticLeveAllowances(Dalamud.Log, Dalamud.SigScanner);
+            _tasks = tasks;
             SetState();
         }
 
@@ -60,13 +58,17 @@ public partial class TimerManager
         public void Dispose()
             => Disable();
 
-        private void UpdateLeves()
+        private unsafe void UpdateLeves()
         {
             if (Dalamud.ClientState.LocalPlayer == null)
                 return;
 
-            var leves = _leveAddress!.Leves();
-            if (leves < 0)
+            var questManager = QuestManager.Instance();
+            if (questManager == null)
+                return;
+
+            var leves = questManager->NumLeveAllowances;
+            if (leves > questManager->LeveQuests.Length)
                 return;
 
             var player = new PlayerInfo(Dalamud.ClientState.LocalPlayer);

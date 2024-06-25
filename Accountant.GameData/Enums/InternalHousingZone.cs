@@ -1,9 +1,8 @@
-﻿using System;
-using OtterLoc.Structs;
+﻿using OtterLoc.Structs;
 
 namespace Accountant.Enums;
 
-// The housing zone as given by the current position struc.t
+// The housing zone as given by the current position struct.
 public enum InternalHousingZone : byte
 {
     Unknown      = 0,
