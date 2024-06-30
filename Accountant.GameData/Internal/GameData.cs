@@ -66,7 +66,7 @@ internal class GameData : IGameData
             ? ret
             : $"Unknown World {id}";
 
-    public string GetWorldName(PlayerCharacter player)
+    public string GetWorldName(IPlayerCharacter player)
         => GetWorldName(player.HomeWorld.Id);
 
     public uint GetWorldId(string worldName)

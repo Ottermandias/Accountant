@@ -24,7 +24,7 @@ public class Accountant : IDalamudPlugin
     public readonly  ConfigWindow            ConfigWindow;
     private readonly ConfigSync              _configSync;
 
-    public Accountant(DalamudPluginInterface pluginInterface)
+    public Accountant(IDalamudPluginInterface pluginInterface)
     {
         Dalamud.Initialize(pluginInterface);
         Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "";
@@ -64,10 +64,7 @@ public class Accountant : IDalamudPlugin
     }
 
     private static void OnAcct(string command, string _)
-    {
-        Config.WindowVisible = !Config.WindowVisible;
-        Config.Save();
-    }
+        => TimerWindow.Toggle();
 
     public void Dispose()
     {

@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using Accountant.Internal;
 using FFXIVClientStructs.FFXIV.Client.Game;
 
 namespace Accountant.Classes;
@@ -20,7 +21,7 @@ public class RetainerInfo
     public RetainerInfo(RetainerManager.Retainer r)
     {
         Name       = r.NameString;
-        Venture    = DateTimeOffset.FromUnixTimeSeconds(r.VentureComplete).UtcDateTime;
+        Venture    = Helpers.DateFromTimeStamp(r.VentureComplete);
         RetainerId = r.RetainerId;
         VentureId  = r.VentureId;
         Available  = r.Available;

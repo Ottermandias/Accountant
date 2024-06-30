@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using Dalamud;
+using Dalamud.Game;
 using Dalamud.Game.Text.SeStringHandling;
 
 namespace OtterLoc;

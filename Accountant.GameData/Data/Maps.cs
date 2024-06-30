@@ -37,6 +37,8 @@ public class Maps
             [36611] = items.GetRow(36611)!,
             [36612] = items.GetRow(36612)!,
             [39591] = items.GetRow(39591)!,
+            [43556] = items.GetRow(43556)!,
+            [43557] = items.GetRow(43557)!,
         };
     }
 }

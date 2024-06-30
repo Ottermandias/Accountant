@@ -6,19 +6,13 @@ using Newtonsoft.Json;
 
 namespace Accountant.Classes;
 
-public readonly struct PlayerInfo : IEquatable<PlayerInfo>, ITimerIdentifier
+[method: JsonConstructor]
+public readonly struct PlayerInfo(string name, ushort serverId) : IEquatable<PlayerInfo>, ITimerIdentifier
 {
-    public string Name     { get; }
-    public ushort ServerId { get; }
+    public string Name     { get; } = name;
+    public ushort ServerId { get; } = serverId;
 
-    [JsonConstructor]
-    public PlayerInfo(string name, ushort serverId)
-    {
-        Name     = name;
-        ServerId = serverId;
-    }
-
-    public PlayerInfo(PlayerCharacter character)
+    public PlayerInfo(IPlayerCharacter character)
         : this(character.Name.TextValue, (ushort)character.HomeWorld.Id)
     { }
 

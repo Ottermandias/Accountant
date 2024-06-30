@@ -2,7 +2,6 @@
 using AddonWatcher.Internal;
 using Dalamud.Game.Text.SeStringHandling;
 using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace AddonWatcher.Structs;
 
@@ -10,8 +9,6 @@ public unsafe struct SelectYesNoInfo
 {
     public const int YesButtonId       = 0;
     public const int NoButtonId        = 1;
-    public const int CheckMarkId       = 3;
-    public const int DescriptionNodeId = 2;
 
     public AddonSelectYesno* Pointer;
 
@@ -28,8 +25,7 @@ public unsafe struct SelectYesNoInfo
     {
         get
         {
-            // TODO: use clientstructs Prompt member when its merged
-            var node = *(AtkTextNode**)((byte*)Pointer + 0x220);
+            var node = Pointer->PromptText;
             return node == null ? SeString.Empty : Helpers.TextNodeToString(node);
         }
     }

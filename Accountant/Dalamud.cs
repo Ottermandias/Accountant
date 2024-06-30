@@ -1,9 +1,8 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices.ComTypes;
 using Dalamud.Game;
 using Dalamud.Game.ClientState.Objects;
-using Dalamud.Interface.Internal;
 using Dalamud.Interface.Textures;
+using Dalamud.Interface.Textures.TextureWraps;
 using Dalamud.IoC;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
@@ -14,11 +13,11 @@ namespace Accountant;
 
 public class Dalamud
 {
-    public static void Initialize(DalamudPluginInterface pluginInterface)
+    public static void Initialize(IDalamudPluginInterface pluginInterface)
         => pluginInterface.Create<Dalamud>();
 
         // @formatter:off
-        [PluginService] public static DalamudPluginInterface PluginInterface { get; private set; } = null!;
+        [PluginService] public static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
         [PluginService] public static ICommandManager        Commands        { get; private set; } = null!;
         [PluginService] public static ISigScanner            SigScanner      { get; private set; } = null!;
         [PluginService] public static IDataManager           GameData        { get; private set; } = null!;

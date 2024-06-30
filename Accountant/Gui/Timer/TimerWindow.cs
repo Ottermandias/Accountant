@@ -43,7 +43,14 @@ public partial class TimerWindow : IDisposable
         _completedString = StringId.Completed.Value();
         _availableString = StringId.Available.Value();
 
-        Dalamud.PluginInterface.UiBuilder.Draw += Draw;
+        Dalamud.PluginInterface.UiBuilder.Draw       += Draw;
+        Dalamud.PluginInterface.UiBuilder.OpenMainUi += Toggle;
+    }
+
+    public static void Toggle()
+    {
+        Accountant.Config.WindowVisible = !Accountant.Config.WindowVisible;
+        Accountant.Config.Save();
     }
 
     private void SetWidthTotal()
@@ -64,7 +71,10 @@ public partial class TimerWindow : IDisposable
         => Array.Sort(_cache, (l, r) => Accountant.Config.GetPriority(r.Name).CompareTo(Accountant.Config.GetPriority(l.Name)));
 
     public void Dispose()
-        => Dalamud.PluginInterface.UiBuilder.Draw -= Draw;
+    {
+        Dalamud.PluginInterface.UiBuilder.Draw       -= Draw;
+        Dalamud.PluginInterface.UiBuilder.OpenMainUi -= Toggle;
+    }
 
     public void ResetCache()
     {

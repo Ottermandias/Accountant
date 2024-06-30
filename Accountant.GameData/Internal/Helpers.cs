@@ -2,7 +2,7 @@
 
 namespace Accountant.Internal;
 
-internal static class Helpers
+public static class Helpers
 {
     public static DateTime DateFromTimeStamp(uint timeStamp)
     {

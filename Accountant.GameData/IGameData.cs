@@ -54,7 +54,7 @@ public interface IGameData : IDisposable
     public string GetWorldName(uint id);
 
     // Obtain the name of the homeworld for a player character.
-    public string GetWorldName(PlayerCharacter player);
+    public string GetWorldName(IPlayerCharacter player);
 
     // Obtain the id of a world by its name.
     public uint GetWorldId(string worldName);

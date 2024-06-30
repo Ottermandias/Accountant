@@ -68,9 +68,6 @@ public partial class TimerManager
                 return;
 
             var leves = questManager->NumLeveAllowances;
-            if (leves > questManager->LeveQuests.Length)
-                return;
-
             var player = new PlayerInfo(Dalamud.ClientState.LocalPlayer);
 
             if (_tasks!.AddOrUpdateLeves(player, leves))
