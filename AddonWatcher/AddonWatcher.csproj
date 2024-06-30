@@ -34,8 +34,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DalamudLibPath>H:\Projects\FFPlugins\Dalamud\bin\Release\</DalamudLibPath>
-    <!--<DalamudLibPath>$(AppData)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>-->
+    <DalamudLibPath>$(AppData)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
   </PropertyGroup>
 
   <ItemGroup>
