@@ -1,6 +1,5 @@
 ﻿using System;
 using Dalamud.Game;
-using Dalamud.Game.Gui;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin.Services;
 
