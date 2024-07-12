@@ -9,7 +9,7 @@ public class Maps
     private readonly Dictionary<uint, Item> _idToItem;
 
     internal Item? Find(uint itemId)
-        => _idToItem.TryGetValue(itemId, out var map) ? map : null;
+        => _idToItem.GetValueOrDefault(itemId);
 
     internal Maps(IDataManager gameData)
     {

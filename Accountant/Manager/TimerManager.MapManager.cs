@@ -49,9 +49,9 @@ public partial class TimerManager
                 return;
 
             _tasks.Reload();
-            Dalamud.Chat.ChatMessage += OnChatMap;
-            Dalamud.Framework.Update += OnFrameworkMap;
-            _state                   =  true;
+            Dalamud.Chat.CheckMessageHandled += OnChatMap;
+            Dalamud.Framework.Update         += OnFrameworkMap;
+            _state                           =  true;
         }
 
         private void Disable()
@@ -59,7 +59,7 @@ public partial class TimerManager
             if (!_state)
                 return;
 
-            Dalamud.Chat.ChatMessage -= OnChatMap;
+            Dalamud.Chat.CheckMessageHandled -= OnChatMap;
             Dalamud.Framework.Update -= OnFrameworkMap;
             _state                   =  false;
         }

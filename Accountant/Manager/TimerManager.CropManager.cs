@@ -8,7 +8,6 @@ using Accountant.Timers;
 using AddonWatcher;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
-using Dalamud.Logging;
 using OtterLoc.Structs;
 
 namespace Accountant.Manager;
