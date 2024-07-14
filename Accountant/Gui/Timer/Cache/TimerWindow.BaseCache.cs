@@ -12,9 +12,9 @@ public partial class TimerWindow
     public partial class BaseCache
     {
         protected readonly TimerWindow       Window;
-        protected readonly List<CacheObject> Objects    = new();
-        protected readonly List<SmallHeader> Headers    = new();
-        private readonly   HashSet<string>   _seenNames = new();
+        protected readonly List<CacheObject> Objects    = [];
+        protected readonly List<SmallHeader> Headers    = [];
+        private readonly   HashSet<string>   _seenNames = [];
 
         protected DateTime Now;
         private   DateTime _nextChange = DateTime.MinValue;

@@ -207,27 +207,30 @@ public class AccountantConfiguration : IPluginConfiguration
     public int TribesFinished { get; set; } = 0;
 
     public bool ShowCropTooltip = true;
+    public bool ShowDtr { get; set; } = true;
 
     public Dictionary<ColorId, uint> Colors { get; set; } = Enum.GetValues<ColorId>().ToDictionary(c => c, c => c.Default());
 
     public SortedList<ulong, string> PlotNames { get; } = new();
 
-    public HashSet<ulong>  BlockedPlots                 { get; } = new();
-    public HashSet<string> BlockedPlayersCrops          { get; } = new();
-    public HashSet<string> BlockedPlayersRetainers      { get; } = new();
-    public HashSet<string> BlockedPlayersTasks          { get; } = new();
-    public HashSet<string> BlockedCompaniesAirships     { get; } = new();
-    public HashSet<string> BlockedCompaniesSubmersibles { get; } = new();
-    public HashSet<string> BlockedCompaniesWheels       { get; } = new();
-    public HashSet<uint>   BlockedCrops                 { get; } = new();
+    public HashSet<ulong>  BlockedPlots                 { get; } = [];
+    public HashSet<string> BlockedPlayersCrops          { get; } = [];
+    public HashSet<string> BlockedPlayersRetainers      { get; } = [];
+    public HashSet<string> BlockedPlayersTasks          { get; } = [];
+    public HashSet<string> BlockedCompaniesAirships     { get; } = [];
+    public HashSet<string> BlockedCompaniesSubmersibles { get; } = [];
+    public HashSet<string> BlockedCompaniesWheels       { get; } = [];
+    public HashSet<uint>   BlockedCrops                 { get; } = [];
 
     public Dictionary<string, int> Priorities { get; } = new();
 
     public int GetPriority(string name)
-        => Priorities.TryGetValue(name, out var ret) ? ret : int.MinValue;
+        => Priorities.GetValueOrDefault(name, int.MinValue);
 
     [JsonIgnore]
     public DateTime LastChangeTime { get; private set; } = DateTime.UtcNow.AddMilliseconds(500);
+
+    public float? FixedWindowWidth { get; set; } = null;
 
     public static AccountantConfiguration Load()
     {

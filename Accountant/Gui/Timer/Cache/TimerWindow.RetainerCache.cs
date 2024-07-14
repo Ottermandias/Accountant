@@ -5,7 +5,6 @@ using Accountant.Classes;
 using Accountant.Enums;
 using Accountant.Gui.Timer.Cache;
 using Accountant.Timers;
-using OtterLoc.Structs;
 
 namespace Accountant.Gui.Timer;
 
@@ -15,6 +14,7 @@ public partial class TimerWindow
     {
         private readonly RetainerTimers _retainers;
         public           string         Header = string.Empty;
+        public           ObjectCounter  Counter;
 
         public RetainerCache(TimerWindow window, ConfigFlags requiredFlags, RetainerTimers retainers)
             : base("Retainers", requiredFlags, window)
@@ -62,22 +62,22 @@ public partial class TimerWindow
 
         protected override void UpdateInternal()
         {
-            var global = ObjectCounter.Create();
+            Counter = ObjectCounter.Create();
             foreach (var (player, retainers) in _retainers.Data
                          .Where(r => !Accountant.Config.BlockedPlayersRetainers.Contains(r.Key.CastedName))
                          .Select(p => (GetName(p.Key.Name, p.Key.ServerId), p.Value))
                          .OrderByDescending(p => Accountant.Config.GetPriority(p.Item1)))
             {
-                var p = GeneratePlayer(player, retainers, ref global);
+                var p = GeneratePlayer(player, retainers, ref Counter);
                 if (p.ObjectsCount == 0)
                     continue;
 
                 Headers.Add(p);
             }
 
-            Color       = global.GetColorHeader();
-            DisplayTime = global.GetTime();
-            Header      = global.GetHeader(StringId.Retainers);
+            Color       = Counter.GetColorHeader();
+            DisplayTime = Counter.GetTime();
+            Header      = Counter.GetHeader(StringId.Retainers);
         }
     }
 }

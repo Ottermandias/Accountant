@@ -1,6 +1,7 @@
 ﻿using System;
 using Accountant.Enums;
 using Accountant.Manager;
+using Dalamud.Game.Text;
 using OtterLoc.Structs;
 
 namespace Accountant.Gui.Timer;
@@ -20,14 +21,17 @@ public partial class TimerWindow
         private DateTime _timeForFirst;
         private DateTime _timeForAll;
         private DateTime _actualTimeForFirst;
-        private int      _available;
-        private int      _completed;
-        private int      _sent;
+        public  int      Available { get; private set; }
+        public  int      Completed { get; private set; }
+        public  int      Sent      { get; private set; }
         private int      _limited;
         private int      _total;
 
+        public string GetHeader(SeIconChar icon)
+            => $"{icon.ToIconChar()}{Completed}|{Available}|{Sent}";
+
         public string GetHeader(StringId s)
-            => $"{s.Value()}: {_completed} | {_available} | {_sent}";
+            => $"{s.Value()}: {Completed} | {Available} | {Sent}";
 
         public ColorId GetColorText()
         {
@@ -35,10 +39,10 @@ public partial class TimerWindow
                 return ColorId.DisabledText;
 
             var diff = _total - _limited;
-            if (_completed == diff)
+            if (Completed == diff)
                 return ColorId.TextObjectsHome;
 
-            if (_sent == diff)
+            if (Sent == diff)
                 return ColorId.TextObjectsAway;
 
             return ColorId.TextObjectsMixed;
@@ -48,7 +52,7 @@ public partial class TimerWindow
             => GetColorText().TextToHeader();
 
         public DateTime GetTime()
-            => _sent == _total - _limited ? _timeForFirst : _timeForAll;
+            => Sent == _total - _limited ? _timeForFirst : _timeForAll;
 
         public static ObjectCounter Create()
             => new()
@@ -62,9 +66,9 @@ public partial class TimerWindow
             => new()
             {
                 _total              = lhs._total + rhs._total,
-                _available          = lhs._available + rhs._available,
-                _completed          = lhs._completed + rhs._completed,
-                _sent               = lhs._sent + rhs._sent,
+                Available           = lhs.Available + rhs.Available,
+                Completed           = lhs.Completed + rhs.Completed,
+                Sent                = lhs.Sent + rhs.Sent,
                 _limited            = lhs._limited + rhs._limited,
                 _timeForFirst       = lhs._timeForFirst < rhs._timeForFirst ? lhs._timeForFirst : rhs._timeForFirst,
                 _timeForAll         = lhs._timeForAll > rhs._timeForAll ? lhs._timeForAll : rhs._timeForAll,
@@ -83,14 +87,14 @@ public partial class TimerWindow
                 }
 
                 _timeForFirst = DateTime.MinValue;
-                ++_available;
+                ++Available;
                 return ObjectStatus.Available;
             }
 
             if (dateTime <= now)
             {
                 _timeForFirst = DateTime.MinValue;
-                ++_completed;
+                ++Completed;
                 return ObjectStatus.Completed;
             }
 
@@ -100,12 +104,12 @@ public partial class TimerWindow
                 _actualTimeForFirst = dateTime;
             if (_timeForAll < dateTime)
                 _timeForAll = dateTime;
-            ++_sent;
+            ++Sent;
             return ObjectStatus.Sent;
         }
 
         private bool LimitReached(int maxSent)
-            => _sent + _completed >= maxSent;
+            => Sent + Completed >= maxSent;
 
         public bool VerifyLimit(int maxSent)
         {
@@ -113,8 +117,8 @@ public partial class TimerWindow
                 return false;
 
             _timeForFirst =  _actualTimeForFirst;
-            _limited      += _available;
-            _available    =  0;
+            _limited      += Available;
+            Available     =  0;
             return true;
         }
     }

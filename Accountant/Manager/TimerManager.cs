@@ -33,15 +33,15 @@ public sealed partial class TimerManager : IDisposable
     public TimerManager()
     {
         PositionInfo = new PositionInfoAddress(Dalamud.Log, Dalamud.SigScanner);
-        _managers = new ITimerManager[]
-        {
+        _managers =
+        [
             new RetainerManager(RetainerTimers),
             new CropManager(PlotCropTimers, PrivateCropTimers, PositionInfo),
             new SubmersibleManager(SubmersibleTimers, AirshipTimers, CompanyStorage),
             new AirshipManager(AirshipTimers, SubmersibleTimers, CompanyStorage),
             new WheelManager(WheelTimers, CompanyStorage),
             new TaskManager(TaskTimers),
-        };
+        ];
     }
 
     public TimerWindow.BaseCache[] CreateCaches(TimerWindow window)

@@ -5,7 +5,6 @@ using Accountant.Enums;
 using Accountant.Gui.Helper;
 using Accountant.Manager;
 using Dalamud.Interface.Utility;
-using Dalamud.Plugin.Services;
 using ImGuiNET;
 using OtterLoc.Structs;
 using DateTime = System.DateTime;
@@ -14,13 +13,12 @@ namespace Accountant.Gui.Timer;
 
 public partial class TimerWindow : IDisposable
 {
-    private          float            _widthTotal;
-    private readonly string           _completedString;
-    private readonly string           _availableString;
-    private readonly ITextureProvider _icons;
-    private          string           _headerString = "Timers###Accountant.Timers";
-    private          ColorId          _headerColor  = ColorId.NeutralHeader;
-    private          bool             _drawData     = true;
+    private          float   _widthTotal;
+    private readonly string  _completedString;
+    private readonly string  _availableString;
+    private          string  _headerString = "Timers###Accountant.Timers";
+    private          ColorId _headerColor  = ColorId.NeutralHeader;
+    private          bool    _drawData     = true;
 
     private readonly BaseCache[] _cache;
 
@@ -28,20 +26,25 @@ public partial class TimerWindow : IDisposable
 
     private readonly CropCache     _cropCache;
     private readonly RetainerCache _retainerCache;
-    private readonly MachineCache  _machineCache1;
-    private readonly MachineCache  _machineCache2;
+    private readonly MachineCache  _subCache;
+    private readonly MachineCache  _airshipCache;
 
-    public TimerWindow(TimerManager manager, ITextureProvider icons)
+    internal static DtrManager DtrManager = null!;
+
+    public TimerWindow(TimerManager manager)
     {
-        _icons = icons;
         _cache = manager.CreateCaches(this);
         SortCache();
         _cropCache       = (CropCache)_cache.First(c => c is CropCache);
         _retainerCache   = (RetainerCache)_cache.First(c => c is RetainerCache);
-        _machineCache1   = (MachineCache)_cache.First(c => c is MachineCache);
-        _machineCache2   = (MachineCache)_cache.Last(c => c is MachineCache);
+        _subCache        = (MachineCache)_cache.First(c => c is MachineCache);
+        _airshipCache    = (MachineCache)_cache.Last(c => c is MachineCache);
         _completedString = StringId.Completed.Value();
         _availableString = StringId.Available.Value();
+
+        DtrManager = new DtrManager(Dalamud.Dtr, _cropCache, _retainerCache, _airshipCache, _subCache);
+        if (Accountant.Config.ShowDtr)
+            DtrManager.Enable();
 
         Dalamud.PluginInterface.UiBuilder.Draw       += Draw;
         Dalamud.PluginInterface.UiBuilder.OpenMainUi += Toggle;
@@ -90,10 +93,16 @@ public partial class TimerWindow : IDisposable
 
     private void Draw()
     {
-        if (!Accountant.Config.Enabled || !Accountant.Config.WindowVisible)
+        if (!Accountant.Config.Enabled)
             return;
 
         _now = DateTime.UtcNow;
+
+        if (!Accountant.Config.WindowVisible)
+        {
+            DtrManager.Update(true);
+            return;
+        }
 
         var flags = ImGuiWindowFlags.None;
         if (Accountant.Config.ProhibitMoving)
@@ -102,9 +111,9 @@ public partial class TimerWindow : IDisposable
             flags |= ImGuiWindowFlags.NoResize;
 
         SetWidthTotal();
-        var minSize = new Vector2(_widthTotal * ImGuiHelpers.GlobalScale,
-            ImGui.GetFrameHeightWithSpacing() * 4 + ImGui.GetStyle().ItemSpacing.Y * 3);
-        var maxSize = new Vector2(minSize.X, 100000);
+        var minSize = new Vector2((Accountant.Config.FixedWindowWidth ?? 100) * ImGuiHelpers.GlobalScale,
+            ImGui.GetFrameHeightWithSpacing() * 2 + ImGui.GetStyle().ItemSpacing.Y);
+        var maxSize = new Vector2((Accountant.Config.FixedWindowWidth ?? 1000) * ImGuiHelpers.GlobalScale, 100000);
         ImGui.SetNextWindowSizeConstraints(minSize, maxSize);
 
         var enabled = Accountant.Config.WindowVisible;
@@ -136,14 +145,15 @@ public partial class TimerWindow : IDisposable
 
             if (Accountant.Config.Flags.Check(ConfigFlags.Retainers))
                 _headerString = Accountant.Config.Flags.Any(ConfigFlags.Airships | ConfigFlags.Submersibles)
-                    ? $"{_retainerCache.Header}    {(_machineCache1.GlobalCounter + _machineCache2.GlobalCounter).GetHeader(StringId.Machines)}###Accountant.Timers"
+                    ? $"{_retainerCache.Header}    {(_subCache.GlobalCounter + _airshipCache.GlobalCounter).GetHeader(StringId.Machines)}###Accountant.Timers"
                     : $"{_retainerCache.Header}###Accountant.Timers";
             else if (Accountant.Config.Flags.Any(ConfigFlags.Airships | ConfigFlags.Submersibles))
                 _headerString =
-                    $"{(_machineCache1.GlobalCounter + _machineCache2.GlobalCounter).GetHeader(StringId.Machines)}###Accountant.Timers";
+                    $"{(_subCache.GlobalCounter + _airshipCache.GlobalCounter).GetHeader(StringId.Machines)}###Accountant.Timers";
 
             if (Accountant.Config.Flags.Check(ConfigFlags.Crops))
                 _headerColor = _cropCache.Color;
+            DtrManager.Update(false);
         }
         finally
         {

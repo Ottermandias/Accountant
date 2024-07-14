@@ -21,12 +21,32 @@ public partial class ConfigWindow
 
         raii.Push(ImGui.EndChild);
 
-        ImGuiRaii.ConfigCheckmark("Enable Plugin",               Accountant.Config.Enabled,         EnableTimers);
-        ImGuiRaii.ConfigCheckmark("Show Timers",                 Accountant.Config.WindowVisible,   b => Accountant.Config.WindowVisible   = b);
+        ImGuiRaii.ConfigCheckmark("Enable Plugin", Accountant.Config.Enabled,       EnableTimers);
+        ImGuiRaii.ConfigCheckmark("Show Timers",   Accountant.Config.WindowVisible, b => Accountant.Config.WindowVisible = b);
+        ImGuiRaii.ConfigCheckmark("Show DTR Header", Accountant.Config.ShowDtr, b =>
+        {
+            Accountant.Config.ShowDtr = b;
+            if (b)
+                TimerWindow.DtrManager.Enable();
+            else
+                TimerWindow.DtrManager.Disable();
+        });
         ImGuiRaii.ConfigCheckmark("No Collapsed Header Styling", Accountant.Config.NoHeaderStyling, b => Accountant.Config.NoHeaderStyling = b);
         ImGuiRaii.ConfigCheckmark("No Timer Window Resize",      Accountant.Config.ProhibitResize,  b => Accountant.Config.ProhibitResize  = b);
-        ImGuiRaii.ConfigCheckmark("No Timer Window Movement",    Accountant.Config.ProhibitMoving,  b => Accountant.Config.ProhibitMoving  = b);
-        ImGuiRaii.ConfigCheckmark("Hide Disabled Objects",       Accountant.Config.HideDisabled,    b => Accountant.Config.HideDisabled    = b);
+        ImGuiRaii.ConfigCheckmark("Fix Timer Window Width", Accountant.Config.FixedWindowWidth != null,
+            b => Accountant.Config.FixedWindowWidth = b ? 300f : null);
+        if (Accountant.Config.FixedWindowWidth != null)
+        {
+            var value = Accountant.Config.FixedWindowWidth.Value;
+            if (ImGui.DragFloat("Fixed Timer Window Width", ref value, 1f, 100f, 1000f))
+                Accountant.Config.FixedWindowWidth = value;
+
+            if (ImGui.IsItemDeactivatedAfterEdit())
+                Accountant.Config.Save();
+        }
+
+        ImGuiRaii.ConfigCheckmark("No Timer Window Movement", Accountant.Config.ProhibitMoving, b => Accountant.Config.ProhibitMoving = b);
+        ImGuiRaii.ConfigCheckmark("Hide Disabled Objects",    Accountant.Config.HideDisabled,   b => Accountant.Config.HideDisabled   = b);
         ImGuiRaii.HoverTooltip("Hide objects that are disabled or limited from the timers.");
         ImGui.NewLine();
 

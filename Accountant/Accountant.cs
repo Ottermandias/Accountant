@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Reflection;
 using Accountant.Gui.Config;
 using Accountant.Manager;
@@ -16,9 +15,9 @@ public class Accountant : IDalamudPlugin
 
     public static string Version = "";
 
-    public static    AccountantConfiguration Config   = null!;
-    public static    IGameData               GameData = null!;
-    public static    IAddonWatcher           Watcher  = null!;
+    public static    AccountantConfiguration Config     = null!;
+    public static    IGameData               GameData   = null!;
+    public static    IAddonWatcher           Watcher    = null!;
     public readonly  TimerManager            Timers;
     public readonly  TimerWindow             TimerWindow;
     public readonly  ConfigWindow            ConfigWindow;
@@ -34,7 +33,7 @@ public class Accountant : IDalamudPlugin
         GameData = GameDataFactory.Create(Dalamud.Log, Dalamud.GameGui, Dalamud.ClientState, Dalamud.Framework, Dalamud.GameData);
 
         Timers       = new TimerManager();
-        TimerWindow  = new TimerWindow(Timers, Dalamud.Textures);
+        TimerWindow  = new TimerWindow(Timers);
         ConfigWindow = new ConfigWindow(Timers, TimerWindow);
 
         Dalamud.Commands.AddHandler("/accountant", new CommandInfo(OnAccountant)

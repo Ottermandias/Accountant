@@ -30,7 +30,8 @@ public class Dalamud
         [PluginService] public static ITextureProvider       Textures        { get; private set; } = null!;
         [PluginService] public static IGameInteropProvider   Interop         { get; private set; } = null!;
         [PluginService] public static IPluginLog             Log             { get; private set; } = null!;
-    // @formatter:on
+        [PluginService] public static IDtrBar                Dtr             { get; private set;} = null!;
+        // @formatter:on
 
     public static bool GetIcon(uint iconId, [NotNullWhen(true)] out IDalamudTextureWrap? icon)
     {
