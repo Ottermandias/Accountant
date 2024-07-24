@@ -63,7 +63,11 @@ internal class DtrManager(
             PushColor(builder, retainerCache.Counter.GetHeader(SeIconChar.BoxedLetterR), retainerCache.Color);
             if (Accountant.Config.EnableRetainersDtrTimer)
             {
-                PushColor(builder, $" ({Helpers.FormatTimeSpan(Helpers.TimeLeftFromNow(retainerCache.Counter.GetTime()))})", retainerCache.Color);
+                var timeLeft = Helpers.TimeLeftFromNow(retainerCache.Counter.GetTime());
+                if (TimeSpan.Compare(timeLeft, TimeSpan.Zero) > 0)
+                {
+                    PushColor(builder, $" ({Helpers.FormatTimeSpan(timeLeft)})", retainerCache.Color);
+                }
             }
         }
 
