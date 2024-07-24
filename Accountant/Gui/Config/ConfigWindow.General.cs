@@ -51,6 +51,7 @@ public partial class ConfigWindow
         ImGui.NewLine();
 
         ImGuiRaii.ConfigCheckmark("Enable Retainer Timers", Accountant.Config.EnableRetainers, EnableRetainers);
+        ImGuiRaii.ConfigCheckmark("Show Remaining Venture Time in DTR Header", Accountant.Config.EnableRetainersDtrTimer, EnableRetainersDtrTimer);
         ImGui.NewLine();
         ImGuiRaii.ConfigCheckmark("Enable Airship Timers",         Accountant.Config.EnableAirships,     EnableAirships);
         ImGuiRaii.ConfigCheckmark("Enable Submersible Timers",     Accountant.Config.EnableSubmersibles, EnableSubmersibles);
@@ -151,6 +152,9 @@ public partial class ConfigWindow
 
     private void EnableRetainers(bool toggle)
         => EnableCache(toggle, ConfigFlags.Retainers, typeof(TimerWindow.RetainerCache));
+
+    private void EnableRetainersDtrTimer(bool toggle)
+        => EnableCache(toggle, ConfigFlags.RetainersDtrTimer, typeof(TimerWindow.RetainerCache));
 
     private void EnableAirships(bool toggle)
         => EnableCache(toggle, ConfigFlags.Airships, typeof(TimerWindow.MachineCache));

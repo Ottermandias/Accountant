@@ -1,6 +1,7 @@
 ﻿using System;
 using Accountant.Gui;
 using Accountant.Gui.Timer;
+using Accountant.Internal;
 using Dalamud.Game.Gui.Dtr;
 using Dalamud.Game.Text;
 using Dalamud.Game.Text.SeStringHandling;
@@ -60,6 +61,10 @@ internal class DtrManager(
             if (updateCaches)
                 retainerCache.Update(now);
             PushColor(builder, retainerCache.Counter.GetHeader(SeIconChar.BoxedLetterR), retainerCache.Color);
+            if (Accountant.Config.EnableRetainersDtrTimer)
+            {
+                PushColor(builder, $" ({Helpers.FormatTimeSpan(Helpers.TimeLeftFromNow(retainerCache.Counter.GetTime()))})", retainerCache.Color);
+            }
         }
 
         if (Accountant.Config.EnableSubmersibles)
