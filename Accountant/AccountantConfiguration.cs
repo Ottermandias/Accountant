@@ -14,23 +14,24 @@ public enum ConfigFlags : uint
     Enabled            = 0x000001,
     WindowVisible      = 0x000002,
     Retainers          = 0x000004,
-    Airships           = 0x000008,
-    Submersibles       = 0x000010,
-    AetherialWheels    = 0x000020,
-    Crops              = 0x000040,
-    OrderByCrop        = 0x000080,
-    LeveAllowances     = 0x000100,
-    HideDisabled       = 0x000200,
-    Squadron           = 0x000400,
-    MapAllowance       = 0x000800,
-    ProhibitResize     = 0x001000,
-    ProhibitMoving     = 0x002000,
-    IgnoreIndoorPlants = 0x004000,
-    MiniCactpot        = 0x008000,
-    JumboCactpot       = 0x010000,
-    NoHeaderStyling    = 0x020000,
-    CustomDelivery     = 0x040000,
-    Tribes             = 0x080000,
+    RetainersDtrTimer  = 0x000008,
+    Airships           = 0x000010,
+    Submersibles       = 0x000020,
+    AetherialWheels    = 0x000040,
+    Crops              = 0x000080,
+    OrderByCrop        = 0x000100,
+    LeveAllowances     = 0x000200,
+    HideDisabled       = 0x000400,
+    Squadron           = 0x000800,
+    MapAllowance       = 0x001000,
+    ProhibitResize     = 0x002000,
+    ProhibitMoving     = 0x004000,
+    IgnoreIndoorPlants = 0x008000,
+    MiniCactpot        = 0x010000,
+    JumboCactpot       = 0x020000,
+    NoHeaderStyling    = 0x040000,
+    CustomDelivery     = 0x080000,
+    Tribes             = 0x100000,
 }
 
 public static class ConfigFlagExtensions
@@ -66,6 +67,7 @@ public class AccountantConfiguration : IPluginConfiguration
         ConfigFlags.Enabled
       | ConfigFlags.WindowVisible
       | ConfigFlags.Retainers
+      | ConfigFlags.RetainersDtrTimer
       | ConfigFlags.Airships
       | ConfigFlags.Submersibles
       | ConfigFlags.Crops
@@ -99,6 +101,12 @@ public class AccountantConfiguration : IPluginConfiguration
     {
         get => Flags.Check(ConfigFlags.Retainers);
         set => Flags.Set(ConfigFlags.Retainers, value);
+    }
+
+    public bool EnableRetainersDtrTimer
+    {
+        get => Flags.Check(ConfigFlags.RetainersDtrTimer);
+        set => Flags.Set(ConfigFlags.RetainersDtrTimer, value);
     }
 
     public bool EnableAirships
