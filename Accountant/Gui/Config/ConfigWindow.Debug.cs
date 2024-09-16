@@ -1,6 +1,9 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using Accountant.Enums;
 using Accountant.Gui.Helper;
 using ImGuiNET;
+using OtterLoc.Structs;
 
 namespace Accountant.Gui.Config;
 
@@ -18,7 +21,24 @@ public partial class ConfigWindow
 
         raii.Push(ImGui.EndTable);
 
-        var       info = _timers.CompanyStorage.GetCurrentCompanyInfo();
+        var info = _timers.CompanyStorage.GetCurrentCompanyInfo();
+
+        ImGui.TableNextColumn();
+        ImGui.Text("Current House");
+        ImGui.TableNextColumn();
+        ImGui.Text(_demoManager.CurrentPlot.ToName());
+
+        ImGui.TableNextColumn();
+        ImGui.Text("Demolition Subscribed");
+        ImGui.TableNextColumn();
+        ImGui.Text(_demoManager.FrameworkSubscribed.ToString());
+
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted("Test Demolition");
+        ImGui.TableNextColumn();
+        if (ImGui.SmallButton("Test##Demolition"))
+            _demoManager.Test();
+
         ImGui.TableNextColumn();
         ImGui.Text("Free Company Name");
         ImGui.TableNextColumn();
@@ -58,5 +78,13 @@ public partial class ConfigWindow
         ImGui.Text("Current House");
         ImGui.TableNextColumn();
         ImGui.Text(_timers.PositionInfo.House.ToString());
+
+        foreach (var id in Enum.GetValues<StringId>())
+        {
+            ImGui.TableNextColumn();
+            ImGui.TextUnformatted(id.ToString());
+            ImGui.TableNextColumn();
+            ImGui.TextUnformatted(id.Value());
+        }
     }
 }

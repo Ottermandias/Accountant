@@ -295,13 +295,35 @@ public partial class TimerManager
                 case 0:
                 {
                     if (StringId.HarvestCrop.Match(buttonText))
+                    {
                         HarvestCrop(descriptionText);
+                    }
                     else if (StringId.PlantCrop.Match(buttonText))
+                    {
                         SetPatch(descriptionText);
+                    }
+                    // In slot 0, so removal of withered crop.
                     else if (StringId.RemoveCrop.Match(buttonText))
+                    {
                         SetPatch(descriptionText);
+                        var id = IdentifyCropSpot();
+                        switch (id.Type)
+                        {
+                            case CropSpotType.Apartment:
+                            case CropSpotType.Chambers:
+                                _privateCrops.HarvestCrop(id);
+                                break;
+                            case CropSpotType.Outdoors:
+                            case CropSpotType.House:
+                                _plotCrops.HarvestCrop(id);
+                                break;
+                        }
+                    }
                     else if (StringId.TendCrop.Match(buttonText))
+                    {
                         TendCrop(descriptionText);
+                    }
+
                     return;
                 }
                 case 1:

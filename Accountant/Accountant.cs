@@ -15,13 +15,15 @@ public class Accountant : IDalamudPlugin
 
     public static string Version = "";
 
-    public static    AccountantConfiguration Config     = null!;
-    public static    IGameData               GameData   = null!;
-    public static    IAddonWatcher           Watcher    = null!;
+    public static    AccountantConfiguration Config      = null!;
+    public static    DemolitionManager       DemoManager = null!;
+    public static    IGameData               GameData    = null!;
+    public static    IAddonWatcher           Watcher     = null!;
     public readonly  TimerManager            Timers;
     public readonly  TimerWindow             TimerWindow;
     public readonly  ConfigWindow            ConfigWindow;
     private readonly ConfigSync              _configSync;
+
 
     public Accountant(IDalamudPluginInterface pluginInterface)
     {
@@ -29,12 +31,12 @@ public class Accountant : IDalamudPlugin
         Version = Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "";
         Config  = AccountantConfiguration.Load();
 
-        Watcher  = AddonWatcherFactory.Create(Dalamud.Log, Dalamud.GameGui, Dalamud.SigScanner, Dalamud.Interop);
-        GameData = GameDataFactory.Create(Dalamud.Log, Dalamud.GameGui, Dalamud.ClientState, Dalamud.Framework, Dalamud.GameData);
-
+        Watcher      = AddonWatcherFactory.Create(Dalamud.Log, Dalamud.GameGui, Dalamud.SigScanner, Dalamud.Interop);
+        GameData     = GameDataFactory.Create(Dalamud.Log, Dalamud.GameGui, Dalamud.ClientState, Dalamud.Framework, Dalamud.GameData);
         Timers       = new TimerManager();
-        TimerWindow  = new TimerWindow(Timers);
-        ConfigWindow = new ConfigWindow(Timers, TimerWindow);
+        DemoManager  = new DemolitionManager(Config, pluginInterface, Dalamud.ClientState, Dalamud.Framework, Timers.PositionInfo, Dalamud.Objects);
+        TimerWindow  = new TimerWindow(Timers, DemoManager);
+        ConfigWindow = new ConfigWindow(Timers, TimerWindow, DemoManager);
 
         Dalamud.Commands.AddHandler("/accountant", new CommandInfo(OnAccountant)
         {
@@ -47,7 +49,7 @@ public class Accountant : IDalamudPlugin
             HelpMessage = "Toggle the timer window.",
             ShowInHelp  = true,
         });
-        _configSync = new ConfigSync(Timers, TimerWindow);
+        _configSync = new ConfigSync(Timers, TimerWindow, DemoManager);
     }
 
     private void OnAccountant(string command, string arguments)
@@ -68,6 +70,7 @@ public class Accountant : IDalamudPlugin
     public void Dispose()
     {
         _configSync.Dispose();
+        DemoManager.Dispose();
         Timers.Dispose();
         ConfigWindow.Dispose();
         TimerWindow.Dispose();

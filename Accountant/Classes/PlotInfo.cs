@@ -6,20 +6,13 @@ using Newtonsoft.Json;
 
 namespace Accountant.Classes;
 
-public readonly struct PlotInfo : IEquatable<PlotInfo>, ITimerIdentifier
+public readonly struct PlotInfo(InternalHousingZone zone, ushort ward, ushort plot, ushort serverId)
+    : IEquatable<PlotInfo>, ITimerIdentifier
 {
-    public InternalHousingZone Zone     { get; }
-    public ushort              ServerId { get; }
-    public ushort              Ward     { get; }
-    public ushort              Plot     { get; }
-
-    public PlotInfo(InternalHousingZone zone, ushort ward, ushort plot, ushort serverId)
-    {
-        Zone     = zone;
-        ServerId = serverId;
-        Ward     = ward;
-        Plot     = plot;
-    }
+    public InternalHousingZone Zone     { get; } = zone;
+    public ushort              ServerId { get; } = serverId;
+    public ushort              Ward     { get; } = ward;
+    public ushort              Plot     { get; } = plot;
 
     public string ToName()
         => $"{Ward:D2}-{Plot:D2}, {Zone.ToName()}";
@@ -33,7 +26,7 @@ public readonly struct PlotInfo : IEquatable<PlotInfo>, ITimerIdentifier
 
     [JsonIgnore]
     public string Name
-        => Accountant.Config.PlotNames.TryGetValue(Value, out var ret) ? ret : ToName();
+        => Accountant.DemoManager.Data.TryGetValue(this, out var ret) && ret.Name.Length > 0 ? ret.Name : ToName();
 
     public bool Equals(PlotInfo other)
         => Zone == other.Zone

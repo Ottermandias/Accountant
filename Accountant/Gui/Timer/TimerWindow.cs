@@ -24,16 +24,18 @@ public partial class TimerWindow : IDisposable
 
     private DateTime _now = DateTime.UtcNow;
 
-    private readonly CropCache     _cropCache;
-    private readonly RetainerCache _retainerCache;
-    private readonly MachineCache  _subCache;
-    private readonly MachineCache  _airshipCache;
+    private readonly CropCache         _cropCache;
+    private readonly RetainerCache     _retainerCache;
+    private readonly MachineCache      _subCache;
+    private readonly MachineCache      _airshipCache;
+    private readonly DemolitionWarning _demolitionWarning;
 
     internal static DtrManager DtrManager = null!;
 
-    public TimerWindow(TimerManager manager)
+    public TimerWindow(TimerManager manager, DemolitionManager demolitionManager)
     {
-        _cache = manager.CreateCaches(this);
+        _demolitionWarning = new DemolitionWarning(demolitionManager, Dalamud.Framework);
+        _cache             = manager.CreateCaches(this);
         SortCache();
         _cropCache       = (CropCache)_cache.First(c => c is CropCache);
         _retainerCache   = (RetainerCache)_cache.First(c => c is RetainerCache);
@@ -75,6 +77,7 @@ public partial class TimerWindow : IDisposable
 
     public void Dispose()
     {
+        _demolitionWarning.Dispose();
         Dalamud.PluginInterface.UiBuilder.Draw       -= Draw;
         Dalamud.PluginInterface.UiBuilder.OpenMainUi -= Toggle;
     }
@@ -140,13 +143,15 @@ public partial class TimerWindow : IDisposable
 
         try
         {
+            DrawDemolition();
+
             foreach (var cache in _cache)
                 cache.Draw(_now);
 
             if (Accountant.Config.Flags.Check(ConfigFlags.Retainers))
                 _headerString = Accountant.Config.Flags.Any(ConfigFlags.Airships | ConfigFlags.Submersibles)
-                    ? $"{_retainerCache.Header}    {(_subCache.GlobalCounter + _airshipCache.GlobalCounter).GetHeader(StringId.Machines)}###Accountant.Timers"
-                    : $"{_retainerCache.Header}###Accountant.Timers";
+                    ? $"{_retainerCache.Counter.GetHeader(StringId.Retainers)}    {(_subCache.GlobalCounter + _airshipCache.GlobalCounter).GetHeader(StringId.Machines)}###Accountant.Timers"
+                    : $"{_retainerCache.Counter.GetHeader(StringId.Retainers)}###Accountant.Timers";
             else if (Accountant.Config.Flags.Any(ConfigFlags.Airships | ConfigFlags.Submersibles))
                 _headerString =
                     $"{(_subCache.GlobalCounter + _airshipCache.GlobalCounter).GetHeader(StringId.Machines)}###Accountant.Timers";
@@ -158,6 +163,28 @@ public partial class TimerWindow : IDisposable
         finally
         {
             ImGui.End();
+        }
+    }
+
+    private void DrawDemolition()
+    {
+        if (_demolitionWarning.Warnings.Count <= 0)
+            return;
+
+        using var c = ImGuiRaii.PushColor(ImGuiCol.Header, _demolitionWarning.HeaderColor.Value());
+        if (!ImGui.CollapsingHeader("Demolishing Houses", ImGuiTreeNodeFlags.DefaultOpen))
+            return;
+
+        foreach (var warning in _demolitionWarning.Warnings)
+        {
+            c.Push(ImGuiCol.Text, warning.Color.Value());
+            if (ImGui.TreeNodeEx(warning.Name, ImGuiTreeNodeFlags.Bullet | ImGuiTreeNodeFlags.Leaf))
+                ImGui.TreePop();
+            ImGui.SameLine();
+            var size = ImGui.CalcTextSize(warning.Status);
+            ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - size.X);
+            ImGui.TextUnformatted(warning.Status);
+            c.Pop();
         }
     }
 

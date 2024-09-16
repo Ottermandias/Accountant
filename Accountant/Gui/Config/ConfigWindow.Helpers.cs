@@ -109,20 +109,20 @@ public partial class ConfigWindow
     private static void DrawPlotRow(PlotInfo plot)
     {
         ImGui.TableNextColumn();
-        ImGui.Text(Accountant.GameData.GetWorldName(plot.ServerId));
+        ImGui.TextUnformatted(Accountant.GameData.GetWorldName(plot.ServerId));
         ImGui.TableNextColumn();
-        ImGui.Text(plot.Zone.ToName());
+        ImGui.TextUnformatted(plot.Zone.ToName());
         ImGui.TableNextColumn();
-        ImGui.Text(plot.Ward.ToString("D2"));
+        ImGui.TextUnformatted(plot.Ward.ToString("D2"));
         ImGui.TableNextColumn();
-        ImGui.Text(plot.Plot.ToString("D2"));
+        ImGui.TextUnformatted(plot.Plot.ToString("D2"));
     }
 
     private static void SetupPlotHeaders()
     {
-        ImGui.TableSetupColumn("World", ImGuiTableColumnFlags.WidthFixed, 125 * ImGuiHelpers.GlobalScale);
-        ImGui.TableSetupColumn("Zone",  ImGuiTableColumnFlags.WidthFixed, 125 * ImGuiHelpers.GlobalScale);
-        ImGui.TableSetupColumn("Ward",  ImGuiTableColumnFlags.WidthFixed, 35 * ImGuiHelpers.GlobalScale);
-        ImGui.TableSetupColumn("Plot",  ImGuiTableColumnFlags.WidthFixed, 35 * ImGuiHelpers.GlobalScale);
+        ImGui.TableSetupColumn("World", ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoClip, 125 * ImGuiHelpers.GlobalScale);
+        ImGui.TableSetupColumn("Zone",  ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoClip, 125 * ImGuiHelpers.GlobalScale);
+        ImGui.TableSetupColumn("Ward",  ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoClip, 35 * ImGuiHelpers.GlobalScale);
+        ImGui.TableSetupColumn("Plot",  ImGuiTableColumnFlags.WidthFixed | ImGuiTableColumnFlags.NoClip, 35 * ImGuiHelpers.GlobalScale);
     }
 }

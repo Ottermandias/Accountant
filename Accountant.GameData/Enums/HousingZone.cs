@@ -16,7 +16,7 @@ public enum HousingZone : ushort
     ApartmentLavenderBeds = 609,
     ApartmentGoblet       = 610,
     ApartmentShirogane    = 655,
-    ApartmentEmpyreum    = 999,
+    ApartmentEmpyreum     = 999,
     CottageMist           = 282,
     CottageLavenderBeds   = 342,
     CottageGoblet         = 345,

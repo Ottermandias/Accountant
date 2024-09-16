@@ -31,6 +31,10 @@ public partial class ConfigWindow
             else
                 TimerWindow.DtrManager.Disable();
         });
+        ImGuiRaii.ConfigCheckmark("Show Unassigned Retainers/Machines in Headers", Accountant.Config.ShowUnassignedInHeader,
+            b => Accountant.Config.ShowUnassignedInHeader = b);
+        ImGuiRaii.ConfigCheckmark("Show Sent-Out Retainers/Machines in Headers", Accountant.Config.ShowUnderwayInHeader,
+            b => Accountant.Config.ShowUnderwayInHeader = b);
         ImGuiRaii.ConfigCheckmark("No Collapsed Header Styling", Accountant.Config.NoHeaderStyling, b => Accountant.Config.NoHeaderStyling = b);
         ImGuiRaii.ConfigCheckmark("No Timer Window Resize",      Accountant.Config.ProhibitResize,  b => Accountant.Config.ProhibitResize  = b);
         ImGuiRaii.ConfigCheckmark("Fix Timer Window Width", Accountant.Config.FixedWindowWidth != null,
@@ -38,6 +42,7 @@ public partial class ConfigWindow
         if (Accountant.Config.FixedWindowWidth != null)
         {
             var value = Accountant.Config.FixedWindowWidth.Value;
+            ImGui.SetNextItemWidth(300 * ImGuiHelpers.GlobalScale);
             if (ImGui.DragFloat("Fixed Timer Window Width", ref value, 1f, 100f, 1000f))
                 Accountant.Config.FixedWindowWidth = value;
 

@@ -5,21 +5,22 @@ using Accountant.Gui.Timer;
 using Accountant.Manager;
 using Accountant.Timers;
 using Accountant.Util;
-using Dalamud.Logging;
 using Dalamud.Plugin.Services;
 
 namespace Accountant;
 
-
 public class ConfigSync : IDisposable
 {
-    private readonly TimerManager _manager;
-    private readonly TimerWindow  _window;
-    private          int          _frameCounter = 0;
-    public ConfigSync(TimerManager manager, TimerWindow window)
+    private readonly TimerManager      _manager;
+    private readonly TimerWindow       _window;
+    private readonly DemolitionManager _demoManager;
+    private          int               _frameCounter;
+
+    public ConfigSync(TimerManager manager, TimerWindow window, DemolitionManager demoManager)
     {
-        _manager = manager;
-        _window  = window;
+        _manager                 =  manager;
+        _window                  =  window;
+        _demoManager             =  demoManager;
         Dalamud.Framework.Update += OnFramework;
     }
 
@@ -64,13 +65,23 @@ public class ConfigSync : IDisposable
                     _manager.CompanyStorage.Reload();
                     _window.ResetCache();
                 }
+
+                break;
+            case 90:
+                if (_demoManager.GetWriteTime() > _demoManager.LastChangeTime)
+                {
+                    _demoManager.Reload();
+                    Dalamud.Log.Verbose("Reloaded {Timer:l} due to external changes.", typeof(DemolitionManager));
+                    _window.ResetCache();
+                }
+
                 break;
         }
     }
 
     private static void CheckTimersFolder<T1, T2>(TimersBase<T1, T2> timer) where T1 : struct, ITimerIdentifier
     {
-        var dir     = timer.CreateFolder();
+        var dir = timer.CreateFolder();
         if (dir.LastWriteTimeUtc <= timer.FileChangeTime
          && !dir.EnumerateFiles("*.json").Any(file => file.LastWriteTimeUtc > timer.FileChangeTime))
             return;

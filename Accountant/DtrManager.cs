@@ -74,11 +74,7 @@ internal class DtrManager(
             {
                 if (updateCaches)
                     airshipCache.Update(now);
-                PushColor(builder,
-                    $"{SeIconChar.BoxedLetterM.ToIconChar()}{airshipCache.GlobalCounter.Completed + subCache.GlobalCounter.Completed}|"
-                  + $"{airshipCache.GlobalCounter.Available + subCache.GlobalCounter.Available}|"
-                  + $"{airshipCache.GlobalCounter.Sent + subCache.GlobalCounter.Sent}",
-                    airshipCache.Color.Combine(subCache.Color));
+                PushColor(builder, (airshipCache.GlobalCounter + subCache.GlobalCounter).GetHeader(SeIconChar.BoxedLetterM), airshipCache.Color.Combine(subCache.Color));
             }
             else
             {

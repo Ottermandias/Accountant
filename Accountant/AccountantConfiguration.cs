@@ -209,9 +209,12 @@ public class AccountantConfiguration : IPluginConfiguration
     public bool ShowCropTooltip = true;
     public bool ShowDtr { get; set; } = true;
 
+    public bool ShowUnassignedInHeader { get; set; } = false;
+    public bool ShowUnderwayInHeader   { get; set; } = true;
+
     public Dictionary<ColorId, uint> Colors { get; set; } = Enum.GetValues<ColorId>().ToDictionary(c => c, c => c.Default());
 
-    public SortedList<ulong, string> PlotNames { get; } = new();
+    public SortedList<ulong, string> PlotNames { get; } = [];
 
     public HashSet<ulong>  BlockedPlots                 { get; } = [];
     public HashSet<string> BlockedPlayersCrops          { get; } = [];
@@ -258,10 +261,12 @@ public class AccountantConfiguration : IPluginConfiguration
         LastChangeTime = DateTime.UtcNow.AddMilliseconds(500);
     }
 
-
     // Backwards-Compatibility
     public bool EnableMachines
     {
         set => Flags.Set(ConfigFlags.Airships | ConfigFlags.Submersibles, value);
     }
+
+    public bool ShouldSerializePlotNames()
+        => false;
 }

@@ -11,15 +11,17 @@ public partial class ConfigWindow : IDisposable
 {
     private readonly        TimerManager      _timers;
     private readonly        Timer.TimerWindow _timerWindow;
+    private readonly        DemolitionManager _demoManager;
     private readonly        string            _header;
     private                 bool              _enabled;
-    private static readonly Vector2           MinSize = new(640, 480);
+    private static readonly Vector2           MinSize = new(640, 540);
 
 
-    public ConfigWindow(TimerManager timers, Timer.TimerWindow timerWindow)
+    public ConfigWindow(TimerManager timers, Timer.TimerWindow timerWindow, DemolitionManager demoManager)
     {
         _timers      = timers;
         _timerWindow = timerWindow;
+        _demoManager = demoManager;
         _header      = Accountant.Version != string.Empty ? $"Accountant v{Accountant.Version}###Accountant" : "Accountant###Accountant";
 
         Dalamud.PluginInterface.UiBuilder.Draw         += Draw;
@@ -56,7 +58,7 @@ public partial class ConfigWindow : IDisposable
 
         DrawConfigTab();
         DrawColorsTab();
-        DrawPlotNamesTab();
+        DrawDemolitionTab();
         DrawBlocklistsTab();
         DrawOrderNamesTab();
         DrawDeleteTab();

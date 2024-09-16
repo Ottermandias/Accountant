@@ -28,10 +28,10 @@ public partial class TimerWindow
         private int      _total;
 
         public string GetHeader(SeIconChar icon)
-            => $"{icon.ToIconChar()}{Completed}|{Available}|{Sent}";
+            => $"{icon.ToIconChar()}{Completed}{(Accountant.Config.ShowUnassignedInHeader ? $"|{Available}" : string.Empty)}{(Accountant.Config.ShowUnderwayInHeader ? $"|{Sent}" : string.Empty)}";
 
         public string GetHeader(StringId s)
-            => $"{s.Value()}: {Completed} | {Available} | {Sent}";
+            => $"{s.Value()}: {Completed}{(Accountant.Config.ShowUnassignedInHeader ? $" | {Available}" : string.Empty)}{(Accountant.Config.ShowUnderwayInHeader ? $" | {Sent}" : string.Empty)}";
 
         public ColorId GetColorText()
         {

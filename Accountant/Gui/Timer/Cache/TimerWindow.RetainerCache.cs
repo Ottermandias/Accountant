@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Accountant.Classes;
-using Accountant.Enums;
 using Accountant.Gui.Timer.Cache;
 using Accountant.Timers;
 
@@ -13,7 +12,6 @@ public partial class TimerWindow
     internal sealed class RetainerCache : BaseCache
     {
         private readonly RetainerTimers _retainers;
-        public           string         Header = string.Empty;
         public           ObjectCounter  Counter;
 
         public RetainerCache(TimerWindow window, ConfigFlags requiredFlags, RetainerTimers retainers)
@@ -77,7 +75,6 @@ public partial class TimerWindow
 
             Color       = Counter.GetColorHeader();
             DisplayTime = Counter.GetTime();
-            Header      = Counter.GetHeader(StringId.Retainers);
         }
     }
 }
