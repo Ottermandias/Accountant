@@ -93,6 +93,7 @@ public class DemolitionManager : IDisposable
             {
                 obj[plot.Value.ToString()] = new JObject
                 {
+                    [nameof(DemolitionInfo.Name)]               = demo.Name,
                     [nameof(DemolitionInfo.CheckedPlayers)]     = JArray.FromObject(demo.CheckedPlayers.Select(s => s.CastedName)),
                     [nameof(DemolitionInfo.LastVisit)]          = new DateTimeOffset(demo.LastVisit).ToUnixTimeMilliseconds(),
                     [nameof(DemolitionInfo.DisplayFrom)]        = demo.DisplayFrom,
@@ -184,6 +185,7 @@ public class DemolitionManager : IDisposable
                     DisplayFrom        = demoObj[nameof(DemolitionInfo.DisplayFrom)]?.ToObject<byte>() ?? DefaultDisplayFrom,
                     DisplayWarningFrom = demoObj[nameof(DemolitionInfo.DisplayWarningFrom)]?.ToObject<byte>() ?? DefaultDisplayWarningFrom,
                     Tracked            = demoObj[nameof(DemolitionInfo.Tracked)]?.ToObject<bool>() ?? true,
+                    Name               = demoObj[nameof(DemolitionInfo.Name)]?.ToObject<string>() ?? string.Empty,
                 };
                 demo.DisplayFrom        = Math.Clamp(demo.DisplayFrom,        (byte)0, DefaultDisplayMax);
                 demo.DisplayWarningFrom = Math.Clamp(demo.DisplayWarningFrom, (byte)0, DefaultDisplayMax);

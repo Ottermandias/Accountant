@@ -48,7 +48,8 @@ public partial class ConfigWindow
             return;
         }
 
-        if (ImGui.InputTextWithHint("Custom Name", "Leave blank for default...", ref data.Name, 128))
+        ImGui.InputTextWithHint("Custom Name", "Leave blank for default...", ref data.Name, 128);
+        if (ImGui.IsItemDeactivatedAfterEdit())
         {
             _timerWindow.ResetCache();
             _demoManager.Save();
