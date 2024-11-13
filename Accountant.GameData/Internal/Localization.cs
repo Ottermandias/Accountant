@@ -4,13 +4,13 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using Accountant.Enums;
 using Dalamud.Game;
-using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Plugin.Services;
 using Dalamud.Utility;
 using Lumina.Data;
 using Lumina.Excel;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
+using Lumina.Text.ReadOnly;
 using OtterLoc;
 using OtterLoc.Enums;
 
@@ -21,29 +21,29 @@ internal static class Localization
     private static bool _initialized;
 
     [Sheet("RetainerString")]
-    private class StringSheet : ExcelRow
+    private readonly struct StringSheet(ExcelPage page, uint offset, uint row) : IExcelRow<StringSheet>
     {
-        public SeString String { get; set; } = null!;
+        public ReadOnlySeString String
+            => page.ReadString(offset, offset);
 
-        public override void PopulateData(RowParser parser, Lumina.GameData gameData, Language language)
-        {
-            RowId    = parser.RowId;
-            SubRowId = parser.SubRowId;
-            String   = SeString.Parse(parser.ReadColumn<Lumina.Text.SeString>(1)!.RawData);
-        }
+        public static StringSheet Create(ExcelPage page, uint offset, uint row)
+            => new(page, offset, row);
+
+        public uint RowId
+            => row;
     }
 
     [Sheet("GoldSaucerTalk")]
-    private class GoldSaucerTalk : ExcelRow
+    private readonly struct GoldSaucerTalk(ExcelPage page, uint offset, uint row) : IExcelRow<GoldSaucerTalk>
     {
-        public SeString String { get; set; } = null!;
+        public ReadOnlySeString String
+            => page.ReadString(offset, offset); // TODO, column 17
 
-        public override void PopulateData(RowParser parser, Lumina.GameData gameData, Language language)
-        {
-            RowId    = parser.RowId;
-            SubRowId = parser.SubRowId;
-            String   = SeString.Parse(parser.ReadColumn<Lumina.Text.SeString>(17)!.RawData);
-        }
+        public static GoldSaucerTalk Create(ExcelPage page, uint offset, uint row)
+            => new(page, offset, row);
+
+        public uint RowId
+            => row;
     }
 
     private static readonly Regex PlantingTextEn =
@@ -83,33 +83,26 @@ internal static class Localization
 
     private static void SetCropCommands(IDataManager data)
     {
-        var sheet = data.Excel.GetType().GetMethod("GetSheet", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .MakeGenericMethod(typeof(StringSheet)).Invoke(data.Excel, new object?[]
-            {
-                "custom/001/cmndefhousinggardeningplant_00151",
-                data.Language.ToLumina(),
-                null,
-            }) as ExcelSheet<StringSheet>;
+        var sheet = data.Excel.GetSheet<StringSheet>(data.Language.ToLumina(), "custom/001/cmndefhousinggardeningplant_00151");
+        var addon = data.Excel.GetSheet<Addon>();
 
-        var addon = data.Excel.GetSheet<Addon>()!;
-
-        LocalizationDict<StringId>.RegisterComparer(StringId.HarvestCrop,   sheet!.GetRow(6)!.String.TextValue);
-        LocalizationDict<StringId>.RegisterComparer(StringId.TendCrop,      sheet.GetRow(4)!.String.TextValue);
-        LocalizationDict<StringId>.RegisterComparer(StringId.FertilizeCrop, sheet.GetRow(3)!.String.TextValue);
-        LocalizationDict<StringId>.RegisterComparer(StringId.RemoveCrop,    sheet.GetRow(5)!.String.TextValue);
-        LocalizationDict<StringId>.RegisterComparer(StringId.DisposeCrop, (sheet.GetRow(11)!.String.Payloads[0] as TextPayload)!.Text!,
+        LocalizationDict<StringId>.RegisterComparer(StringId.HarvestCrop,   sheet!.GetRow(6).String.ExtractText());
+        LocalizationDict<StringId>.RegisterComparer(StringId.TendCrop,      sheet.GetRow(4).String.ExtractText());
+        LocalizationDict<StringId>.RegisterComparer(StringId.FertilizeCrop, sheet.GetRow(3).String.ExtractText());
+        LocalizationDict<StringId>.RegisterComparer(StringId.RemoveCrop,    sheet.GetRow(5).String.ExtractText());
+        LocalizationDict<StringId>.RegisterComparer(StringId.DisposeCrop, (sheet.GetRow(11).String.ToDalamudString().Payloads[0] as TextPayload)!.Text!,
             MatchType.StartsWith);
-        LocalizationDict<StringId>.RegisterComparer(StringId.PlantCrop, sheet.GetRow(2)!.String.TextValue);
+        LocalizationDict<StringId>.RegisterComparer(StringId.PlantCrop, sheet.GetRow(2).String.ExtractText());
 
-        var matcher = SeStringMatcher.SinglePayloadComparer(data.Language, sheet.GetRow(7)!.String, ^1, ^1, ^1, 0);
+        var matcher = SeStringMatcher.SinglePayloadComparer(data.Language, sheet.GetRow(7).String.ToDalamudString(), ^1, ^1, ^1, 0);
         LocalizationDict<StringId>.Register(StringId.CropBeyondHope, matcher);
-        matcher = SeStringMatcher.SinglePayloadComparer(data.Language, sheet.GetRow(8)!.String, ^1, ^1, ^1, 0);
+        matcher = SeStringMatcher.SinglePayloadComparer(data.Language, sheet.GetRow(8).String.ToDalamudString(), ^1, ^1, ^1, 0);
         LocalizationDict<StringId>.Register(StringId.CropDoingWell, matcher);
-        matcher = SeStringMatcher.SinglePayloadComparer(data.Language, sheet.GetRow(9)!.String, ^1, ^1, ^1, 0);
+        matcher = SeStringMatcher.SinglePayloadComparer(data.Language, sheet.GetRow(9).String.ToDalamudString(), ^1, ^1, ^1, 0);
         LocalizationDict<StringId>.Register(StringId.CropBetterDays, matcher);
-        matcher = SeStringMatcher.SinglePayloadComparer(data.Language, sheet.GetRow(10)!.String, ^1, ^3, ^1, 0);
+        matcher = SeStringMatcher.SinglePayloadComparer(data.Language, sheet.GetRow(10).String.ToDalamudString(), ^1, ^3, ^1, 0);
         LocalizationDict<StringId>.Register(StringId.CropReady, matcher);
-        matcher = SeStringMatcher.SinglePayloadComparer(data.Language, SeString.Parse(addon.GetRow(6413)!.Text.RawData), 0, 0, ^1, ^1);
+        matcher = SeStringMatcher.SinglePayloadComparer(data.Language, addon.GetRow(6413).Text.ExtractText(), 0, 0, ^1, ^1);
         LocalizationDict<StringId>.Register(StringId.CropPrepareBed, matcher);
 
         LocalizationDict<StringId>.Register(StringId.PlantMatcher, SeStringParser.SpecificPayload(data.Language, 2, 3, 2, 3));
@@ -141,36 +134,30 @@ internal static class Localization
             return;
 
         _initialized = true;
-        var territories = data.Excel.GetSheet<TerritoryType>()!;
-        var names       = data.Excel.GetSheet<PlaceName>()!;
-        var addon       = data.Excel.GetSheet<Addon>()!;
-        var goldSaucerTalk = data.Excel.GetType().GetMethod("GetSheet", BindingFlags.Instance | BindingFlags.NonPublic)!
-            .MakeGenericMethod(typeof(GoldSaucerTalk)).Invoke(data.Excel, new object?[]
-            {
-                "goldsaucertalk",
-                data.Language.ToLumina(),
-                null,
-            }) as ExcelSheet<GoldSaucerTalk>;
+        var territories    = data.Excel.GetSheet<TerritoryType>();
+        var names          = data.Excel.GetSheet<PlaceName>();
+        var addon          = data.Excel.GetSheet<Addon>();
+        var goldSaucerTalk = data.Excel.GetSheet<GoldSaucerTalk>(data.Language.ToLumina(), "goldsaucertalk");
 
-        var territory = territories.GetRow((uint)HousingZone.Mist)!;
-        var name      = names.GetRow(territory.PlaceName.Row)!;
-        LocalizationDict<StringId>.Register(StringId.Mist, name.Name.RawString);
+        var territory = territories.GetRow((uint)HousingZone.Mist);
+        var name      = names.GetRow(territory.PlaceName.RowId);
+        LocalizationDict<StringId>.Register(StringId.Mist, name.Name.ExtractText());
 
-        territory = territories.GetRow((uint)HousingZone.LavenderBeds)!;
-        name      = names.GetRow(territory.PlaceName.Row)!;
-        LocalizationDict<StringId>.Register(StringId.LavenderBeds, name.Name.RawString);
+        territory = territories.GetRow((uint)HousingZone.LavenderBeds);
+        name      = names.GetRow(territory.PlaceName.RowId);
+        LocalizationDict<StringId>.Register(StringId.LavenderBeds, name.Name.ExtractText());
 
-        territory = territories.GetRow((uint)HousingZone.Goblet)!;
-        name      = names.GetRow(territory.PlaceName.Row)!;
-        LocalizationDict<StringId>.Register(StringId.Goblet, name.Name.RawString);
+        territory = territories.GetRow((uint)HousingZone.Goblet);
+        name      = names.GetRow(territory.PlaceName.RowId);
+        LocalizationDict<StringId>.Register(StringId.Goblet, name.Name.ExtractText());
 
-        territory = territories.GetRow((uint)HousingZone.Shirogane)!;
-        name      = names.GetRow(territory.PlaceName.Row)!;
-        LocalizationDict<StringId>.Register(StringId.Shirogane, name.Name.RawString);
+        territory = territories.GetRow((uint)HousingZone.Shirogane);
+        name      = names.GetRow(territory.PlaceName.RowId);
+        LocalizationDict<StringId>.Register(StringId.Shirogane, name.Name.ExtractText());
 
-        territory = territories.GetRow((uint)HousingZone.Empyreum)!;
-        name      = names.GetRow(territory.PlaceName.Row)!;
-        LocalizationDict<StringId>.Register(StringId.Empyreum, name.Name.RawString);
+        territory = territories.GetRow((uint)HousingZone.Empyreum);
+        name      = names.GetRow(territory.PlaceName.RowId);
+        LocalizationDict<StringId>.Register(StringId.Empyreum, name.Name.ExtractText());
 
         LocalizationDict<StringId>.RegisterName(StringId.Unknown, data.Language, "Unknown", "不明", "Unbekannt", "Inconnu");
 
@@ -190,16 +177,16 @@ internal static class Localization
 
         LocalizationDict<StringId>.RegisterName(StringId.Airship, data.Language, "Airship", "飛行船", "Luftschiff", "Aéronef");
         LocalizationDict<StringId>.Register(StringId.Submersible,
-            addon.GetRow(data.Language == ClientLanguage.Japanese ? 6881u : 6888u)!.Text.RawString);
-        LocalizationDict<StringId>.Register(StringId.Retainer, addon.GetRow(6163)!.Text.RawString);
+            addon.GetRow(data.Language == ClientLanguage.Japanese ? 6881u : 6888u).Text.ExtractText());
+        LocalizationDict<StringId>.Register(StringId.Retainer, addon.GetRow(6163).Text.ExtractText());
 
         LocalizationDict<StringId>.Register(StringId.WheelFilter,
             StringParser.FromRegex(data.Language, WheelTextEn, WheelTextFr, WheelTextJp, WheelTextDe, "wheel"));
 
         LocalizationDict<StringId>.Register(StringId.BuyMiniCactpotTicket,
-            new StringMatcherLetters(goldSaucerTalk!.GetRow(16)!.String.TextValue));
+            new StringMatcherLetters(goldSaucerTalk!.GetRow(16).String.ExtractText()));
         LocalizationDict<StringId>.Register(StringId.BuyJumboCactpotTicket,
-            new StringMatcherLetters(SeString.Parse(addon!.GetRow(9276)!.Text.RawData).TextValue));
+            new StringMatcherLetters(addon.GetRow(9276).Text.ExtractText()));
         LocalizationDict<StringId>.Register(StringId.FilterJumboCactpotTicket,
             StringParser.FromRegex(data.Language, JumboTextEn, JumboTextFr, JumboTextJp, JumboTextDe, "ticket"));
         SetCropCommands(data);

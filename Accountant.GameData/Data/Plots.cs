@@ -2,7 +2,7 @@
 using System.Linq;
 using Accountant.Enums;
 using Dalamud.Plugin.Services;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace Accountant.Data;
 
@@ -45,12 +45,12 @@ public class Plots
 
     internal Plots(IDataManager data)
     {
-        var sheet = data.GetExcelSheet<HousingLandSet>()!;
-        _mistData         = sheet.GetRow(0)!.PlotSize.Select(b => (PlotSize)b).ToArray();
-        _lavenderBedsData = sheet.GetRow(1)!.PlotSize.Select(b => (PlotSize)b).ToArray();
-        _gobletData       = sheet.GetRow(2)!.PlotSize.Select(b => (PlotSize)b).ToArray();
-        _shiroganeData    = sheet.GetRow(3)!.PlotSize.Select(b => (PlotSize)b).ToArray();
-        _empyreumData     = sheet.GetRow(4)!.PlotSize.Select(b => (PlotSize)b).ToArray();
+        var sheet = data.GetExcelSheet<HousingLandSet>();
+        _mistData         = sheet.GetRow(0).LandSet.Select(b => (PlotSize)b.PlotSize).ToArray();
+        _lavenderBedsData = sheet.GetRow(1).LandSet.Select(b => (PlotSize)b.PlotSize).ToArray();
+        _gobletData       = sheet.GetRow(2).LandSet.Select(b => (PlotSize)b.PlotSize).ToArray();
+        _shiroganeData    = sheet.GetRow(3).LandSet.Select(b => (PlotSize)b.PlotSize).ToArray();
+        _empyreumData     = sheet.GetRow(4).LandSet.Select(b => (PlotSize)b.PlotSize).ToArray();
     }
 
     private readonly PlotSize[] _mistData;

@@ -48,7 +48,7 @@ internal class FreeCompanyTracker
         {
             var newName   = _state.LocalPlayer.Name.TextValue;
             var newTag    = _state.LocalPlayer.CompanyTag.TextValue;
-            var newServer = _state.LocalPlayer.HomeWorld.Id;
+            var newServer = _state.LocalPlayer.HomeWorld.RowId;
             if (_characterName != newName || _freeCompanyTag != newTag || newServer != _serverId)
             {
                 _freeCompanyName   = null;
@@ -109,7 +109,7 @@ internal class FreeCompanyTracker
     private void LoginHandler()
         => _framework.Update += UpdateAndRemove;
 
-    private void LogoutHandler()
+    private void LogoutHandler(int _1, int _2)
     {
         Update();
     }

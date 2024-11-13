@@ -6,7 +6,7 @@ using Accountant.Enums;
 using Accountant.Structs;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Plugin.Services;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace Accountant.Internal;
 
@@ -67,7 +67,7 @@ internal class GameData : IGameData
             : $"Unknown World {id}";
 
     public string GetWorldName(IPlayerCharacter player)
-        => GetWorldName(player.HomeWorld.Id);
+        => GetWorldName(player.HomeWorld.RowId);
 
     public uint GetWorldId(string worldName)
         => _worldIds!.TryGetValue(worldName, out var ret)
@@ -98,12 +98,12 @@ internal class GameData : IGameData
 
         var sheet = data.GameData.GetExcelSheet<World>()!;
         _worldNames = sheet.Where(IsValid)
-            .ToDictionary(w => w.RowId, w => w.Name.RawString);
+            .ToDictionary(w => w.RowId, w => w.Name.ExtractText());
         _worldIds = _worldNames.ToDictionary(kvp => kvp.Value, kvp => kvp.Key);
         _worldCactpotHours = _worldNames.ToDictionary(kvp => kvp.Key, kvp =>
         {
-            var world = sheet.GetRow(kvp.Key)!;
-            return (byte)(world.DataCenter.Row switch
+            var world = sheet.GetRow(kvp.Key);
+            return (byte)(world.DataCenter.RowId switch
             {
                 1  => 12,
                 2  => 12,
@@ -126,16 +126,16 @@ internal class GameData : IGameData
 
     private static bool IsValid(World world)
     {
-        if (world.Name.RawData.IsEmpty)
+        if (world.Name.IsEmpty)
             return false;
 
-        if (world.DataCenter.Row is 0)
+        if (world.DataCenter.RowId is 0)
             return false;
 
         if (world.IsPublic)
             return true;
 
-        return char.IsUpper((char)world.Name.RawData[0]);
+        return char.IsUpper((char)world.Name.Data.Span[0]);
     }
 
     public void Dispose()

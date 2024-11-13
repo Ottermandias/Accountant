@@ -26,7 +26,7 @@ public class FreeCompanyStorage
             return null;
 
         var (tag, name, leader) = Accountant.GameData.FreeCompanyInfo();
-        var id = (ushort)Dalamud.ClientState.LocalPlayer.HomeWorld.Id;
+        var id = (ushort)Dalamud.ClientState.LocalPlayer.HomeWorld.RowId;
         return FindByAndUpdateInfo(tag, name, leader, id);
     }
 

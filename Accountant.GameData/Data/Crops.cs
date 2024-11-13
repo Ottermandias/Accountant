@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Accountant.Structs;
 using Dalamud.Plugin.Services;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace Accountant.Data;
 
@@ -26,15 +26,13 @@ public partial class Crops
         _idToData   = new Dictionary<uint, (CropData, string)>(Data.Length * 2);
         foreach (var (growth, wilt, itemId, seedId) in Data)
         {
-            var item = sheet.GetRow((uint)itemId);
-            var seed = sheet.GetRow((uint)seedId);
-            if (item == null)
+            if (!sheet.TryGetRow((uint)itemId, out var item))
             {
                 log.Error($"Could not obtain item with id {itemId}");
                 continue;
             }
 
-            if (seed == null)
+            if (!sheet.TryGetRow((uint)seedId, out var seed))
             {
                 log.Error($"Could not obtain item with id {seedId}");
                 continue;

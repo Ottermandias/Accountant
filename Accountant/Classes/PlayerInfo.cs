@@ -13,7 +13,7 @@ public readonly struct PlayerInfo(string name, ushort serverId) : IEquatable<Pla
     public ushort ServerId { get; } = serverId;
 
     public PlayerInfo(IPlayerCharacter character)
-        : this(character.Name.TextValue, (ushort)character.HomeWorld.Id)
+        : this(character.Name.TextValue, (ushort)character.HomeWorld.RowId)
     { }
 
     public bool Equals(PlayerInfo other)

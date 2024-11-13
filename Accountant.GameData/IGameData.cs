@@ -5,7 +5,7 @@ using Accountant.Internal;
 using Accountant.Structs;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Plugin.Services;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace Accountant;
 

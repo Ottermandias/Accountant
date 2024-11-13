@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using Dalamud.Game;
-using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Plugin.Services;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace Accountant.Data;
 
@@ -25,13 +24,13 @@ public class Wheels
 
     internal Wheels(IDataManager gameData)
     {
-        var items        = gameData.GetExcelSheet<Item>(ClientLanguage.English)!;
-        var itemsLang    = gameData.GetExcelSheet<Item>()!;
+        var items        = gameData.GetExcelSheet<Item>(ClientLanguage.English);
+        var itemsLang    = gameData.GetExcelSheet<Item>();
         var primedWheels = new List<(string, uint)>(50);
         var englishDict  = new Dictionary<string, (Item Item, string Name, byte Grade)>(50);
         foreach (var item in items)
         {
-            var englishName  = item.Name.RawString.ToLowerInvariant();
+            var englishName  = item.Name.ExtractText().ToLowerInvariant();
             var match = WheelRegex.Match(englishName);
             if (!match.Success)
             {
@@ -42,9 +41,9 @@ public class Wheels
             }
 
             var grade    = (byte)(match.Groups["grade"].Value[0] - '0');
-            var itemLang = itemsLang.GetRow(item.RowId)!;
-            var name = SeString.Parse(itemLang.Name.RawData).TextValue;
-            var singular = SeString.Parse(itemLang.Singular.RawData).TextValue.ToLowerInvariant();
+            var itemLang = itemsLang.GetRow(item.RowId);
+            var name = itemLang.Name.ExtractText();
+            var singular = itemLang.Name.ExtractText().ToLowerInvariant();
             _idToItem.TryAdd(itemLang.RowId, (itemLang, name, grade));
             _nameToItem.TryAdd(name.ToLowerInvariant(), (itemLang, name, grade));
             _nameToItem.TryAdd(singular,                (itemLang, name, grade));
@@ -53,9 +52,9 @@ public class Wheels
 
         foreach (var (englishName, primedWheel) in primedWheels)
         {
-            var itemLang     = itemsLang.GetRow(primedWheel)!;
-            var fullName     = SeString.Parse(itemLang.Name.RawData).TextValue.ToLowerInvariant();
-            var singular     = SeString.Parse(itemLang.Singular.RawData).TextValue.ToLowerInvariant();
+            var itemLang = itemsLang.GetRow(primedWheel);
+            var fullName = itemLang.Name.ExtractText().ToLowerInvariant();
+            var singular = itemLang.Name.ExtractText().ToLowerInvariant();
             if (!englishDict.TryGetValue(englishName, out var data))
                 continue;
             _nameToItem.TryAdd(fullName, data);

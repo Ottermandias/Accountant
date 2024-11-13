@@ -105,7 +105,7 @@ public partial class ConfigWindow
         ImGui.InputTextWithHint("##PlayerName", "New Player Name...", ref _newPlayerName, 40);
         ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
         if (_newWorldId == 0 && Dalamud.ClientState.LocalPlayer is not null)
-            _newWorldId = (ushort)Dalamud.ClientState.LocalPlayer.HomeWorld.Id;
+            _newWorldId = (ushort)Dalamud.ClientState.LocalPlayer.HomeWorld.RowId;
         DrawWorldsCombo(ref _newWorldId);
 
 
@@ -192,7 +192,7 @@ public partial class ConfigWindow
         var newPlot = PlotInfo.FromValue(_newPlotInfo);
         if (newPlot.ServerId == 0 && Dalamud.ClientState.LocalPlayer != null)
         {
-            newPlot      = new PlotInfo(newPlot.Zone, newPlot.Ward, newPlot.Plot, (ushort)Dalamud.ClientState.LocalPlayer.CurrentWorld.Id);
+            newPlot      = new PlotInfo(newPlot.Zone, newPlot.Ward, newPlot.Plot, (ushort)Dalamud.ClientState.LocalPlayer.CurrentWorld.RowId);
             _newPlotInfo = newPlot.Value;
         }
 

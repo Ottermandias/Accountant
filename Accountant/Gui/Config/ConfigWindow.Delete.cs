@@ -4,7 +4,6 @@ using System.Linq;
 using Accountant.Classes;
 using Accountant.Gui.Helper;
 using ImGuiNET;
-using Lumina.Excel.GeneratedSheets;
 
 namespace Accountant.Gui.Config;
 

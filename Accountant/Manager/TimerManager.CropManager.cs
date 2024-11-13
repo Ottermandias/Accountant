@@ -116,7 +116,7 @@ public partial class TimerManager
                 {
                     Type       = type,
                     PlayerName = Dalamud.ClientState.LocalPlayer!.Name.ToString(),
-                    ServerId   = (ushort)Dalamud.ClientState.LocalPlayer.HomeWorld.Id,
+                    ServerId   = (ushort)Dalamud.ClientState.LocalPlayer.HomeWorld.RowId,
                     Position   = target.Position,
                 };
                 return ret;
@@ -131,7 +131,7 @@ public partial class TimerManager
                 var ret = new CropSpotIdentification
                 {
                     Type     = CropSpotType.House,
-                    ServerId = (ushort)Dalamud.ClientState.LocalPlayer!.CurrentWorld.Id,
+                    ServerId = (ushort)Dalamud.ClientState.LocalPlayer!.CurrentWorld.RowId,
                     Position = target.Position,
                     Zone     = _positionInfo!.Zone,
                     Ward     = (byte)_positionInfo.Ward,
@@ -151,7 +151,7 @@ public partial class TimerManager
                 var ret = new CropSpotIdentification
                 {
                     Type     = CropSpotType.Outdoors,
-                    ServerId = (ushort)Dalamud.ClientState.LocalPlayer!.CurrentWorld.Id,
+                    ServerId = (ushort)Dalamud.ClientState.LocalPlayer!.CurrentWorld.RowId,
                     Zone     = _positionInfo!.Zone,
                     Ward     = (byte)_positionInfo.Ward,
                     Plot     = _positionInfo.Plot,

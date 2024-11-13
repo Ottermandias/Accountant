@@ -1,5 +1,5 @@
 using System;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace Accountant.Classes;
 
@@ -23,7 +23,7 @@ public struct Squadron
             return null;
 
         return Dalamud.GameData.GetExcelSheet<GcArmyExpedition>()?
-            .GetRow(MissionId)?
+            .GetRowOrDefault(MissionId)?
             .Name.ToString();
     }
 
@@ -33,7 +33,7 @@ public struct Squadron
             return null;
 
         return Dalamud.GameData.GetExcelSheet<GcArmyTraining>()?
-            .GetRow(TrainingId)?
+            .GetRowOrDefault(TrainingId)?
             .Name.ToString();
     }
 }

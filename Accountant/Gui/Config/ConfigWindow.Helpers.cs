@@ -92,7 +92,7 @@ public partial class ConfigWindow
         var newPlot = PlotInfo.FromValue(plotInfo);
         if (newPlot.ServerId == 0 && Dalamud.ClientState.LocalPlayer != null)
         {
-            newPlot  = new PlotInfo(newPlot.Zone, newPlot.Ward, newPlot.Plot, (ushort)Dalamud.ClientState.LocalPlayer.CurrentWorld.Id);
+            newPlot  = new PlotInfo(newPlot.Zone, newPlot.Ward, newPlot.Plot, (ushort)Dalamud.ClientState.LocalPlayer.CurrentWorld.RowId);
             plotInfo = newPlot.Value;
         }
 

@@ -1,22 +1,14 @@
-﻿using Lumina.Excel.GeneratedSheets;
+﻿using Lumina.Excel.Sheets;
 
 namespace Accountant.Structs;
 
-public readonly struct CropData
+public readonly struct CropData(ushort growTime, ushort wiltTime, Item item, Item seed)
 {
-    public readonly ushort GrowTime;
-    public readonly ushort WiltTime;
-    public readonly Item   Item;
-    public readonly Item   Seed;
+    public readonly ushort GrowTime = (ushort)(growTime * 60);
+    public readonly ushort WiltTime = (ushort)(wiltTime * 60);
+    public readonly Item   Item     = item;
+    public readonly Item   Seed     = seed;
 
     public ushort WitherTime
         => (ushort)(WiltTime + 24 * 60);
-
-    public CropData(ushort growTime, ushort wiltTime, Item item, Item seed)
-    {
-        GrowTime = (ushort)(growTime * 60);
-        WiltTime = (ushort)(wiltTime * 60);
-        Item     = item;
-        Seed     = seed;
-    }
 }

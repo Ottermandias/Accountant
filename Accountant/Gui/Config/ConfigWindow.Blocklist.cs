@@ -22,7 +22,7 @@ public partial class ConfigWindow
             return;
 
         if (_newWorld == 0 && Dalamud.ClientState.LocalPlayer != null)
-            _newWorld = (ushort)Dalamud.ClientState.LocalPlayer.CurrentWorld.Id;
+            _newWorld = (ushort)Dalamud.ClientState.LocalPlayer.CurrentWorld.RowId;
         using var raii = ImGuiRaii.DeferredEnd(ImGui.EndTabItem);
 
         if (!ImGui.BeginChild("##BlockListTab"))

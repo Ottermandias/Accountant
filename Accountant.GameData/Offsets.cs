@@ -51,7 +51,7 @@ public static class Signatures
 
 
     public const string AirshipTimers = "48 89 5C 24 ?? 57 48 83 EC 20 48 8B D9 48 8B FA 48 8B 49 40";
-    public const string PositionInfo  = "48 8B 15 ?? ?? ?? ?? 33 FF";
+    public const string PositionInfo  = "48 8B 05 ?? ?? ?? ?? 0F 83";
 
     public const string AirshipStatus = "48 89 5C 24 ?? 48 89 6C 24 ?? 56 57 41 54 41 56 41 57 48 83 EC ?? 48 8D B9";
 

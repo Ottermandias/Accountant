@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Dalamud.Plugin.Services;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace Accountant.Data;
 
