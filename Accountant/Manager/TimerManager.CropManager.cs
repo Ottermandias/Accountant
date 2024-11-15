@@ -2,7 +2,6 @@
 using System.Linq;
 using Accountant.Enums;
 using Accountant.Gui.Timer;
-using Accountant.SeFunctions;
 using Accountant.Structs;
 using Accountant.Timers;
 using AddonWatcher;
@@ -20,7 +19,6 @@ public partial class TimerManager
             => ConfigFlags.Enabled | ConfigFlags.Crops;
 
         private readonly IAddonWatcher       _watcher;
-        private readonly PositionInfoAddress _positionInfo;
         private readonly IGameData           _gameData;
 
         private bool   _state;
@@ -31,11 +29,10 @@ public partial class TimerManager
         private readonly PlotCropTimers    _plotCrops;
         private readonly PrivateCropTimers _privateCrops;
 
-        public CropManager(PlotCropTimers plotCrops, PrivateCropTimers privateCrops, PositionInfoAddress positionInfo)
+        public CropManager(PlotCropTimers plotCrops, PrivateCropTimers privateCrops)
         {
             _plotCrops    = plotCrops;
             _privateCrops = privateCrops;
-            _positionInfo = positionInfo;
             _watcher      = Accountant.Watcher;
             _gameData     = Accountant.GameData;
             SetState();
@@ -133,9 +130,9 @@ public partial class TimerManager
                     Type     = CropSpotType.House,
                     ServerId = (ushort)Dalamud.ClientState.LocalPlayer!.CurrentWorld.RowId,
                     Position = target.Position,
-                    Zone     = _positionInfo!.Zone,
-                    Ward     = (byte)_positionInfo.Ward,
-                    Plot     = (byte)_positionInfo.House,
+                    Zone     = Interop.PositionInfo.Zone,
+                    Ward     = (byte)Interop.PositionInfo.Ward,
+                    Plot     = (byte)Interop.PositionInfo.House,
                 };
                 if (ret.Zone == InternalHousingZone.Unknown || ret.Ward == 0 || ret.Plot == 0)
                     return CropSpotIdentification.Invalid;
@@ -152,9 +149,9 @@ public partial class TimerManager
                 {
                     Type     = CropSpotType.Outdoors,
                     ServerId = (ushort)Dalamud.ClientState.LocalPlayer!.CurrentWorld.RowId,
-                    Zone     = _positionInfo!.Zone,
-                    Ward     = (byte)_positionInfo.Ward,
-                    Plot     = _positionInfo.Plot,
+                    Zone     = Interop.PositionInfo.Zone,
+                    Ward     = (byte)Interop.PositionInfo.Ward,
+                    Plot     = Interop.PositionInfo.Plot,
                     Bed      = (byte)_lastBed,
                     Patch    = (byte)_lastPatch,
                 };

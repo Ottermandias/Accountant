@@ -6,9 +6,5 @@ namespace Accountant.SeFunctions;
 
 public delegate void UpdateGoldSaucerDelegate(IntPtr unk, IntPtr packetData);
 
-public sealed class UpdateGoldSaucerData : SeFunctionBase<UpdateGoldSaucerDelegate>
-{
-    public UpdateGoldSaucerData(IPluginLog log, ISigScanner sigScanner)
-        : base(log, sigScanner, Signatures.GoldSaucerData)
-    { }
-}
+public sealed class UpdateGoldSaucerData(IPluginLog log, ISigScanner sigScanner)
+    : SeFunctionBase<UpdateGoldSaucerDelegate>(log, sigScanner, Signatures.GoldSaucerData);

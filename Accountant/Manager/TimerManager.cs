@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using Accountant.Gui.Timer;
-using Accountant.SeFunctions;
 using Accountant.Timers;
 using Accountant.Util;
 
@@ -26,17 +25,15 @@ public sealed partial class TimerManager : IDisposable
     public readonly WheelTimers         WheelTimers       = new();
     public readonly TaskTimers          TaskTimers        = new();
     public readonly FreeCompanyStorage  CompanyStorage    = FreeCompanyStorage.Load();
-    public readonly PositionInfoAddress PositionInfo;
 
     private readonly ITimerManager[] _managers;
 
     public TimerManager()
     {
-        PositionInfo = new PositionInfoAddress(Dalamud.Log, Dalamud.SigScanner);
         _managers =
         [
             new RetainerManager(RetainerTimers),
-            new CropManager(PlotCropTimers, PrivateCropTimers, PositionInfo),
+            new CropManager(PlotCropTimers, PrivateCropTimers),
             new SubmersibleManager(SubmersibleTimers, AirshipTimers, CompanyStorage),
             new AirshipManager(AirshipTimers, SubmersibleTimers, CompanyStorage),
             new WheelManager(WheelTimers, CompanyStorage),

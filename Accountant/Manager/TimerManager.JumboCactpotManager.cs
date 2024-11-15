@@ -24,11 +24,11 @@ public partial class TimerManager
         private readonly IAddonWatcher                   _watcher;
         private readonly Hook<UpdateGoldSaucerDelegate>? _goldSaucerUpdateHook;
 
-        public JumboCactpotManager(TaskTimers tasks, UpdateGoldSaucerData goldSaucerUpdate)
+        public JumboCactpotManager(TaskTimers tasks)
         {
             _tasks                = tasks;
             _watcher              = Accountant.Watcher;
-            _goldSaucerUpdateHook = goldSaucerUpdate.CreateHook(Dalamud.Interop, UpdateGoldSaucerDetour, false);
+            _goldSaucerUpdateHook = Interop.UpdateGoldSaucerData.CreateHook(Dalamud.Interop, UpdateGoldSaucerDetour, false);
             SetState();
         }
 

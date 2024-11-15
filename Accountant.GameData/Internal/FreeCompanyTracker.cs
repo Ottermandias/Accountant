@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Linq;
-using Dalamud.Game;
-using Dalamud.Game.ClientState;
-using Dalamud.Game.Gui;
 using Dalamud.Game.Text.SeStringHandling;
-using Dalamud.Logging;
 using Dalamud.Memory;
 using Dalamud.Plugin.Services;
 
@@ -44,7 +39,7 @@ internal class FreeCompanyTracker
 
     private void Update()
     {
-        if (_state.IsLoggedIn && _state.LocalPlayer != null)
+        if (_state is { IsLoggedIn: true, LocalPlayer: not null })
         {
             var newName   = _state.LocalPlayer.Name.TextValue;
             var newTag    = _state.LocalPlayer.CompanyTag.TextValue;

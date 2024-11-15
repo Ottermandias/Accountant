@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Globalization;
 using Accountant.Enums;
-using Accountant.Gui.Helper;
+using Dalamud.Interface.Utility.Raii;
 using ImGuiNET;
 using OtterLoc.Structs;
 
@@ -15,18 +16,140 @@ public partial class ConfigWindow
         if (!ImGui.BeginTabItem("Debug##AccountantTabs"))
             return;
 
-        using var raii = ImGuiRaii.DeferredEnd(ImGui.EndTabItem);
-        if (!ImGui.BeginTable("##debugtable", 2))
+        DrawCompanyInfo();
+        DrawPositionInfo();
+        DrawSquadron();
+        DrawTests();
+        DrawAddresses();
+        DrawStrings();
+    }
+
+    private static void DrawStrings()
+    {
+        if (!ImGui.CollapsingHeader("Strings"))
             return;
 
-        raii.Push(ImGui.EndTable);
+        using var table = ImRaii.Table("##debugtableStrings", 2);
+        if (!table)
+            return;
 
-        var info = _timers.CompanyStorage.GetCurrentCompanyInfo();
+        foreach (var id in Enum.GetValues<StringId>())
+        {
+            ImGui.TableNextColumn();
+            ImGui.TextUnformatted(id.ToString());
+            ImGui.TableNextColumn();
+            ImGui.TextUnformatted(id.Value());
+        }
+    }
+
+    private void DrawAddresses()
+    {
+        if (!ImGui.CollapsingHeader("Addresses", ImGuiTreeNodeFlags.DefaultOpen))
+            return;
+
+        using var table = ImRaii.Table("##debugtableAddresses", 2);
+        if (!table)
+            return;
+
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted("Position Info");
+        ImGui.TableNextColumn();
+        CopyOnClickSelectable(Interop.PositionInfo.Address);
+
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted("Squadron Container");
+        ImGui.TableNextColumn();
+        CopyOnClickSelectable(Interop.SquadronContainer.Address);
+
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted("Update Gold Saucer Data");
+        ImGui.TableNextColumn();
+        CopyOnClickSelectable(Interop.UpdateGoldSaucerData.Address);
+    }
+
+    private void DrawPositionInfo()
+    {
+        if (!ImGui.CollapsingHeader("Position", ImGuiTreeNodeFlags.DefaultOpen))
+            return;
+
+        using var table = ImRaii.Table("##debugtablePosition", 2);
+        if (!table)
+            return;
+
+        ImGui.TableNextColumn();
+        ImGui.Text("Current Clientstate Territory ID");
+        ImGui.TableNextColumn();
+        ImGui.Text(Dalamud.ClientState.TerritoryType.ToString());
 
         ImGui.TableNextColumn();
         ImGui.Text("Current House");
         ImGui.TableNextColumn();
         ImGui.Text(_demoManager.CurrentPlot.ToName());
+
+        ImGui.TableNextColumn();
+        ImGui.Text("Current Housing Territory");
+        ImGui.TableNextColumn();
+        ImGui.Text(Interop.PositionInfo.Zone.ToString());
+
+        ImGui.TableNextColumn();
+        ImGui.Text("Current Ward");
+        ImGui.TableNextColumn();
+        ImGui.Text($"{Interop.PositionInfo.Ward}{(Interop.PositionInfo.Subdivision ? " (Subdivision)" : string.Empty)}");
+
+        ImGui.TableNextColumn();
+        ImGui.Text("Current Plot");
+        ImGui.TableNextColumn();
+        ImGui.Text(Interop.PositionInfo.Plot.ToString());
+
+        ImGui.TableNextColumn();
+        ImGui.Text("Current House");
+        ImGui.TableNextColumn();
+        ImGui.Text(Interop.PositionInfo.House.ToString());
+    }
+
+    private void DrawSquadron()
+    {
+        if (!ImGui.CollapsingHeader("Squadron", ImGuiTreeNodeFlags.DefaultOpen))
+            return;
+
+        using var table = ImRaii.Table("##debugtableSquadron", 2);
+        if (!table)
+            return;
+
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted("Mission ID");
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted(Interop.SquadronContainer.MissionId.ToString());
+
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted("Mission End");
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted(Interop.SquadronContainer.MissionEnd.ToString(CultureInfo.InvariantCulture));
+
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted("Training ID");
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted(Interop.SquadronContainer.TrainingId.ToString());
+
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted("Training End");
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted(Interop.SquadronContainer.TrainingEnd.ToString(CultureInfo.InvariantCulture));
+
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted("New Recruits");
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted(Interop.SquadronContainer.NewRecruits.ToString());
+    }
+
+    private void DrawTests()
+    {
+        if (!ImGui.CollapsingHeader("Tests", ImGuiTreeNodeFlags.DefaultOpen))
+            return;
+
+        using var table = ImRaii.Table("##debugtableTests", 2);
+        if (!table)
+            return;
 
         ImGui.TableNextColumn();
         ImGui.Text("Demolition Subscribed");
@@ -38,7 +161,18 @@ public partial class ConfigWindow
         ImGui.TableNextColumn();
         if (ImGui.SmallButton("Test##Demolition"))
             _demoManager.Test();
+    }
 
+    private void DrawCompanyInfo()
+    {
+        if (!ImGui.CollapsingHeader("Free Company", ImGuiTreeNodeFlags.DefaultOpen))
+            return;
+
+        using var table = ImRaii.Table("##debugtableCompany", 2);
+        if (!table)
+            return;
+
+        var info = _timers.CompanyStorage.GetCurrentCompanyInfo();
         ImGui.TableNextColumn();
         ImGui.Text("Free Company Name");
         ImGui.TableNextColumn();
@@ -58,33 +192,16 @@ public partial class ConfigWindow
         ImGui.Text("Free Company Server Id");
         ImGui.TableNextColumn();
         ImGui.Text(info?.ServerId.ToString() ?? "Unknown");
-
-        ImGui.TableNextColumn();
-        ImGui.Text("Current Territory");
-        ImGui.TableNextColumn();
-        ImGui.Text(_timers.PositionInfo.Zone.ToString());
-
-        ImGui.TableNextColumn();
-        ImGui.Text("Current Ward");
-        ImGui.TableNextColumn();
-        ImGui.Text($"{_timers.PositionInfo.Ward}{(_timers.PositionInfo.Subdivision ? " (Subdivision)" : string.Empty)}");
-
-        ImGui.TableNextColumn();
-        ImGui.Text("Current Plot");
-        ImGui.TableNextColumn();
-        ImGui.Text(_timers.PositionInfo.Plot.ToString());
-
-        ImGui.TableNextColumn();
-        ImGui.Text("Current House");
-        ImGui.TableNextColumn();
-        ImGui.Text(_timers.PositionInfo.House.ToString());
-
-        foreach (var id in Enum.GetValues<StringId>())
-        {
-            ImGui.TableNextColumn();
-            ImGui.TextUnformatted(id.ToString());
-            ImGui.TableNextColumn();
-            ImGui.TextUnformatted(id.Value());
-        }
     }
+
+    private static void CopyOnClickSelectable(string text)
+    {
+        if (ImGui.Selectable(text))
+            ImGui.SetClipboardText(text);
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip($"Click to copy to clipboard.");
+    }
+
+    private static void CopyOnClickSelectable(nint ptr)
+        => CopyOnClickSelectable($"0x{ptr:X}");
 }

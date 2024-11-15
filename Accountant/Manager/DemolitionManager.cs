@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using Accountant.Classes;
 using Accountant.Enums;
-using Accountant.SeFunctions;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
@@ -23,7 +22,6 @@ public class DemolitionManager : IDisposable
     private readonly IClientState        _clientState;
     private readonly IObjectTable        _objects;
     private readonly IFramework          _framework;
-    private readonly PositionInfoAddress _position;
     private readonly string              _filePath;
     public           DateTime            LastChangeTime      { get; private set; } = DateTime.UnixEpoch;
     public           bool                FrameworkSubscribed { get; private set; }
@@ -44,15 +42,14 @@ public class DemolitionManager : IDisposable
     public readonly Dictionary<PlotInfo, DemolitionInfo> Data = [];
 
     public PlotInfo CurrentPlot
-        => new(_position.Zone, _position.Ward, InsideHouse(_clientState.TerritoryType) ? _position.House : _position.Plot,
+        => new(Interop.PositionInfo.Zone, Interop.PositionInfo.Ward, InsideHouse(_clientState.TerritoryType) ? Interop.PositionInfo.House : Interop.PositionInfo.Plot,
             (ushort)(_clientState.LocalPlayer?.CurrentWorld.RowId ?? 0));
 
     public DemolitionManager(AccountantConfiguration config, IDalamudPluginInterface pluginInterface, IClientState clientState,
-        IFramework framework, PositionInfoAddress position, IObjectTable objects)
+        IFramework framework, IObjectTable objects)
     {
         _clientState = clientState;
         _framework   = framework;
-        _position    = position;
         _objects     = objects;
         _filePath    = Path.Combine(pluginInterface.GetPluginConfigDirectory(), "demolitiontracking.json");
         Load(config);
@@ -277,7 +274,7 @@ public class DemolitionManager : IDisposable
         if (_clientState.LocalPlayer is not { } player)
             return;
 
-        var plotInfo = new PlotInfo(_position.Zone, _position.Ward, _position.House, (ushort)player.CurrentWorld.RowId);
+        var plotInfo = new PlotInfo(Interop.PositionInfo.Zone, Interop.PositionInfo.Ward, Interop.PositionInfo.House, (ushort)player.CurrentWorld.RowId);
         if (!Data.TryGetValue(plotInfo, out var demoInfo) || !demoInfo.Tracked)
             return;
 

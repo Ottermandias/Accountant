@@ -1,9 +1,7 @@
 using System;
 using Accountant.Classes;
 using Accountant.Gui.Timer;
-using Accountant.SeFunctions;
 using Accountant.Timers;
-using Dalamud.Game;
 using Dalamud.Plugin.Services;
 
 namespace Accountant.Manager;
@@ -15,7 +13,6 @@ public partial class TimerManager
         public ConfigFlags RequiredFlags
             => ConfigFlags.Enabled | ConfigFlags.Squadron;
 
-        private readonly StaticSquadronContainer _squadron;
         private          bool                    _state;
         private          DateTime                _nextSquadronCheck = DateTime.MinValue;
 
@@ -24,7 +21,6 @@ public partial class TimerManager
         public SquadronManager(TaskTimers tasks)
         {
             _tasks    = tasks;
-            _squadron = new StaticSquadronContainer(Dalamud.Log, Dalamud.SigScanner);
             SetState();
         }
 
@@ -66,22 +62,22 @@ public partial class TimerManager
             if (Dalamud.ClientState.LocalPlayer == null)
                 return;
 
-            var missionId = _squadron.MissionId;
+            var missionId = Interop.SquadronContainer.MissionId;
             if (missionId == ushort.MaxValue)
                 return;
 
             var info = new Squadron
             {
                 MissionId   = missionId,
-                TrainingId  = _squadron.TrainingId,
-                MissionEnd  = _squadron.MissionEnd,
-                TrainingEnd = _squadron.TrainingEnd,
-                NewRecruits = _squadron.NewRecruits,
+                TrainingId  = Interop.SquadronContainer.TrainingId,
+                MissionEnd  = Interop.SquadronContainer.MissionEnd,
+                TrainingEnd = Interop.SquadronContainer.TrainingEnd,
+                NewRecruits = Interop.SquadronContainer.NewRecruits,
             };
 
             var player = new PlayerInfo(Dalamud.ClientState.LocalPlayer);
 
-            if (_tasks!.AddOrUpdateSquadron(player, info))
+            if (_tasks.AddOrUpdateSquadron(player, info))
                 _tasks.Save(player);
         }
 

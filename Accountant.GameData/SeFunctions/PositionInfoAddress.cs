@@ -5,7 +5,7 @@ using Dalamud.Plugin.Services;
 
 namespace Accountant.SeFunctions;
 
-public sealed class PositionInfoAddress : SeAddressBase
+public sealed class PositionInfoAddress(IPluginLog log, ISigScanner sigScanner) : SeAddressBase(log, sigScanner, Signatures.PositionInfo)
 {
     public ushort Ward
         => Info.Ward;
@@ -24,10 +24,6 @@ public sealed class PositionInfoAddress : SeAddressBase
 
     public HousingFloor HousingFloor
         => Info.HousingFloor;
-
-    public PositionInfoAddress(IPluginLog log, ISigScanner sigScanner)
-        : base(log, sigScanner, Signatures.PositionInfo)
-    { }
 
     private readonly unsafe struct PositionInfo
     {
