@@ -1,6 +1,4 @@
-using System.Linq;
 using Accountant.Gui.Timer;
-using Accountant.SeFunctions;
 using Accountant.Timers;
 
 namespace Accountant.Manager;
