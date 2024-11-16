@@ -19,9 +19,20 @@ public partial class ConfigWindow
         DrawCompanyInfo();
         DrawPositionInfo();
         DrawSquadron();
+        DrawFreeCompanyStorage();
         DrawTests();
         DrawAddresses();
         DrawStrings();
+    }
+
+    private void DrawFreeCompanyStorage()
+    {
+        if (!ImGui.CollapsingHeader("Free Company Storage Data"))
+            return;
+
+        ImGui.TextUnformatted($"Last Change: {_freeCompanyStorage.LastChangeTime}");
+        foreach (var company in _freeCompanyStorage.Infos)
+            ImGui.BulletText($"{company.Name} <{company.Tag}> by {company.Leader}@{Accountant.GameData.GetWorldName(company.ServerId)}");
     }
 
     private static void DrawStrings()
@@ -161,6 +172,15 @@ public partial class ConfigWindow
         ImGui.TableNextColumn();
         if (ImGui.SmallButton("Test##Demolition"))
             _demoManager.Test();
+
+        ImGui.TableNextColumn();
+        ImGui.TextUnformatted("Clear FC Data");
+        ImGui.TableNextColumn();
+        if (ImGui.SmallButton("Clear##FCData"))
+        {
+            _freeCompanyStorage.Infos.Clear();
+            _freeCompanyStorage.Save();
+        }
     }
 
     private void DrawCompanyInfo()

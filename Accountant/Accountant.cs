@@ -36,8 +36,8 @@ public class Accountant : IDalamudPlugin
         GameData     = GameDataFactory.Create(Dalamud.Log, Dalamud.GameGui, Dalamud.ClientState, Dalamud.Framework, Dalamud.GameData);
         Timers       = new TimerManager();
         DemoManager  = new DemolitionManager(Config, pluginInterface, Dalamud.ClientState, Dalamud.Framework, Dalamud.Objects);
-        TimerWindow  = new TimerWindow(Timers, DemoManager);
-        ConfigWindow = new ConfigWindow(Timers, TimerWindow, DemoManager);
+        TimerWindow  = new TimerWindow(Timers, DemoManager, Timers.CompanyStorage);
+        ConfigWindow = new ConfigWindow(Timers, TimerWindow, DemoManager, Timers.CompanyStorage);
 
         Dalamud.Commands.AddHandler("/accountant", new CommandInfo(OnAccountant)
         {

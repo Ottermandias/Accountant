@@ -4,7 +4,10 @@ using System.Numerics;
 using Accountant.Enums;
 using Accountant.Gui.Helper;
 using Accountant.Manager;
+using Accountant.Util;
 using Dalamud.Interface.Utility;
+using Dalamud.Interface.Utility.Raii;
+using Dalamud.Utility;
 using ImGuiNET;
 using OtterLoc.Structs;
 using DateTime = System.DateTime;
@@ -24,16 +27,18 @@ public partial class TimerWindow : IDisposable
 
     private DateTime _now = DateTime.UtcNow;
 
-    private readonly CropCache         _cropCache;
-    private readonly RetainerCache     _retainerCache;
-    private readonly MachineCache      _subCache;
-    private readonly MachineCache      _airshipCache;
-    private readonly DemolitionWarning _demolitionWarning;
+    private readonly CropCache          _cropCache;
+    private readonly RetainerCache      _retainerCache;
+    private readonly MachineCache       _subCache;
+    private readonly MachineCache       _airshipCache;
+    private readonly DemolitionWarning  _demolitionWarning;
+    private readonly FreeCompanyStorage _freeCompany;
 
     internal static DtrManager DtrManager = null!;
 
-    public TimerWindow(TimerManager manager, DemolitionManager demolitionManager)
+    public TimerWindow(TimerManager manager, DemolitionManager demolitionManager, FreeCompanyStorage freeCompany)
     {
+        _freeCompany       = freeCompany;
         _demolitionWarning = new DemolitionWarning(demolitionManager, Dalamud.Framework);
         _cache             = manager.CreateCaches(this);
         SortCache();
@@ -143,6 +148,7 @@ public partial class TimerWindow : IDisposable
 
         try
         {
+            DrawCompanyWarning();
             DrawDemolition();
 
             foreach (var cache in _cache)
@@ -163,6 +169,28 @@ public partial class TimerWindow : IDisposable
         finally
         {
             ImGui.End();
+        }
+    }
+
+    private void DrawCompanyWarning()
+    {
+        if (!Accountant.Config.ShowFreeCompanyWarning)
+            return;
+
+        var info           = _freeCompany.GetCurrentCompanyInfo();
+        var infoIncomplete = !info.HasValue || info.Value.Tag.Length > 0 && info.Value.Name.IsNullOrEmpty();
+        var tagUnavailable = Accountant.GameData.FreeCompanyInfo().Tag.IsNullOrEmpty();
+        if (!infoIncomplete || tagUnavailable)
+            return;
+
+        using var c = ImGuiRaii.PushColor(ImGuiCol.Header, _demolitionWarning.HeaderColor.Value());
+        ImGui.CollapsingHeader("No Full Free Company Data", ImGuiTreeNodeFlags.DefaultOpen);
+        if (ImGui.IsItemHovered())
+        {
+            using var tt = ImRaii.Tooltip();
+            ImGui.TextWrapped("No full data about your current free company available.\n\n"
+              + "Please leave your current instance or relog onto your character if this does not help to obtain Free Company Data after a Accountant Update.\n\n"
+              + "You can disable this warning permanently in the settings.");
         }
     }
 

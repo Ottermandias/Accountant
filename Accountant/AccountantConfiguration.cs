@@ -203,8 +203,9 @@ public class AccountantConfiguration : IPluginConfiguration
         set => Flags.Set(ConfigFlags.Tribes, value);
     }
 
-    public int LeveWarning    { get; set; } = 85;
-    public int TribesFinished { get; set; } = 0;
+    public bool ShowFreeCompanyWarning { get; set; } = true;
+    public int  LeveWarning            { get; set; } = 85;
+    public int  TribesFinished         { get; set; } = 0;
 
     public bool ShowCropTooltip = true;
     public bool ShowDtr { get; set; } = true;

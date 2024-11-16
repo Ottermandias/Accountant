@@ -24,6 +24,8 @@ public partial class TimerManager
                 new MapManager(tasks),
                 new TribeManager(tasks),
                 new DeliveryManager(tasks),
+                new JumboCactpotManager(tasks),
+                new MiniCactpotManager(tasks),
             ];
 
             SetState();

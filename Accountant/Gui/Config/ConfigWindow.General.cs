@@ -55,6 +55,8 @@ public partial class ConfigWindow
         ImGuiRaii.HoverTooltip("Hide objects that are disabled or limited from the timers.");
         ImGui.NewLine();
 
+        ImGuiRaii.ConfigCheckmark("Show Free Company Warning", Accountant.Config.ShowFreeCompanyWarning,
+            b => Accountant.Config.ShowFreeCompanyWarning = b);
         ImGuiRaii.ConfigCheckmark("Enable Retainer Timers", Accountant.Config.EnableRetainers, EnableRetainers);
         ImGui.NewLine();
         ImGuiRaii.ConfigCheckmark("Enable Airship Timers",         Accountant.Config.EnableAirships,     EnableAirships);

@@ -12,10 +12,10 @@ public class FreeCompanyStorage
 {
     public const string FileName = "free_company_data.json";
 
-    public readonly List<FreeCompanyInfo> Infos = new();
+    public readonly List<FreeCompanyInfo> Infos = [];
 
     [JsonIgnore]
-    public DateTime LastChangeTime { get; set; } = DateTime.UtcNow.AddMilliseconds(500);
+    public DateTime LastChangeTime { get; private set; } = DateTime.UtcNow.AddMilliseconds(500);
 
     public FreeCompanyInfo? GetCurrentCompanyInfo()
     {
