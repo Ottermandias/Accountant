@@ -182,6 +182,7 @@ public partial class TimerManager
                 case HousingZone.ApartmentEmpyreum:
                     return IdentifyCropSpotPrivate(CropSpotType.Apartment);
                 case HousingZone.CottageMist:
+                case HousingZone.CottageMistTenant:
                 case HousingZone.CottageLavenderBeds:
                 case HousingZone.CottageGoblet:
                 case HousingZone.CottageShirogane:

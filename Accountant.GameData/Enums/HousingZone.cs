@@ -32,4 +32,5 @@ public enum HousingZone : ushort
     MansionGoblet         = 347,
     MansionShirogane      = 651,
     MansionEmpyreum       = 982,
+    CottageMistTenant        = 1249,
 }
