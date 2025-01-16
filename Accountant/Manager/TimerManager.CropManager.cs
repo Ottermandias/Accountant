@@ -186,16 +186,19 @@ public partial class TimerManager
                 case HousingZone.CottageGoblet:
                 case HousingZone.CottageShirogane:
                 case HousingZone.CottageEmpyreum:
+                case HousingZone.CottageMinimalist:
                 case HousingZone.HouseMist:
                 case HousingZone.HouseLavenderBeds:
                 case HousingZone.HouseGoblet:
                 case HousingZone.HouseShirogane:
                 case HousingZone.HouseEmpyreum:
+                case HousingZone.HouseMinimalist:
                 case HousingZone.MansionMist:
                 case HousingZone.MansionLavenderBeds:
                 case HousingZone.MansionGoblet:
                 case HousingZone.MansionShirogane:
                 case HousingZone.MansionEmpyreum:
+                case HousingZone.MansionMinimalist:
                     return IdentifyCropSpotHouse();
                 default:
                     Dalamud.Log.Error($"Housing Zone {Dalamud.ClientState.TerritoryType} should not be able to have crops.");

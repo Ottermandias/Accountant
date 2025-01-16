@@ -19,12 +19,12 @@ public class DemolitionManager : IDisposable
     public const byte DefaultDisplayWarningFrom = 40;
     public const byte DefaultDisplayFrom        = 30;
 
-    private readonly IClientState        _clientState;
-    private readonly IObjectTable        _objects;
-    private readonly IFramework          _framework;
-    private readonly string              _filePath;
-    public           DateTime            LastChangeTime      { get; private set; } = DateTime.UnixEpoch;
-    public           bool                FrameworkSubscribed { get; private set; }
+    private readonly IClientState _clientState;
+    private readonly IObjectTable _objects;
+    private readonly IFramework   _framework;
+    private readonly string       _filePath;
+    public           DateTime     LastChangeTime      { get; private set; } = DateTime.UnixEpoch;
+    public           bool         FrameworkSubscribed { get; private set; }
 
     public class DemolitionInfo
     {
@@ -42,7 +42,8 @@ public class DemolitionManager : IDisposable
     public readonly Dictionary<PlotInfo, DemolitionInfo> Data = [];
 
     public PlotInfo CurrentPlot
-        => new(Interop.PositionInfo.Zone, Interop.PositionInfo.Ward, InsideHouse(_clientState.TerritoryType) ? Interop.PositionInfo.House : Interop.PositionInfo.Plot,
+        => new(Interop.PositionInfo.Zone, Interop.PositionInfo.Ward,
+            InsideHouse(_clientState.TerritoryType) ? Interop.PositionInfo.House : Interop.PositionInfo.Plot,
             (ushort)(_clientState.LocalPlayer?.CurrentWorld.RowId ?? 0));
 
     public DemolitionManager(AccountantConfiguration config, IDalamudPluginInterface pluginInterface, IClientState clientState,
@@ -255,16 +256,19 @@ public class DemolitionManager : IDisposable
             HousingZone.CottageGoblet       => true,
             HousingZone.CottageShirogane    => true,
             HousingZone.CottageEmpyreum     => true,
+            HousingZone.CottageMinimalist   => true,
             HousingZone.HouseMist           => true,
             HousingZone.HouseLavenderBeds   => true,
             HousingZone.HouseGoblet         => true,
             HousingZone.HouseShirogane      => true,
             HousingZone.HouseEmpyreum       => true,
+            HousingZone.HouseMinimalist     => true,
             HousingZone.MansionMist         => true,
             HousingZone.MansionLavenderBeds => true,
             HousingZone.MansionGoblet       => true,
             HousingZone.MansionShirogane    => true,
             HousingZone.MansionEmpyreum     => true,
+            HousingZone.MansionMinimalist   => true,
             _                               => false,
         };
 
@@ -274,7 +278,8 @@ public class DemolitionManager : IDisposable
         if (_clientState.LocalPlayer is not { } player)
             return;
 
-        var plotInfo = new PlotInfo(Interop.PositionInfo.Zone, Interop.PositionInfo.Ward, Interop.PositionInfo.House, (ushort)player.CurrentWorld.RowId);
+        var plotInfo = new PlotInfo(Interop.PositionInfo.Zone, Interop.PositionInfo.Ward, Interop.PositionInfo.House,
+            (ushort)player.CurrentWorld.RowId);
         if (!Data.TryGetValue(plotInfo, out var demoInfo) || !demoInfo.Tracked)
             return;
 
