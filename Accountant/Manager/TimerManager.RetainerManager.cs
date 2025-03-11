@@ -63,7 +63,7 @@ public partial class TimerManager
                 return;
 
             var manager = FFXIVClientStructs.FFXIV.Client.Game.RetainerManager.Instance();
-            if (manager == null || manager->Ready != 1)
+            if (manager == null || !manager->IsReady)
                 return;
 
             var retainerList = manager->Retainers;

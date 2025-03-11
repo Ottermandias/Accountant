@@ -119,7 +119,7 @@ public sealed class TaskTimers : TimersBase<PlayerInfo, TaskInfo>
         }
 
         var oldDelivery = tasks.Delivery;
-        if (oldDelivery.Allowances == allowances)
+        if (oldDelivery.Allowances == allowances && Delivery.NextReset(oldDelivery.LastUpdate) >= oldDelivery.LastUpdate)
             return false;
 
         tasks.Delivery = newDelivery;
