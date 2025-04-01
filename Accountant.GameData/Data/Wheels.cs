@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using Dalamud.Game;
 using Dalamud.Plugin.Services;
+using Dalamud.Utility;
 using Lumina.Excel.Sheets;
 
 namespace Accountant.Data;
@@ -42,8 +43,8 @@ public class Wheels
 
             var grade    = (byte)(match.Groups["grade"].Value[0] - '0');
             var itemLang = itemsLang.GetRow(item.RowId);
-            var name = itemLang.Name.ExtractText();
-            var singular = itemLang.Name.ExtractText().ToLowerInvariant();
+            var name     = itemLang.Name.ToDalamudString().TextValue;
+            var singular = itemLang.Name.ToDalamudString().TextValue.ToLowerInvariant();
             _idToItem.TryAdd(itemLang.RowId, (itemLang, name, grade));
             _nameToItem.TryAdd(name.ToLowerInvariant(), (itemLang, name, grade));
             _nameToItem.TryAdd(singular,                (itemLang, name, grade));
@@ -53,8 +54,8 @@ public class Wheels
         foreach (var (englishName, primedWheel) in primedWheels)
         {
             var itemLang = itemsLang.GetRow(primedWheel);
-            var fullName = itemLang.Name.ExtractText().ToLowerInvariant();
-            var singular = itemLang.Name.ExtractText().ToLowerInvariant();
+            var fullName = itemLang.Name.ToDalamudString().TextValue.ToLowerInvariant();
+            var singular = itemLang.Name.ToDalamudString().TextValue.ToLowerInvariant();
             if (!englishDict.TryGetValue(englishName, out var data))
                 continue;
             _nameToItem.TryAdd(fullName, data);
