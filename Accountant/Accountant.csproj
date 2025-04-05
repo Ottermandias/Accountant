@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Accountant</RootNamespace>
     <AssemblyName>Accountant</AssemblyName>
-    <Version>1.8.0.0</Version>
+    <Version>1.8.0.1</Version>
     <Company>SoftOtter</Company>
     <Product>Accountant</Product>
     <Copyright>Copyright © 2025</Copyright>
