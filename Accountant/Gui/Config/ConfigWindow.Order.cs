@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Accountant.Gui.Helper;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
-using ImGuiNET;
 
 namespace Accountant.Gui.Config;
 
@@ -25,7 +25,7 @@ public partial class ConfigWindow
     }
 
     private static unsafe bool IsDropping(string name)
-        => ImGui.AcceptDragDropPayload(name).NativePtr != null;
+        => ImGui.AcceptDragDropPayload(name).Handle != null;
 
     private void DrawOrderNamesTab()
     {
@@ -68,7 +68,7 @@ public partial class ConfigWindow
             font.Pop();
             ImGui.TableNextColumn();
             ImGui.SetNextItemWidth(-1);
-            if (ImGui.InputInt(string.Empty, ref priority, 0, 0, ImGuiInputTextFlags.EnterReturnsTrue) && priority != _priorityCache[i].Item1)
+            if (ImGui.InputInt(string.Empty, ref priority, 0, 0, flags: ImGuiInputTextFlags.EnterReturnsTrue) && priority != _priorityCache[i].Item1)
             {
                 change      = i;
                 newPriority = priority;
@@ -79,7 +79,7 @@ public partial class ConfigWindow
 
             if (ImGui.BeginDragDropSource())
             {
-                ImGui.SetDragDropPayload("Priority", IntPtr.Zero, 0);
+                ImGui.SetDragDropPayload("Priority", [], ImGuiCond.None);
                 _dragDropSource = i;
                 ImGui.EndDragDropSource();
             }

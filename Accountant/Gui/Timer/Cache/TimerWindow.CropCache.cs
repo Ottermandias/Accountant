@@ -5,7 +5,7 @@ using Accountant.Classes;
 using Accountant.Gui.Helper;
 using Accountant.Gui.Timer.Cache;
 using Accountant.Timers;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace Accountant.Gui.Timer;
 
@@ -61,7 +61,7 @@ public partial class TimerWindow
                 using var _ = ImGuiRaii.PushColor(ImGuiCol.Button, ret.Color.TextToHeader().Value());
                 if (Dalamud.GetIcon(ret.Icon, out var icon))
                 {
-                    ImGui.Image(icon.ImGuiHandle, Vector2.One * icon.Height / 2);
+                    ImGui.Image(icon.Handle, Vector2.One * icon.Height / 2);
                     ImGui.SameLine();
                     ImGui.Button(plantName, Vector2.UnitY * icon.Height / 2 - Vector2.UnitX);
                 }

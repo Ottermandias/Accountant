@@ -4,9 +4,10 @@ using System.Linq;
 using Accountant.Classes;
 using Accountant.Gui.Helper;
 using Accountant.Gui.Timer;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface;
 using Dalamud.Interface.Utility;
-using ImGuiNET;
+using Dalamud.Interface.Utility.Raii;
 
 namespace Accountant.Gui.Config;
 
@@ -18,17 +19,16 @@ public partial class ConfigWindow
 
     private void DrawBlocklistsTab()
     {
-        if (!ImGui.BeginTabItem("Blocklist##AccountantTabs"))
+        using var tabItem = ImRaii.TabItem("Blocklist##AccountantTabs");
+        if (!tabItem)
             return;
 
         if (_newWorld == 0 && Dalamud.ClientState.LocalPlayer != null)
             _newWorld = (ushort)Dalamud.ClientState.LocalPlayer.CurrentWorld.RowId;
-        using var raii = ImGuiRaii.DeferredEnd(ImGui.EndTabItem);
 
-        if (!ImGui.BeginChild("##BlockListTab"))
+        using var child = ImRaii.Child("##BlockListTab");
+        if (!child)
             return;
-
-        raii.Push(ImGui.EndChild);
 
         if (ImGui.CollapsingHeader("Blocked Crops"))
             DrawBlockedCrops();

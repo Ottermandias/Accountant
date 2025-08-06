@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Numerics;
 using Accountant.Gui.Helper;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace Accountant.Gui.Timer;
 

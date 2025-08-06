@@ -6,7 +6,7 @@ using Accountant.Classes;
 using Accountant.Enums;
 using Accountant.Gui.Timer.Cache;
 using Accountant.Timers;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using OtterLoc.Structs;
 
 namespace Accountant.Gui.Timer;
@@ -53,15 +53,15 @@ public partial class TimerWindow
                 ImGui.BeginGroup();
                 ImGui.Text(info.NewRecruits ? StringId.Available.Value() : "None");
                 if (info.MissionEnd == DateTime.MinValue)
-                    ImGui.Text(StringId.Available.Value());
+                    ImGui.Text((string)StringId.Available.Value());
                 else if (info.MissionEnd < now)
-                    ImGui.Text(StringId.Completed.Value());
+                    ImGui.Text((string)StringId.Completed.Value());
                 else
                     ImGui.Text(TimeSpanString(info.MissionEnd - now));
                 if (info.TrainingEnd == DateTime.MinValue)
-                    ImGui.Text(StringId.Available.Value());
+                    ImGui.Text((string)StringId.Available.Value());
                 else if (info.TrainingEnd < now)
-                    ImGui.Text(StringId.Completed.Value());
+                    ImGui.Text((string)StringId.Completed.Value());
                 else
                     ImGui.Text(TimeSpanString(info.TrainingEnd - now));
                 ImGui.EndGroup();

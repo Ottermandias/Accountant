@@ -75,7 +75,7 @@ public partial class TimerManager
 
         private static unsafe byte ActiveWheelSlot()
         {
-            var wheel = (AtkUnitBase*)Dalamud.GameGui.GetAddonByName("AetherialWheel", 1);
+            var wheel = (AtkUnitBase*)Dalamud.GameGui.GetAddonByName("AetherialWheel", 1).Address;
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (wheel == null || wheel->UldManager.NodeListCount < 14)
                 return 0;
@@ -132,7 +132,7 @@ public partial class TimerManager
 
         private unsafe void OnFrameworkWheel(IFramework _)
         {
-            var wheel = (AtkUnitBase*)Dalamud.GameGui.GetAddonByName("AetherialWheel", 1);
+            var wheel = (AtkUnitBase*)Dalamud.GameGui.GetAddonByName("AetherialWheel", 1).Address;
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (wheel == null || wheel->UldManager.NodeListCount < 14)
                 return;

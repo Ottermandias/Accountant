@@ -4,11 +4,11 @@ using Accountant.Classes;
 using Accountant.Enums;
 using Accountant.Gui.Helper;
 using Accountant.Manager;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface;
 using Dalamud.Interface.Components;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
-using ImGuiNET;
 
 namespace Accountant.Gui.Config;
 

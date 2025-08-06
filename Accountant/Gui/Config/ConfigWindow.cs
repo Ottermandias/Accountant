@@ -3,8 +3,8 @@ using System.Numerics;
 using Accountant.Gui.Helper;
 using Accountant.Manager;
 using Accountant.Util;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Utility;
-using ImGuiNET;
 
 namespace Accountant.Gui.Config;
 

@@ -2,8 +2,8 @@
 using Accountant.Classes;
 using Accountant.Gui.Helper;
 using Accountant.Gui.Timer;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Utility;
-using ImGuiNET;
 
 namespace Accountant.Gui.Config;
 
