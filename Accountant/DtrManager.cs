@@ -32,7 +32,7 @@ internal class DtrManager(
 
         _enabled       = true;
         _entry         = dtr.Get(DtrName);
-        _entry.OnClick = TimerWindow.Toggle;
+        _entry.OnClick = TimerWindow.ToggleDtr;
         _entry.Tooltip = "Click to toggle Accountant Timer Window.";
         Update(true);
     }

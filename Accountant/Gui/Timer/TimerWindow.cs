@@ -7,6 +7,7 @@ using Accountant.Manager;
 using Accountant.Util;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Game.Addon.Events.EventDataTypes;
+using Dalamud.Game.Gui.Dtr;
 using Dalamud.Interface.Utility;
 using Dalamud.Interface.Utility.Raii;
 using Dalamud.Utility;
@@ -59,6 +60,12 @@ public partial class TimerWindow : IDisposable
     }
 
     public static void Toggle()
+    {
+        Accountant.Config.WindowVisible = !Accountant.Config.WindowVisible;
+        Accountant.Config.Save();
+    }
+
+    public static void ToggleDtr(DtrInteractionEvent dtrInteractionEvent)
     {
         Accountant.Config.WindowVisible = !Accountant.Config.WindowVisible;
         Accountant.Config.Save();
