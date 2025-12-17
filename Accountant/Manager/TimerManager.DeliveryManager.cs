@@ -60,14 +60,14 @@ public partial class TimerManager
 
         private void UpdateDeliveries()
         {
-            if (Dalamud.ClientState.LocalPlayer == null)
+            if (Dalamud.Objects.LocalPlayer is not {} p)
                 return;
 
             var allowances = Delivery.AllowanceCap - SatisfactionSupplyManager.Instance()->GetUsedAllowances();
             if (allowances is < 0 or > Delivery.AllowanceCap)
                 return;
 
-            var player = new PlayerInfo(Dalamud.ClientState.LocalPlayer);
+            var player = new PlayerInfo(p);
 
             if (_tasks!.AddOrUpdateDeliveries(player, allowances))
                 _tasks.Save(player);

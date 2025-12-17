@@ -78,7 +78,7 @@ public partial class TimerManager
                 LastUpdate = DateTime.UtcNow,
             };
 
-            var player = new PlayerInfo(Dalamud.ClientState.LocalPlayer!);
+            var player = new PlayerInfo(Dalamud.Objects.LocalPlayer!);
             if (_tasks.AddOrUpdateMiniCactpot(player, mini))
                 _tasks.Save(player);
             _goldSaucerUpdateHook!.Original(_, packet);
@@ -92,7 +92,7 @@ public partial class TimerManager
             if (!StringId.BuyMiniCactpotTicket.Match(description))
                 return;
 
-            var player = new PlayerInfo(Dalamud.ClientState.LocalPlayer!);
+            var player = new PlayerInfo(Dalamud.Objects.LocalPlayer!);
             if (_tasks.AddOrUpdateMini(player))
                 _tasks.Save(player);
         }

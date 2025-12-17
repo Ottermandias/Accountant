@@ -44,7 +44,7 @@ public class DemolitionManager : IDisposable
     public PlotInfo CurrentPlot
         => new(Interop.PositionInfo.Zone, Interop.PositionInfo.Ward,
             InsideHouse(_clientState.TerritoryType) ? Interop.PositionInfo.House : Interop.PositionInfo.Plot,
-            (ushort)(_clientState.LocalPlayer?.CurrentWorld.RowId ?? 0));
+            (ushort)(Dalamud.PlayerState.IsLoaded ? Dalamud.PlayerState.CurrentWorld.RowId : 0));
 
     public DemolitionManager(AccountantConfiguration config, IDalamudPluginInterface pluginInterface, IClientState clientState,
         IFramework framework, IObjectTable objects)
@@ -275,11 +275,11 @@ public class DemolitionManager : IDisposable
 
     private void OnFramework(IFramework framework)
     {
-        if (_clientState.LocalPlayer is not { } player)
+        if (!Dalamud.PlayerState.IsLoaded)
             return;
 
         var plotInfo = new PlotInfo(Interop.PositionInfo.Zone, Interop.PositionInfo.Ward, Interop.PositionInfo.House,
-            (ushort)player.CurrentWorld.RowId);
+            (ushort)Dalamud.PlayerState.CurrentWorld.RowId);
         if (!Data.TryGetValue(plotInfo, out var demoInfo) || !demoInfo.Tracked)
             return;
 

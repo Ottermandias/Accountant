@@ -61,14 +61,14 @@ public partial class TimerManager
 
         private unsafe void UpdateTribes()
         {
-            if (Dalamud.ClientState.LocalPlayer == null)
+            if (Dalamud.Objects.LocalPlayer is not {} p)
                 return;
 
             var allowances = (int) QuestManager.Instance()->GetBeastTribeAllowance();
             if (allowances is < 0 or > Tribe.AllowanceCap)
                 return;
 
-            var player = new PlayerInfo(Dalamud.ClientState.LocalPlayer);
+            var player = new PlayerInfo(p);
 
             if (_tasks!.AddOrUpdateTribes(player, allowances))
                 _tasks.Save(player);

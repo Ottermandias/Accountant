@@ -23,8 +23,8 @@ public partial class ConfigWindow
         if (!tabItem)
             return;
 
-        if (_newWorld == 0 && Dalamud.ClientState.LocalPlayer != null)
-            _newWorld = (ushort)Dalamud.ClientState.LocalPlayer.CurrentWorld.RowId;
+        if (_newWorld is 0 && Dalamud.PlayerState.IsLoaded)
+            _newWorld = (ushort)Dalamud.PlayerState.CurrentWorld.RowId;
 
         using var child = ImRaii.Child("##BlockListTab");
         if (!child)

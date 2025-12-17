@@ -80,7 +80,7 @@ public partial class TimerManager
             if (_gameData.FindMap(item.ItemId) == null)
                 return;
 
-            var player = new PlayerInfo(Dalamud.ClientState.LocalPlayer!);
+            var player = new PlayerInfo(Dalamud.Objects.LocalPlayer!);
             if (_tasks!.AddOrUpdateMap(player, DateTime.UtcNow.AddHours(18)))
                 _tasks.Save(player);
         }
@@ -88,7 +88,7 @@ public partial class TimerManager
 
         private unsafe void UpdateMap()
         {
-            if (Dalamud.ClientState.LocalPlayer == null)
+            if (Dalamud.Objects.LocalPlayer is not {} p)
                 return;
 
             var uiState = UIState.Instance();
@@ -99,7 +99,7 @@ public partial class TimerManager
             if (time == DateTime.MaxValue || time == DateTime.MinValue)
                 return;
 
-            var player = new PlayerInfo(Dalamud.ClientState.LocalPlayer);
+            var player = new PlayerInfo(p);
 
             if (_tasks!.AddOrUpdateMap(player, time))
                 _tasks.Save(player);

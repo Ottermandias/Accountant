@@ -79,9 +79,9 @@ internal class GameData : IGameData
             ? ret
             : throw new ArgumentOutOfRangeException($"{worldId} is not a valid world id.");
 
-    public GameData(IPluginLog log, IGameGui gui, IClientState state, IFramework framework, IDataManager data)
+    public GameData(IPluginLog log, IGameGui gui, IClientState state, IFramework framework, IDataManager data, IObjectTable objects)
     {
-        _fcTracker ??= new FreeCompanyTracker(log, gui, state, framework);
+        _fcTracker ??= new FreeCompanyTracker(log, gui, state, framework, objects);
         _crops     ??= new Crops(log, data);
         _wheels    ??= new Wheels(data);
         _maps      ??= new Maps(data);

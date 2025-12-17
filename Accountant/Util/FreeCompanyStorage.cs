@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Accountant.Classes;
-using Dalamud.Logging;
 using Newtonsoft.Json;
 
 namespace Accountant.Util;
@@ -22,11 +21,11 @@ public class FreeCompanyStorage
         if (!Accountant.GameData.Valid)
             return null;
 
-        if (Dalamud.ClientState.LocalPlayer == null)
+        if (!Dalamud.PlayerState.IsLoaded)
             return null;
 
         var (tag, name, leader) = Accountant.GameData.FreeCompanyInfo();
-        var id = (ushort)Dalamud.ClientState.LocalPlayer.HomeWorld.RowId;
+        var id = (ushort)Dalamud.PlayerState.HomeWorld.RowId;
         return FindByAndUpdateInfo(tag, name, leader, id);
     }
 

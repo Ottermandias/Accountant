@@ -11,8 +11,8 @@ namespace Accountant;
 
 public static class GameDataFactory
 {
-    public static IGameData Create(IPluginLog log, IGameGui gui, IClientState state, IFramework framework, IDataManager data)
-        => new GameData(log, gui, state, framework, data);
+    public static IGameData Create(IPluginLog log, IGameGui gui, IClientState state, IFramework framework, IDataManager data, IObjectTable objects)
+        => new GameData(log, gui, state, framework, data, objects);
 }
 
 public interface IGameData : IDisposable
