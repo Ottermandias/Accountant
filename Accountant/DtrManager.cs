@@ -13,7 +13,8 @@ internal class DtrManager(
     TimerWindow.CropCache cropCache,
     TimerWindow.RetainerCache retainerCache,
     TimerWindow.MachineCache airshipCache,
-    TimerWindow.MachineCache subCache)
+    TimerWindow.MachineCache subCache,
+    TimerWindow.WheelCache wheelCache)
 {
     private const string        DtrName = "Accountant.DTR";
     private       bool          _enabled;
@@ -90,10 +91,20 @@ internal class DtrManager(
                 airshipCache.Update(now);
             PushColor(builder, airshipCache.GlobalCounter.GetHeader(SeIconChar.BoxedLetterM), airshipCache.Color);
         }
-
-        if (Accountant.Config.EnableCrops)
+        
+        if (Accountant.Config.EnableWheels)
         {
             if (Accountant.Config.EnableRetainers || Accountant.Config.EnableSubmersibles || Accountant.Config.EnableAirships)
+                builder.AddText(" ");
+
+            if (updateCaches)
+                wheelCache.Update(now);
+            PushColor(builder, wheelCache.Counter.GetHeader(SeIconChar.BoxedLetterW), wheelCache.Color);
+        }
+        
+        if (Accountant.Config.EnableCrops)
+        {
+            if (Accountant.Config.EnableRetainers || Accountant.Config.EnableSubmersibles || Accountant.Config.EnableAirships || Accountant.Config.EnableWheels)
                 builder.AddText(" ");
 
             if (updateCaches)

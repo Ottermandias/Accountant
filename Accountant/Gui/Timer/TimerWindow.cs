@@ -33,6 +33,7 @@ public partial class TimerWindow : IDisposable
     private readonly RetainerCache      _retainerCache;
     private readonly MachineCache       _subCache;
     private readonly MachineCache       _airshipCache;
+    private readonly WheelCache         _wheelCache;
     private readonly DemolitionWarning  _demolitionWarning;
     private readonly FreeCompanyStorage _freeCompany;
 
@@ -48,10 +49,11 @@ public partial class TimerWindow : IDisposable
         _retainerCache   = (RetainerCache)_cache.First(c => c is RetainerCache);
         _subCache        = (MachineCache)_cache.First(c => c is MachineCache);
         _airshipCache    = (MachineCache)_cache.Last(c => c is MachineCache);
+        _wheelCache      = (WheelCache)_cache.First(c => c is WheelCache);
         _completedString = StringId.Completed.Value();
         _availableString = StringId.Available.Value();
 
-        DtrManager = new DtrManager(Dalamud.Dtr, _cropCache, _retainerCache, _airshipCache, _subCache);
+        DtrManager = new DtrManager(Dalamud.Dtr, _cropCache, _retainerCache, _airshipCache, _subCache, _wheelCache);
         if (Accountant.Config.ShowDtr)
             DtrManager.Enable();
 
