@@ -11,6 +11,7 @@ using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Logging;
 using Dalamud.Memory;
 using Dalamud.Plugin.Services;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using OtterLoc.Structs;
 
@@ -172,7 +173,7 @@ public partial class TimerManager
                 else
                 {
                     var fill     = button->Component->UldManager.NodeList[8]->ScaleX;
-                    var seString = MemoryHelper.ReadSeString(&((AtkTextNode*)button->Component->UldManager.NodeList[9])->NodeText);
+                    var seString = ((AtkTextNode*) button->Component->UldManager.NodeList[9])->NodeText.AsDalamudSeString();
                     seString.Payloads.RemoveAll(p => p is NewLinePayload);
                     var name = seString.TextValue;
                     var (item, _, grade) = Accountant.GameData.FindWheel(name);
