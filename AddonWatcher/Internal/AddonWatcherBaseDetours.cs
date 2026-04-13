@@ -3,7 +3,6 @@ using System.Linq;
 using AddonWatcher.Enums;
 using AddonWatcher.Structs;
 using FFXIVClientStructs.FFXIV.Client.UI;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace AddonWatcher.Internal;
 
@@ -82,11 +81,11 @@ internal partial class AddonWatcherBase
             var owner = ((PopupMenu*)atkUnit)->Owner;
             if (SelectStringName.EqualsNullTerminated(owner->Name))
             {
-                var ptr             = (IntPtr)owner;
-                var idx             = ((byte*)data)[0x10];
-                var renderer        = *(AtkComponentListItemRenderer**)data;
-                var descriptionText = ((SelectStringInfo)ptr).Description;
-                var itemText        = Helpers.TextNodeToString(renderer->AtkComponentButton.ButtonTextNode);
+                var ptr              = (IntPtr)owner;
+                var idx              = ((byte*)data)[0x10];
+                var selectStringInfo = (SelectStringInfo) ptr;
+                var descriptionText  = selectStringInfo.Description;
+                var itemText         = selectStringInfo.ItemText(idx);
                 _log.Verbose("String {ButtonText} ({Which}) selected on 0x{SelectStringPtr:X} with description {Description}.", itemText,
                     which, (ulong)ptr, descriptionText);
                 StringSelected!.Invoke(ptr, idx, itemText, descriptionText);
