@@ -1,6 +1,7 @@
 ﻿using System;
 using AddonWatcher.Internal;
 using Dalamud.Game.Text.SeStringHandling;
+using Dalamud.Utility;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
@@ -22,7 +23,7 @@ public unsafe struct SelectStringInfo
         => List->ListLength;
 
     public SeString ItemText(int idx)
-        => Helpers.TextNodeToString(List->ItemRendererList[idx].AtkComponentListItemRenderer->AtkComponentButton.ButtonTextNode);
+        => Pointer->AtkValuesSpan[7 + idx].String.AsDalamudSeString();
 
     public SeString Description
     {
