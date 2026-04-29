@@ -63,11 +63,6 @@ public partial class ConfigWindow
             return;
 
         ImGui.TableNextColumn();
-        ImGui.TextUnformatted("Position Info");
-        ImGui.TableNextColumn();
-        CopyOnClickSelectable(Interop.PositionInfo.Address);
-
-        ImGui.TableNextColumn();
         ImGui.TextUnformatted("Squadron Container");
         ImGui.TableNextColumn();
         CopyOnClickSelectable(Interop.SquadronContainer.Address);
@@ -95,27 +90,27 @@ public partial class ConfigWindow
         ImGui.TableNextColumn();
         ImGui.Text("Current House");
         ImGui.TableNextColumn();
-        ImGui.Text(_demoManager.CurrentPlot.ToName());
+        ImGui.Text(Interop.CurrentPlot.ToName());
 
         ImGui.TableNextColumn();
         ImGui.Text("Current Housing Territory");
         ImGui.TableNextColumn();
-        ImGui.Text(Interop.PositionInfo.Zone.ToString());
+        ImGui.Text(Interop.HousingZone.ToName());
 
         ImGui.TableNextColumn();
         ImGui.Text("Current Ward");
         ImGui.TableNextColumn();
-        ImGui.Text($"{Interop.PositionInfo.Ward}{(Interop.PositionInfo.Subdivision ? " (Subdivision)" : string.Empty)}");
+        ImGui.Text($"{Interop.Ward}{(Interop.Subdivision ? " (Subdivision)" : string.Empty)}");
 
         ImGui.TableNextColumn();
         ImGui.Text("Current Plot");
         ImGui.TableNextColumn();
-        ImGui.Text(Interop.PositionInfo.Plot.ToString());
+        ImGui.Text(Interop.Plot.ToString());
 
         ImGui.TableNextColumn();
         ImGui.Text("Current House");
         ImGui.TableNextColumn();
-        ImGui.Text(Interop.PositionInfo.House.ToString());
+        ImGui.Text(Interop.House.ToString());
     }
 
     private void DrawSquadron()

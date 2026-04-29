@@ -3,9 +3,9 @@ using System.Linq;
 using Accountant.Classes;
 using Accountant.Gui.Timer;
 using Accountant.Timers;
+using Dalamud.Game.Chat;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Text;
-using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Game.Text.SeStringHandling.Payloads;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game.UI;
@@ -49,9 +49,9 @@ public partial class TimerManager
                 return;
 
             _tasks.Reload();
-            Dalamud.Chat.CheckMessageHandled += OnChatMap;
-            Dalamud.Framework.Update         += OnFrameworkMap;
-            _state                           =  true;
+            Dalamud.Chat.ChatMessage += OnChatMap;
+            Dalamud.Framework.Update += OnFrameworkMap;
+            _state                   =  true;
         }
 
         private void Disable()
@@ -59,7 +59,7 @@ public partial class TimerManager
             if (!_state)
                 return;
 
-            Dalamud.Chat.CheckMessageHandled -= OnChatMap;
+            Dalamud.Chat.ChatMessage -= OnChatMap;
             Dalamud.Framework.Update -= OnFrameworkMap;
             _state                   =  false;
         }
@@ -68,12 +68,12 @@ public partial class TimerManager
             => Disable();
 
 
-        private void OnChatMap(XivChatType type, int timestamp, ref SeString sender, ref SeString message, ref bool isHandled)
+        private void OnChatMap(IChatMessage message)
         {
-            if ((int)type != 2115 || !Dalamud.Conditions[ConditionFlag.Gathering])
+            if (message.LogKind is not XivChatType.Gathering and not XivChatType.GatheringSystemMessage|| !Dalamud.Conditions[ConditionFlag.Gathering])
                 return;
 
-            var item = (ItemPayload?)message.Payloads.FirstOrDefault(p => p is ItemPayload);
+            var item = (ItemPayload?)message.Message.Payloads.FirstOrDefault(p => p is ItemPayload);
             if (item == null)
                 return;
 
@@ -88,7 +88,7 @@ public partial class TimerManager
 
         private unsafe void UpdateMap()
         {
-            if (Dalamud.Objects.LocalPlayer is not {} p)
+            if (Dalamud.Objects.LocalPlayer is not { } p)
                 return;
 
             var uiState = UIState.Instance();

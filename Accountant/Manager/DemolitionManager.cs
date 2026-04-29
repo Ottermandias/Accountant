@@ -7,6 +7,7 @@ using Accountant.Enums;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Task = System.Threading.Tasks.Task;
@@ -40,11 +41,6 @@ public class DemolitionManager : IDisposable
     }
 
     public readonly Dictionary<PlotInfo, DemolitionInfo> Data = [];
-
-    public PlotInfo CurrentPlot
-        => new(Interop.PositionInfo.Zone, Interop.PositionInfo.Ward,
-            InsideHouse(_clientState.TerritoryType) ? Interop.PositionInfo.House : Interop.PositionInfo.Plot,
-            (ushort)(Dalamud.PlayerState.IsLoaded ? Dalamud.PlayerState.CurrentWorld.RowId : 0));
 
     public DemolitionManager(AccountantConfiguration config, IDalamudPluginInterface pluginInterface, IClientState clientState,
         IFramework framework, IObjectTable objects)
@@ -233,7 +229,7 @@ public class DemolitionManager : IDisposable
         }
     }
 
-    private void OnTerritoryChange(ushort territory)
+    private void OnTerritoryChange(uint territory)
     {
         if (InsideHouse(territory))
         {
@@ -248,7 +244,7 @@ public class DemolitionManager : IDisposable
     }
 
 
-    public static bool InsideHouse(ushort territory)
+    public static bool InsideHouse(uint territory)
         => (HousingZone)territory switch
         {
             HousingZone.CottageMist         => true,
@@ -278,8 +274,7 @@ public class DemolitionManager : IDisposable
         if (!Dalamud.PlayerState.IsLoaded)
             return;
 
-        var plotInfo = new PlotInfo(Interop.PositionInfo.Zone, Interop.PositionInfo.Ward, Interop.PositionInfo.House,
-            (ushort)Dalamud.PlayerState.CurrentWorld.RowId);
+        var plotInfo = Interop.CurrentPlot;
         if (!Data.TryGetValue(plotInfo, out var demoInfo) || !demoInfo.Tracked)
             return;
 

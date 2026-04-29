@@ -130,9 +130,9 @@ public partial class TimerManager
                     Type     = CropSpotType.House,
                     ServerId = (ushort)Dalamud.PlayerState.CurrentWorld.RowId,
                     Position = target.Position,
-                    Zone     = Interop.PositionInfo.Zone,
-                    Ward     = (byte)Interop.PositionInfo.Ward,
-                    Plot     = (byte)Interop.PositionInfo.House,
+                    Zone     = Interop.HousingZone,
+                    Ward     = (byte)Interop.Ward,
+                    Plot     = (byte)Interop.House,
                 };
                 if (ret.Zone == InternalHousingZone.Unknown || ret.Ward == 0 || ret.Plot == 0)
                     return CropSpotIdentification.Invalid;
@@ -149,9 +149,9 @@ public partial class TimerManager
                 {
                     Type     = CropSpotType.Outdoors,
                     ServerId = (ushort)Dalamud.PlayerState.CurrentWorld.RowId,
-                    Zone     = Interop.PositionInfo.Zone,
-                    Ward     = (byte)Interop.PositionInfo.Ward,
-                    Plot     = Interop.PositionInfo.Plot,
+                    Zone     = Interop.HousingZone,
+                    Ward     = (byte)Interop.Ward,
+                    Plot     = (byte)Interop.Plot,
                     Bed      = (byte)_lastBed,
                     Patch    = (byte)_lastPatch,
                 };

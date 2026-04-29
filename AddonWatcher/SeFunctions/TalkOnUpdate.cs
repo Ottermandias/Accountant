@@ -1,5 +1,4 @@
 ﻿using System;
-using Dalamud.Game;
 using Dalamud.Plugin.Services;
 
 namespace AddonWatcher.SeFunctions;

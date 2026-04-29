@@ -213,7 +213,7 @@ public partial class ConfigWindow
             ImGui.SetTooltip(tt);
 
         ImGui.SameLine();
-        var currentPlot = _demoManager.CurrentPlot;
+        var currentPlot = Interop.CurrentPlot;
         tt = (currentPlot.Valid(), _demoManager.CanAddPlot(currentPlot)) switch
         {
             (true, true)  => $"Add the plot {currentPlot.ToName()} on {Accountant.GameData.GetWorldName(currentPlot.ServerId)}.",
@@ -224,7 +224,7 @@ public partial class ConfigWindow
         {
             if (ImGui.Button("Add Current Plot"))
             {
-                var plot = _demoManager.CurrentPlot;
+                var plot = Interop.CurrentPlot;
                 if (plot.Valid())
                     _demoManager.AddPlot(plot);
             }
