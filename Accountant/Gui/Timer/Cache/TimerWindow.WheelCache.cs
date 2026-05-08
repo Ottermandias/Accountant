@@ -11,7 +11,8 @@ public partial class TimerWindow
 {
     internal sealed class WheelCache : BaseCache
     {
-        private readonly WheelTimers _wheels;
+        private readonly WheelTimers   _wheels;
+        public           ObjectCounter Counter;
 
         public WheelCache(TimerWindow window, ConfigFlags requiredFlags, WheelTimers wheels)
             : base("Aetherial Wheels", requiredFlags, window)
@@ -62,21 +63,21 @@ public partial class TimerWindow
 
         protected override void UpdateInternal()
         {
-            var global = ObjectCounter.Create();
+            Counter = ObjectCounter.Create();
             foreach (var (company, wheels) in _wheels.Data
                          .Where(r => !Accountant.Config.BlockedCompaniesWheels.Contains(r.Key.CastedName))
                          .Select(r => (GetName(r.Key.Name, r.Key.ServerId), r.Value))
                          .OrderByDescending(r => Accountant.Config.GetPriority(r.Item1)))
             {
-                var fc = GenerateCompany(company, wheels, ref global);
+                var fc = GenerateCompany(company, wheels, ref Counter);
                 if (fc.ObjectsCount == 0)
                     continue;
 
                 Headers.Add(fc);
             }
 
-            Color       = global.GetColorHeader();
-            DisplayTime = global.GetTime();
+            Color       = Counter.GetColorHeader();
+            DisplayTime = Counter.GetTime();
         }
     }
 }
